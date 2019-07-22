@@ -1,6 +1,7 @@
 #include "cpd_functions.h"
 #include <iostream>
 
+//test for git
 using namespace Eigen;
 
 void rand_shuffle_indices(const VectorXi &dim_size, MatrixXi &rand_indices, int factor)
