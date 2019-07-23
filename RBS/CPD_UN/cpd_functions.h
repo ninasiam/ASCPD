@@ -62,6 +62,8 @@ void Normalize_Init(Ref<MatrixXd> A, Ref<MatrixXd> B, Ref<MatrixXd> C);
 
 void Read_Data(omp_obj omp_var, Ref<MatrixXd> A, Ref<MatrixXd> B, Ref<MatrixXd> C, Ref<MatrixXd> X_A, Ref<MatrixXd> X_B, Ref<MatrixXd> X_C, int I, int J, int K, int R);
 
+void Read_Data(omp_obj omp_var, Ref<MatrixXd> A, Ref<MatrixXd> B, Ref<MatrixXd> C, Ref<MatrixXd> X_A, Ref<MatrixXd> X_C, int I, int J, int K, int R);
+
 void Read_From_File(int nrows, int ncols, Ref<MatrixXd> Mat, const char *file_name, int skip);
 
 //void Read_X_C(int n_I, int n_J, int n_K, int skip_I, int skip_J, int skip_K, int I, int J, Ref<MatrixXd> X_C_one_file_T,const char *file_name);
