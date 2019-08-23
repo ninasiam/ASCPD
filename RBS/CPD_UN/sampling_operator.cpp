@@ -1,7 +1,6 @@
 #include "cpd_functions.h"
 #include <iostream>
 
-//test for git
 using namespace Eigen;
 
 void rand_shuffle_indices(const VectorXi &dim_size, MatrixXi &rand_indices, int factor)
@@ -87,21 +86,22 @@ void create_subfactors(const MatrixXd &Factor, MatrixXd &subFactor, const Matrix
     }
     else if(factor==1) // factor B
     {   
-        numa_run_on_node(0);
-        #pragma omp parallel for schedule(dynamic) \
-                                 default(none) \
-                                 shared(block_size,dim_size,B_cal, Matr_Tensor, Matr_subTensor)
+        // numa_run_on_node(0);
+        // #pragma omp parallel for schedule(dynamic) \
+        //                          default(none) \
+        //                          shared(block_size,dim_size,B_cal, Matr_Tensor, Matr_subTensor)
 
-        for (int j = 0; j < block_size(0); j++) // I: cols
-        {
-            for (int k = 0; k < block_size(2); k++) // K: slices
-            {
-                for (int i = 0; i < block_size(1); i++) // J: rows
-                {
-                    Matr_subTensor((k * block_size(1)) + i, j) = Matr_Tensor((B_cal(2, k) * dim_size(1)) + B_cal(1, i), B_cal(0, j));
-                }
-            }
-        }
+        // for (int j = 0; j < block_size(0); j++) // I: cols
+        // {
+        //     for (int k = 0; k < block_size(2); k++) // K: slices
+        //     {
+        //         for (int i = 0; i < block_size(1); i++) // J: rows
+        //         {
+        //             Matr_subTensor((k * block_size(1)) + i, j) = Matr_Tensor((B_cal(2, k) * dim_size(1)) + B_cal(1, i), B_cal(0, j));
+        //         }
+        //     }
+        // }
+        return;
     }
     else if (factor == 2) // factor C
     {

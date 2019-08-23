@@ -43,7 +43,8 @@ void Workerjob(omp_obj omp_var, size_t J, size_t K, MatrixXd &A, const Ref<const
 
 			for (int k = 0; k < int(K / omp_var.sockets) + (outer_thread_id == omp_var.sockets - 1) * (K % omp_var.sockets); k++)
 			{
-				W.noalias() += X_A.block((k + outer_thread_id * int(K / omp_var.sockets)) * I, 0, I, J) * Kr.block((k + outer_thread_id * int(K / omp_var.sockets)) * J, 0, J, R); // W = X_B * Kr_B
+				// W.noalias() += X_A.block((k + outer_thread_id * int(K / omp_var.sockets)) * I, 0, I, J) * Kr.block((k + outer_thread_id * int(K / omp_var.sockets)) * J, 0, J, R); // W = X_B * Kr_B
+				W.noalias() += X_A.block(0, (k + outer_thread_id * int(K / omp_var.sockets)) * I, J, I).transpose() * Kr.block((k + outer_thread_id * int(K / omp_var.sockets)) * J, 0, J, R); // W = X_B * Kr_B
 			}
 
 			#pragma omp barrier

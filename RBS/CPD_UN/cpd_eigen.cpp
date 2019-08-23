@@ -91,10 +91,10 @@ int main(int argc, char **argv){
 	MatrixXd A_old_N(I,R), B_old_N(J,R), C_old_N(K,R);	// Normalized Factors A_old_N, B_old_N, C_old_N
 	
 	MatrixXd X_A(I, size_t(J * K));						// |
-	MatrixXd X_B(size_t(J * K), I);						// | Matricized Tensors
+	// MatrixXd X_B(size_t(J * K), I);						// | Matricized Tensors
 	MatrixXd X_C(K, size_t(I * J));						// |
 	MatrixXd X_A_sub(BZ(0), BZ(1) * BZ(2));				// |
-	MatrixXd X_B_sub(BZ(1) * BZ(2), BZ(0));				// | Matricized Sub-Tensors
+	// MatrixXd X_B_sub(BZ(1) * BZ(2), BZ(0));				// | Matricized Sub-Tensors
 	MatrixXd X_C_sub(BZ(2), BZ(0) * BZ(1));				// |
 	
 	MatrixXd A_T_A(R, R), B_T_B(R, R), C_T_C(R, R);		// A^T*A, B^T*B, C^T*C
@@ -116,7 +116,7 @@ int main(int argc, char **argv){
 
 	KhatriRao_BA_full.setZero();
 	//	<----------------------		Read Initial Factors and Tensor from file		--------------------------->	//
-	Read_Data(omp_var, A, B, C, X_A, X_B, X_C, I, J, K, R);
+	Read_Data(omp_var, A, B, C, X_A, X_C, I, J, K, R);
 	
 
 	//	<-----------------------		Frobenious Squared Norm of Tensor		------------------------------->	//
@@ -133,7 +133,7 @@ int main(int argc, char **argv){
 	// std::cout << B_cal << "\n";
 	// std::cout << A_sub << "\n";
 	// std::cout << "X_A = \n" << X_A << "\n\nX_A_sub = \n" << X_A_sub << "\n\n\n";
-	create_subfactors(B, B_sub, X_B, X_B_sub, DIMS, BZ, rand_indices, B_cal, AO_iter, 2);
+	create_subfactors(B, B_sub, X_A, X_A_sub, DIMS, BZ, rand_indices, B_cal, AO_iter, 2);
 	// std::cout << "X_B = \n" << X_B << "\n\nX_B_sub = \n" << X_B_sub << "\n\n\n";
 	create_subfactors(C, C_sub, X_C, X_C_sub, DIMS, BZ, rand_indices, B_cal, AO_iter, 3);
 	// std::cout << "X_C = \n" << X_C << "\n\nX_C_sub = \n" << X_C_sub << "\n\n\n";
@@ -179,7 +179,7 @@ int main(int argc, char **argv){
 		Khatri_Rao_Product(omp_var, C_sub, A_sub, KhatriRao_CA); // C kr A
 		stop_t_KCA += toc(start_t_KCA);
 		start_t_Wj2 = tic();
-		Workerjob(omp_var, BZ(0), BZ(2), B_sub, C_T_C, A_T_A, X_B_sub, KhatriRao_CA, 2);
+		Workerjob(omp_var, BZ(0), BZ(2), B_sub, C_T_C, A_T_A, X_A_sub, KhatriRao_CA, 2);
 		stop_t_Wj2 += toc(start_t_Wj2);
 		start_t_BTB = tic();
 		B_T_B.noalias() = B_sub.transpose() * B_sub;
@@ -242,7 +242,7 @@ int main(int argc, char **argv){
 		start_t_sampl = tic();
 		create_subfactors(A, A_sub, X_A, X_A_sub, DIMS, BZ, rand_indices, B_cal, AO_iter, 1);
 		// std::cout << "\n\nX_A_sub = \n" << X_A_sub << "\n\n\n";
-		create_subfactors(B, B_sub, X_B, X_B_sub, DIMS, BZ, rand_indices, B_cal, AO_iter, 2);
+		create_subfactors(B, B_sub, X_A, X_A_sub, DIMS, BZ, rand_indices, B_cal, AO_iter, 2);
 		// std::cout << "\n\nX_B_sub = \n" << X_B_sub << "\n\n\n";
 		create_subfactors(C, C_sub, X_C, X_C_sub, DIMS, BZ, rand_indices, B_cal, AO_iter, 3);
 		// std::cout << "\n\nX_C_sub = \n" << X_C_sub << "\n\n\n";
