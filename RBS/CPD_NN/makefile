@@ -1,4 +1,4 @@
-CC = g++-8
+CC = g++
 MPICC = $(CC)
 OMP = -fopenmp -lnuma
 #DEBUG = -g

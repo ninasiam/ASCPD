@@ -13,11 +13,11 @@
 // #define EIGEN_DEFAULT_TO_ROW_MAJOR
 
 /* Uncomment if running at DALI*/
-//#include "/home/ipapagiannakos/Libraries/eigen3/Eigen/Dense"
-//#include "/home/ipapagiannakos/Libraries/eigen3/Eigen/Core"
+#include "/home/ninasiam/Desktop/PARTENSOR/Libraries/eigen3/Eigen/Dense"
+#include "/home/ninasiam/Desktop/PARTENSOR/Libraries/eigen3/Eigen/Core"
 /* Uncomment if Eigen is allready installed...*/
- #include <Eigen/Dense>
- #include <Eigen/Core>
+// #include <Eigen/Dense>
+// #include <Eigen/Core>
 /* Uncomment if running at ARIS-HPC*/
 // #include "../eigen3/Eigen/Dense"
 // #include "../eigen3/Eigen/Core"
