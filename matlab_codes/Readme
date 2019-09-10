@@ -1,0 +1,34 @@
+August _ Stochastic optimization
+
+->23/8/2019<-
+
+Katyusha initial implemetation.
+Katyusha paper
+Proximal paper Tibshirani
+
+->26/8/2019<-
+
+Katyusha vs SVRG (see katyusha vol 3)
+	-same scheme as SVRG for full gradient
+	-no proximal term, so different update for x_hat
+	-seems that katyusha outperformes SVRG
+Also, a quick look on Bottou pg.68
+
+->30/8/2019<-
+Also compare the SG with the rest ->done
+Put sotchastic nesterov on the game ->done
+
+->2/9/2019<-
+
+Experiment with vatious step sizes for SG -> ended up with a constant that resembles the calcultion of L.
+
+Begin bubeck's book.
+
+Read the lectures of Shmidt for SGD.
+ 
+
+->3/9/2019<-
+
+Right now katyusha and svrg closes with error
+
+TOmorrow set the number of iterations as in SGD and NSGD
