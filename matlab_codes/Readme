@@ -32,3 +32,7 @@ Read the lectures of Shmidt for SGD.
 Right now katyusha and svrg closes with error
 
 TOmorrow set the number of iterations as in SGD and NSGD
+
+-12/9/2019<-
+
+changed the stopping conditions
