@@ -4,14 +4,14 @@
 using namespace Eigen;
 using namespace std;
 
-VectorXd Compute_gradient(MatrixXd A, VectorXd b, VectorXd x, int d, int n){
+VectorXd Compute_gradient(const MatrixXd &A_t, const MatrixXd &A_t_A, const VectorXd &b, const VectorXd &x, int d, int n){
 
      VectorXd grad;
-     int n, num;
 
-     num = A.rows();
+     grad = (1/2*n)*(A_t_A*x - A_t*b);
 
-
-
+     cout << "Fulle Gradient:" << grad << endl;
+     
+     return grad;
 
 }
