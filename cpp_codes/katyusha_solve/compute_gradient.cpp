@@ -8,9 +8,9 @@ VectorXd Compute_gradient(const MatrixXd &A_t, const MatrixXd &A_t_A, const Vect
 
      VectorXd grad;
 
-     grad = (1/2*n)*(A_t_A*x - A_t*b);
+     grad = (A_t_A*x - A_t*b)/n;
 
-     cout << "Fulle Gradient:" << grad << endl;
+     // cout << "Full Gradient:" << grad << endl;
      
      return grad;
 
