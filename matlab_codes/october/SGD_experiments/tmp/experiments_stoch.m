@@ -2,42 +2,46 @@ clc, clear all, close all
 
 %creation of data
 m = 2000;
-n = 200;
+n = 100;
 MaxIter = 20000;
 
+%creation of matrix A with specific eigenvalues
 A_tmp = randn(m,n);
 [U,S,V] = svd(A_tmp,'econ');
-
 lambda_min = 10;
 lambda_max = 1000;
-
 eigs = lambda_min + (lambda_max - lambda_min)*rand(n-2,1);
-
 eig_A = [lambda_min; lambda_max; eigs];
 Sigma = diag(eig_A);
-
 A = U*Sigma*V';
 
-%another_x
-b = rand(m,1);
+%Normalize the rows of A to unit norm 
+%A = normalize(A);
 
+%vector of parameters
+b = rand(m,1);
+%or
+%b = A*randn(n,1);
+
+%Problem parameters
 Hessian = A'*A;
 mu = min(svd(Hessian));
 L = max(svd(Hessian));
 condition = L/mu;
-%A = normalize(A);
+
+%initial point
 x_init_all = zeros(n,1);
 
 %Optimal
 x_star = inv(Hessian)*A'*b;
 f_star = (1/(2*m))*norm(A*x_star - b)^2;
 Beta = norm(x_star);
+%residuals to estimate M
 residuals = (1/2)*(A*x_star - b).^2
 max_res = max(residuals);
-
-[expected_value_g_square_opt,mtp] = compute_squared_mean_g(randperm(m,m), x_star, A, b);
+%computation of expected value E_i[||g(w,i)||^2] at optimum
+[expected_value_g_square_opt,stoch_squared] = compute_squared_mean_g(randperm(m,m), x_star, A, b);
 full_grad_opt = (1/(m^2))*norm(A'*(A*x_star - b))^2;
-
 
 
 % %%%%%%%%%%%%% Stochastic Gradients Different Steps%%%%%%%
@@ -66,21 +70,7 @@ opts.MaxIter = 20000;
 
 [fval_sd_v,~,norm_sd_v] = stochastic_gradient(A, b, eta_sd_v, x_sd_v, f_val, opts);
 
-% %iii)strongly convex variant step
-% x_sd_sc_v = x_init_all;
-% f_val = (1/(2*m))*norm(A*x_init_all - b)^2;
-% eta_sd_sc_v = 1/mu; %we use the mu of A'*A;
-% 
-% opts = struct;
-% opts.average = 'true';
-% opts.StepSize = 'variant';
-% opts.Function ='strongly-convex';
-% opts.epsilon = 10^(-14);
-% opts.MaxIter = 20000;
-% 
-% [fval_sd_sc_v,~,norm_sd_sc_v] = stochastic_gradient(A, b, eta_sd_sc_v, x_sd_sc_v, f_val, opts);
-
-%)iv Bottou strongly convex diminishing step sizes
+%)iv Bottou strongly convex constant step sizes
 x_sd_sc_bt = x_init_all;
 f_val = (1/(2*m))*norm(A*x_init_all - b)^2;
 eta_sd_sc_bt = 1/(L);
@@ -89,13 +79,16 @@ opts = struct;
 opts.average = 'false';
 opts.StepSize = 'constant';
 opts.Function ='strongly-convex';
-opts.epsilon = 10^(-14);
+opts.f_star = f_star;
+opts.epsilon = 10^(-8);
 opts.MaxIter = 20000;
 opts.mu = mu;
 opts.gamma = 100;
 opts.sampling_rate = 1000;
 opts.maximal_res = max_res;
-opts.batch = m/4;
+opts.mini_batch = 'false';
+opts.batch_size = 1;
+opts.exp_chunk = m/4;
 [f_val_sd_sc_bt,~,norm_sd_sc_bt] = stochastic_gradient(A, b, eta_sd_sc_bt, x_sd_sc_bt, f_val, opts); 
 
 
@@ -116,8 +109,22 @@ xlabel('iterations');
 ylabel('|f_t - f^*|');
 title('Stochastic gradients with different step sizes')
 legend('Beta/(L*Beta + norm(A^T*b))',...
-       'Beta/(L*Beta + norm(A^T*b))*sqrt(t)', ...
+       '100*Beta/(L*Beta + norm(A^T*b))*sqrt(t)', ...
        '1/L', 'bound');
+   
+% %iii)strongly convex variant step
+% x_sd_sc_v = x_init_all;
+% f_val = (1/(2*m))*norm(A*x_init_all - b)^2;
+% eta_sd_sc_v = 1/mu; %we use the mu of A'*A;
+% 
+% opts = struct;
+% opts.average = 'true';
+% opts.StepSize = 'variant';
+% opts.Function ='strongly-convex';
+% opts.epsilon = 10^(-14);
+% opts.MaxIter = 20000;
+% 
+% [fval_sd_sc_v,~,norm_sd_sc_v] = stochastic_gradient(A, b, eta_sd_sc_v, x_sd_sc_v, f_val, opts);
 
 % %%%%%%%%%%%%%%%%%%%%%%%%Mini-Batch%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%

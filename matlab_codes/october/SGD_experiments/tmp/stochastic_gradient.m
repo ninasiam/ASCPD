@@ -16,6 +16,8 @@ function [ f_val_sd,fval_merged, norm_sd ] = stochastic_gradient( A, b, eta_sd_i
     p.addOptional('averaging', 'false');
     p.addOptional('sampling_rate',0);
     p.addOptional('maximal_res',1)
+    p.addOptional('exp_chunk',1);
+    p.addOptional('f_star',0.01);
     p.parse(Options);
     options = p.Results
 
@@ -55,7 +57,8 @@ function [ f_val_sd,fval_merged, norm_sd ] = stochastic_gradient( A, b, eta_sd_i
         end
         if(options.sampling_rate ~= 0)
             if mod(iter, options.sampling_rate) == 0
-                [expected_value_g_squared,~] = compute_squared_mean_g(batch, x_sd(:,iter), A, b);
+                exp_chunk_idx = randperm(n,options.exp_chunk);
+                [expected_value_g_squared,~] = compute_squared_mean_g(exp_chunk_idx, x_sd(:,iter), A, b);
                 sq_grad_full = [sq_grad_full (1/(n^2))*norm(A'*(A*x_sd(:,iter) - b))^2];
                 variance = [variance (expected_value_g_squared - sq_grad_full(end))];
             end
@@ -98,9 +101,9 @@ function [ f_val_sd,fval_merged, norm_sd ] = stochastic_gradient( A, b, eta_sd_i
         
         f_val_sd(:,iter+1) = (1/(2*n))*norm(A*x_sd(:,iter+1) - b)^2;
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %for mini-batch plot
         fval_merged = [fval_merged f_val_sd(:,iter+1)*ones(1,batch_s)];
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
         crit_sg = norm(x_sd(:,iter+1)-x_sd(:,iter))/norm(x_sd(:,iter));
 
         if(crit_sg < options.epsilon || iter > options.MaxIter) 
@@ -110,8 +113,8 @@ function [ f_val_sd,fval_merged, norm_sd ] = stochastic_gradient( A, b, eta_sd_i
         iter = iter + 1;
     end
     
-    M = options.maximal_res;
-    M_v = 2*n;
+    M = options.maximal_res*norm(A(n/2,:))^2   %for big dimensionallity of x norms tend to be equal
+    M_v = n-1;
     if(options.sampling_rate ~= 0)
         figure(1)
         semilogy(variance);
