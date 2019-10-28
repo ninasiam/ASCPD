@@ -113,8 +113,8 @@ function [ f_val_sd,fval_merged, norm_sd ] = stochastic_gradient( A, b, eta_sd_i
         iter = iter + 1;
     end
     
-    M = options.maximal_res*norm(A(n/2,:))^2   %for big dimensionallity of x norms tend to be equal
-    M_v = n-1;
+    M = 3%options.f_star*norm(A(n/2,:))^2;   %for big dimensionallity of x norms tend to be equal
+    M_v = 3*n-1%n/2 -1;
     if(options.sampling_rate ~= 0)
         figure(1)
         semilogy(variance);
