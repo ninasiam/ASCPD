@@ -26,7 +26,7 @@ int main(int argc, char **argv){
 	block_size.setConstant(400);							// | Parameters for stochastic
 	const double alpha_init = 0.1;							// | gradient
 	const double beta = 1e-4;								// | 
-	VectorXi F_n(block_size(0),1);									// | fibers to be selected
+	VectorXi F_n(block_size(0),1);							// | fibers to be selected
 	int factor;												// |
 	VectorXi kr_idx(2,1);									// |
 

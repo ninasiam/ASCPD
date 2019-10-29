@@ -87,7 +87,7 @@ opts.MaxIter = 20000;
 %)iv Bottou strongly convex constant step sizes
 x_sd_sc_bt = x_init_all;
 f_val = (1/(2*m))*norm(A*x_init_all - b)^2;
-eta_sd_sc_bt = (1)/(3*L*m);
+eta_sd_sc_bt = (1)/(L*m);
 
 opts = struct;
 opts.average = 'false';

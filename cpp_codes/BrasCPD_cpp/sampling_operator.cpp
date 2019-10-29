@@ -45,8 +45,8 @@ void Sampling_Operator(int order, VectorXi block_size, VectorXi dims, VectorXi &
     random_device rd;
     mt19937 g(rd());
  
-    //  shuffle(indices.begin(), indices.end(), g);
+    shuffle(indices.data(), indices.data() + J_n, g);
 
-    // F_n = indices.head(block_size(factor));
+    F_n = indices.head(block_size(factor));
 
 }
