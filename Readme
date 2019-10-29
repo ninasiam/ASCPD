@@ -1,0 +1,17 @@
+August _ Stochastic optimization
+
+->23/8/2019<-
+
+Katyusha initial implemetation.
+Katyusha paper
+Proximal paper Tibshirani
+
+->26/8/2019<-
+
+Katyusha vs SVRG (see katyusha vol 3)
+	-same scheme as SVRG for full gradient
+	-no proximal term, so different update for x_hat
+	-seems that katyusha outperformes SVRG
+Also, a quick look on Bottou pg.68
+
+
