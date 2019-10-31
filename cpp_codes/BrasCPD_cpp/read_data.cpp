@@ -4,7 +4,7 @@
 using namespace std;
 using namespace Eigen;
 
-void Read_Data(Ref<MatrixXd> A, Ref<MatrixXd> B, Ref<MatrixXd> C, Ref<MatrixXd> X_A_T, Ref<MatrixXd> X_B_T, Ref<MatrixXd> X_C_T,
+void Read_Data(Ref<MatrixXd> A, Ref<MatrixXd> B, Ref<MatrixXd> C, Ref<MatrixXd> X_A, Ref<MatrixXd> X_B, Ref<MatrixXd> X_C,
 			   int I, int J, int K, int R)
 {
 
@@ -41,20 +41,17 @@ void Read_Data(Ref<MatrixXd> A, Ref<MatrixXd> B, Ref<MatrixXd> C, Ref<MatrixXd> 
 	C_true = C_true_T.transpose();
 
 	MatrixXd kr_CB(size_t(K * J), R);
-	MatrixXd X_A(I, size_t(K * J));
 	Khatri_Rao_Product(C_true, B_true, kr_CB);
 	X_A.noalias() = A_true * kr_CB.transpose();
-    X_A_T = X_A.transpose();
+    // X_A_T = X_A.transpose();
 
     MatrixXd kr_CA(size_t(K * I), R);
-	MatrixXd X_B(J, size_t(K * I));
 	Khatri_Rao_Product(C_true, A_true, kr_CA);
 	X_B.noalias() = B_true * kr_CA.transpose();
-    X_B_T = X_B.transpose();
+    // X_B_T = X_B.transpose();
 
 	MatrixXd kr_BA(size_t(I * J), R);
-	MatrixXd X_C(K, size_t(J * I));
 	Khatri_Rao_Product(B_true, A_true, kr_BA);
 	X_C.noalias() = C_true * kr_BA.transpose();
-    X_C_T = X_C.transpose();
+    // X_C_T = X_C.transpose();
 }

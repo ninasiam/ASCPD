@@ -3,7 +3,7 @@ MPICC = $(CC)
 #DEBUG = -g
 CXXFLAGS = -march=native -funroll-loops -c -O3 -DNDEBUG #-fopenmp # -Wall# $(DEBUG)#LFLAGS = -Wall# $(DEBUG)
 # CXXFLAGS = -march=native -c -O3 -DNDEBUG #-fopenmp # -Wall# $(DEBUG)#LFLAGS = -Wall# $(DEBUG)
-OBJS = khatri_rao_product.o brasCPD.o read_data.o read_from_file.o set_info.o get_objective_value.o sampling_operator.o
+OBJS = khatri_rao_product.o brasCPD.o read_data.o read_from_file.o set_info.o get_objective_value.o sampling_operator.o sampling_sub_matrices.o compute_batch_gradient.o
 DEPS = brascpd_functions.h
 
 all: brasCP
@@ -31,6 +31,12 @@ read_from_file.o: read_from_file.cpp $(DEPS)
 
 set_info.o: set_info.cpp $(DEPS)
 	$(MPICC) $(CXXFLAGS) set_info.cpp
+
+sampling_sub_matrices.o: sampling_sub_matrices.cpp $(DEPS)
+	$(MPICC) $(CXXFLAGS) sampling_sub_matrices.cpp
+
+compute_batch_gradient.o: compute_batch_gradient.cpp $(DEPS)
+	$(MPICC) $(CXXFLAGS) compute_batch_gradient.cpp
 
 create_data: create_data.cpp
 	$(CC) -O3 create_data.cpp -o create_data
