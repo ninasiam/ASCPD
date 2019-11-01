@@ -11,10 +11,11 @@ void Sampling_Sub_Matrices(const VectorXi &F_n, MatrixXd &KhatriRao, const Matri
     int R = KhatriRao.cols();
     int J_n = KhatriRao.rows();
     int bz = F_n.size();
+    // cout << bz << endl;
     MatrixXd KhatriRao_T(R, J_n);
 
     Khatri_Rao_Product(U1, U2, KhatriRao);                          // Compute the full Khatri-Rao Product
-    cout << KhatriRao << endl;
+    // cout << KhatriRao << endl;
     KhatriRao_T = KhatriRao.transpose();
 
     for(int col_H = 0; col_H < bz; col_H++)
@@ -26,4 +27,5 @@ void Sampling_Sub_Matrices(const VectorXi &F_n, MatrixXd &KhatriRao, const Matri
     {
         X_sub.col(col_X) = X.col(F_n(col_X));
     }
+    // cout << "Mpike 1" << endl;
 }

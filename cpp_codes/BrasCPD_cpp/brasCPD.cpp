@@ -6,9 +6,11 @@
 #include "brascpd_functions.h"
 #include <limits>
 #include <ctime>
+#include <chrono>
 #include <random>
 
 using namespace std;
+using namespace std::chrono;
 using namespace Eigen;
 
 int main(int argc, char **argv){
@@ -17,16 +19,16 @@ int main(int argc, char **argv){
 	int order = 3;											// Tensor Order
 	int I, J, K;										    // Tensor Dimensions
 	int R;												    // Rank of factorization
-	time_t start_t, stop_t;									// Timer
-	start_t = time(0);
+	// time_t start_t, stop_t;									// Timer
+	// start_t = time(0);
 	srand(time(NULL));
 
 	const double AO_tol = 1e-3;							    // Tolerance for AO Algorithm
-	int max_iter = 20;										// Maximum Number of iterations
+	int max_iter = 50000;										// Maximum Number of iterations
 	int AO_iter  = 1;										// Iterations counter
 
 	VectorXi block_size(3,1);								// |
-	block_size.setConstant(5);								// | Parameters for stochastic
+	block_size.setConstant(1000);								// | Parameters for stochastic
 	const double alpha_init = 0.1;							// | gradient
 	const double beta = 1e-4;								// | 
 	double alpha;											// |
@@ -82,45 +84,54 @@ int main(int argc, char **argv){
 	Khatri_Rao_Product(B, A, KhatriRao_BA);
 	W_C = X_C*KhatriRao_BA;
 
-	f_value = Get_Objective_Value(C, X_C, A_T_A, B_T_B, C_T_C, frob_X);
+	f_value = Get_Objective_Value(C, W_C, A_T_A, B_T_B, C_T_C, frob_X);
 
 	cout << " BEGIN ALGORITHM " << endl;
-	;
+	  high_resolution_clock::time_point t1 = high_resolution_clock::now();
 	while (1)
 	{	
 		alpha = alpha_init/(pow(AO_iter,beta));
-		cout << alpha << endl;
+		// cout << alpha << endl;
 		cout << AO_iter << " -- " << f_value/sqrt(frob_X) << " -- " << f_value << " -- " << frob_X << " -- " <<  endl;
 		Sampling_Operator(order, block_size, dims, F_n, factor);
-		
+		cout << factor << endl;
 		if(factor == 0)										// Factor A
 		{	
 			Sampling_Sub_Matrices(F_n, KhatriRao_CB, X_A, C, B, KhatriRao_CB_sub, X_A_sub);
+			// cout << KhatriRao_CB_sub << endl;
 			Calculate_Batch_Gradient(block_size(0), A, KhatriRao_CB_sub, X_A_sub, Grad_A);	
+			// cout << X_A_sub << endl;
 			A.noalias() = A - alpha*Grad_A;
+			cout << A.norm() << endl;
 			A_T_A.noalias() = A.transpose()*A;
 		}
 		if(factor == 1)										// Factor B
-		{	
-			
+		{				
 			Sampling_Sub_Matrices(F_n, KhatriRao_CA, X_B, C, A, KhatriRao_CA_sub, X_B_sub);
-			Calculate_Batch_Gradient(block_size(1), B, KhatriRao_CA_sub, X_B_sub, Grad_B);
+			// cout << KhatriRao_CA_sub << endl;
+			Calculate_Batch_Gradient(block_size(1), B, KhatriRao_CA_sub, X_B_sub, Grad_B);	
+			// cout << X_B_sub << endl;
 			B.noalias() = B - alpha*Grad_B;
+			cout << B.norm() << endl;
 			B_T_B.noalias() = B.transpose()*B;
 		}
 		if(factor == 2)										// Factor C
 		{
 			
 			Sampling_Sub_Matrices(F_n, KhatriRao_BA, X_C, B, A, KhatriRao_BA_sub, X_C_sub);
-			Calculate_Batch_Gradient(block_size(2), C, KhatriRao_BA_sub, X_C_sub, Grad_C);
+			// cout << KhatriRao_BA_sub << endl;
+			Calculate_Batch_Gradient(block_size(2), C, KhatriRao_BA_sub, X_C_sub, Grad_C);	
+			// cout << X_C_sub << endl;
 			C.noalias() = C - alpha*Grad_C;
+			cout << C.norm() << endl;
 			C_T_C.noalias() = C.transpose()*C;
 		}
 
-		f_value = Get_Objective_Value(C, X_C, A_T_A, B_T_B, C_T_C, frob_X);
+		W_C = X_C*KhatriRao_BA;
+		f_value = Get_Objective_Value(C, W_C, A_T_A, B_T_B, C_T_C, frob_X);
 		
 
-		if(f_value < AO_tol || AO_iter + 1 > max_iter)
+		if(f_value/sqrt(frob_X)  < AO_tol || AO_iter + 1 > max_iter)
 		{
 			cout << "Exit Algorithm" << endl;
 			break; 
@@ -129,9 +140,10 @@ int main(int argc, char **argv){
 		
 	}
 
-	stop_t = time(0);
+	high_resolution_clock::time_point t2 = high_resolution_clock::now();
 
-	cout << " CPU time = " << stop_t << endl; 
+	duration<double> stop_t = duration_cast<duration<double>>(t2-t1);
+	cout << " CPU time = " << stop_t.count() << endl; 
 	cout << " AO_iter = " << AO_iter << endl;
 	cout << " relative f_value = " << f_value/sqrt(frob_X) << endl << endl;
 

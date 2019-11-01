@@ -22,7 +22,7 @@ double Get_Objective_Value(const Ref<const MatrixXd> C, const Ref<const MatrixXd
 	int R = X_C_Kr.cols();
 
 	MatrixXd Z(R, R);
-	Z.noalias() = A_T_A.cwiseProduct(B_T_B.cwiseProduct(C_T_C));					// (A^T*A) .* (B^T*B) .* (C^T*C)
+	Z.noalias() = A_T_A.cwiseProduct(B_T_B.cwiseProduct(C_T_C));				    	// (A^T*A) .* (B^T*B) .* (C^T*C)
 
 	global_sum = (X_C_Kr.cwiseProduct(C)).sum();										// sum(sum((X_C * KhatriRao_BA) .* C))
 
