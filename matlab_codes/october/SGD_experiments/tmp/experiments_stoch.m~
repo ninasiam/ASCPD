@@ -45,88 +45,51 @@ full_grad_opt = (1/(m^2))*norm(A'*(A*x_star - b))^2;
 
 
 % %%%%%%%%%%%%% Stochastic Gradients Different Steps%%%%%%%
-% %%
-%i) constant rho-Lipschitz 
-x_sd = x_init_all;
+%% %i) Nesterov (full problem) 
+x_sd_sc_full_accel = x_init_all;
 f_val = (1/(2*m))*norm(A*x_init_all - b)^2;
-eta_sd = Beta/((L)*Beta + norm(A'*b)); %use a constant
+eta_sd_sc_full_accel = m/L; %!!!
 
 opts = struct;
 opts.StepSize = 'constant';
-opts.epsilon = 10^(-14);
-opts.MaxIter = 20000;
-
-[fval_sd,~,norm_sd] = stochastic_gradient(A, b, eta_sd, x_sd, f_val, opts); 
-
-%ii)constant rho-Lipschitz 
-x_sd_v = x_init_all;
-f_val = (1/(2*m))*norm(A*x_init_all - b)^2;
-eta_sd_v = 100*Beta/((L)*Beta + norm(A'*b)); %use a variant and a constant to enforce a bigger step size
-
-opts = struct;
-opts.StepSize = 'variant';
-opts.epsilon = 10^(-14);
-opts.MaxIter = 20000;
-
-[fval_sd_v,~,norm_sd_v] = stochastic_gradient(A, b, eta_sd_v, x_sd_v, f_val, opts);
-
-% %iii)strongly convex variant step
-x_sd_sc_v = x_init_all;
-f_val = (1/(2*m))*norm(A*x_init_all - b)^2;
-eta_sd_sc_v = (0.1)/mu; %we use the mu of A'*A;
-
-opts = struct;
-opts.averaging = 'false';
-opts.StepSize = 'variant';
 opts.Function ='strongly-convex';
-opts.epsilon = 10^(-14);
-opts.MaxIter = 20000;
+opts.epsilon = 10^(-4);
+opts.mini_batch = 'true';
+opts.accelerate = 'true';
+opts.batch_size = m;
+opts.MaxIter = 10000;
+[~, f_val_merged_full_nes, ~, ~] = stochastic_gradient(A, b, eta_sd_sc_full_accel, x_sd_sc_full_accel, f_val, opts);
 
-[fval_sd_sc_v,~,norm_sd_sc_v] = stochastic_gradient(A, b, eta_sd_sc_v, x_sd_sc_v, f_val, opts);
-
-%)iv Bottou strongly convex constant step sizes
-x_sd_sc_bt = x_init_all;
+%% %ii) Gradient (full batch)
+x_gd_sc_full = x_init_all;
 f_val = (1/(2*m))*norm(A*x_init_all - b)^2;
-eta_sd_sc_bt = (1)/(L*m);
+eta_gd_sc_full = m/L; %!!!
 
 opts = struct;
-opts.average = 'false';
 opts.StepSize = 'constant';
 opts.Function ='strongly-convex';
-opts.f_star = f_star;
-opts.epsilon = 10^(-8);
-opts.MaxIter = 20000;
-opts.mu = mu;
-opts.gamma = 100;
-opts.sampling_rate = 1000;
-opts.maximal_res = max_res;
-opts.mini_batch = 'false';
-opts.batch_size = 1;
-opts.exp_chunk = m/4;
-[f_val_sd_sc_bt,~,norm_sd_sc_bt] = stochastic_gradient(A, b, eta_sd_sc_bt, x_sd_sc_bt, f_val, opts); 
+opts.epsilon = 10^(-4);
+opts.mini_batch = 'true';
+opts.accelerate = 'false';
+opts.batch_size = m;
+opts.MaxIter = 10000;
+[~, f_val_merged_full_gd, ~, ~] = stochastic_gradient(A, b, eta_gd_sc_full, x_gd_sc_full, f_val, opts);
 
+%% %ii) Mini-Batch (m/10)
+x_sd_sc_mini = x_init_all;
+f_val = (1/(2*m))*norm(A*x_init_all - b)^2;
+eta_sd_sc_mini = m/L; %!!!
 
-figure(2)
-semilogy(abs(fval_sd -f_star),'Linestyle',':','Linewidth',3)
-hold on;
-semilogy(abs(fval_sd_v -f_star),'Linestyle','--','Linewidth',3)
-hold on;
-semilogy(abs(fval_sd_sc_v -f_star),'Linestyle',':','Linewidth',3);
-hold on;
-semilogy(abs(f_val_sd_sc_bt - f_star),'Linestyle','--','Linewidth',3)
-hold on;
-mean_value = (1)/(2*m*(mu)).*ones(1,MaxIter);
-semilogy(mean_value,'Linestyle','-','Linewidth',3)
-hold off;
-grid on;
-xlabel('iterations');
-ylabel('|f_t - f^*|');
-title('Stochastic gradients with different step sizes')
-legend('Beta/(L*Beta + norm(A^T*b))',...
-       '100*Beta/(L*Beta + norm(A^T*b))*sqrt(t)','0.1/mu*t', ...
-       '1/LM_G', 'bound');
-   
-
+opts = struct;
+opts.StepSize = 'constant';
+opts.Function ='strongly-convex';
+opts.epsilon = 10^(-4);
+opts.mini_batch = 'true';
+opts.accelerate = 'false';
+opts.batch_size = m/10;
+opts.adaptive_sample ='true';
+opts.MaxIter = 10000;
+[~, f_val_merged_mini, ~, ~] = stochastic_gradient(A, b, eta_sd_sc_mini, x_sd_sc_mini, f_val, opts);
 
 % %%%%%%%%%%%%%%%%%%%%%%%%Mini-Batch%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%

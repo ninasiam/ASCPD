@@ -16,7 +16,7 @@ function [ f_val_sd,fval_merged, x_sd_aver, norm_sd ] = stochastic_gradient( A, 
     p.addOptional('averaging', 'false');
     p.addOptional('maximal_res',1)
     p.addOptional('f_star',0.01);
-    p.addOptional('adaptive_sample','false');
+    p.addOptional('adaptive_sample','true')
     p.parse(Options);
     options = p.Results
 
@@ -39,8 +39,6 @@ function [ f_val_sd,fval_merged, x_sd_aver, norm_sd ] = stochastic_gradient( A, 
     a_par(iter) = 1;
     variance = [];
     sq_grad_full = [];
-    x_sd_aver = [];
-    stoch_grad_cov = [];
     
     if(strcmp(options.mini_batch,'true'))
         batch_s = options.batch_size;
@@ -50,7 +48,6 @@ function [ f_val_sd,fval_merged, x_sd_aver, norm_sd ] = stochastic_gradient( A, 
     
     chi = 0.5; %in (0,1)
     tau = 1.5;
-    
     while(1)
 
         batch = randperm(n,batch_s);
@@ -68,6 +65,7 @@ function [ f_val_sd,fval_merged, x_sd_aver, norm_sd ] = stochastic_gradient( A, 
             appr_var = trace(cov(stoch_grad_cov));
         end
         
+        end
         if(strcmp(options.StepSize,'variant'))
             if(strong_conv_on == 0)  %only smoothness
                 eta_sd = (1/sqrt(iter))*eta_sd_init;
@@ -111,18 +109,17 @@ function [ f_val_sd,fval_merged, x_sd_aver, norm_sd ] = stochastic_gradient( A, 
         crit_sg = norm(x_sd(:,iter+1)-x_sd(:,iter))/norm(x_sd(:,iter));
         
         %adaptive sample size
-        if(strcmp(options.adaptive_sample,'true'))   
+        if(strcmp(options.adaptive_sample,'true'))
+            
             while(1)
-                if(appr_var/batch_s >= chi^2*stoch_grad_sq_norm && batch_s<n)
+                if(appr_var/batch_s >= chi^2*stoch_grad_sq_norm)
                     batch_s = ceil(tau*batch_s);
-                    
+                
                 else
                     break;
-                    batch_s
                 end
             end
         end
-        
         if(crit_sg < options.epsilon || iter > options.MaxIter) 
             break;
         end

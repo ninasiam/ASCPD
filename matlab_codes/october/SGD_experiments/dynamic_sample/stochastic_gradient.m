@@ -1,4 +1,4 @@
-function [ f_val_sd,fval_merged, x_sd_aver, norm_sd ] = stochastic_gradient( A, b, eta_sd_init, x_sd, f_val_sd, Options )
+function [ f_val_sd,fval_merged, norm_sd ] = stochastic_gradient( A, b, eta_sd_init, x_sd, f_val_sd, Options )
     
     n = size(A,1);
 
@@ -14,9 +14,10 @@ function [ f_val_sd,fval_merged, x_sd_aver, norm_sd ] = stochastic_gradient( A, 
     p.addOptional('batch_size', 1);
     p.addOptional('accelerate','false');
     p.addOptional('averaging', 'false');
+    p.addOptional('sampling_rate',0);
     p.addOptional('maximal_res',1)
+    p.addOptional('exp_chunk',1);
     p.addOptional('f_star',0.01);
-    p.addOptional('adaptive_sample','false');
     p.parse(Options);
     options = p.Results
 
@@ -39,17 +40,12 @@ function [ f_val_sd,fval_merged, x_sd_aver, norm_sd ] = stochastic_gradient( A, 
     a_par(iter) = 1;
     variance = [];
     sq_grad_full = [];
-    x_sd_aver = [];
-    stoch_grad_cov = [];
     
     if(strcmp(options.mini_batch,'true'))
         batch_s = options.batch_size;
     else
         batch_s = 1;
     end
-    
-    chi = 0.5; %in (0,1)
-    tau = 1.5;
     
     while(1)
 
@@ -58,16 +54,16 @@ function [ f_val_sd,fval_merged, x_sd_aver, norm_sd ] = stochastic_gradient( A, 
             stoch_grad = (1/batch_s).*(A(batch,:)'*A(batch,:)*y_sd(:,iter) - A(batch,:)'*b(batch));
         else
             stoch_grad = (1/batch_s).*(A(batch,:)'*A(batch,:)*x_sd(:,iter) - A(batch,:)'*b(batch));
-            
-            %||g(x_k,ksi_k)||_2^2
-            stoch_grad_sq_norm = norm(stoch_grad)^2;
-            %create an approximation for the variance
-            for ii=1:batch_s
-                stoch_grad_cov = [stoch_grad_cov (A(ii,:)'*A(ii,:)*x_sd(:,iter) - A(ii,:)'*b(ii))];
-            end
-            appr_var = trace(cov(stoch_grad_cov));
         end
-        
+        if(options.sampling_rate ~= 0)
+            if mod(iter, options.sampling_rate) == 0
+                exp_chunk_idx = randperm(n,options.exp_chunk);
+                [expected_value_g_squared,~] = compute_squared_mean_g(exp_chunk_idx, x_sd(:,iter), A, b);
+                sq_grad_full = [sq_grad_full (1/(n^2))*norm(A'*(A*x_sd(:,iter) - b))^2];
+                variance = [variance (expected_value_g_squared - sq_grad_full(end))];
+            end
+            
+        end
         if(strcmp(options.StepSize,'variant'))
             if(strong_conv_on == 0)  %only smoothness
                 eta_sd = (1/sqrt(iter))*eta_sd_init;
@@ -99,7 +95,7 @@ function [ f_val_sd,fval_merged, x_sd_aver, norm_sd ] = stochastic_gradient( A, 
         end
         
         if strcmp(options.averaging, 'true')
-            x_sd_aver(:,iter+1) = (1/(iter + 1))*(sum(x_sd,2));
+            x_sd(:,iter+1) = (1/(iter + 1))*(sum(x_sd,2));
         end
         norm_sd(iter+1) =  norm(x_sd(:,iter+1));
         
@@ -109,28 +105,24 @@ function [ f_val_sd,fval_merged, x_sd_aver, norm_sd ] = stochastic_gradient( A, 
         fval_merged = [fval_merged f_val_sd(:,iter+1)*ones(1,batch_s)];
         
         crit_sg = norm(x_sd(:,iter+1)-x_sd(:,iter))/norm(x_sd(:,iter));
-        
-        %adaptive sample size
-        if(strcmp(options.adaptive_sample,'true'))   
-            while(1)
-                if(appr_var/batch_s >= chi^2*stoch_grad_sq_norm && batch_s<n)
-                    batch_s = ceil(tau*batch_s);
-                    
-                else
-                    break;
-                    batch_s
-                end
-            end
-        end
-        
+
         if(crit_sg < options.epsilon || iter > options.MaxIter) 
             break;
         end
-        
-        iter = iter + 1;
-        stoch_grad_cov = [];
-    end
-   
 
+        iter = iter + 1;
+    end
+    
+    M = 3%options.f_star*norm(A(n/2,:))^2;   %for big dimensionallity of x norms tend to be equal
+    M_v = n/2 -1;
+    if(options.sampling_rate ~= 0)
+        figure(1)
+        semilogy(variance);
+        hold on;
+        semilogy(M + M_v*sq_grad_full);
+        hold off;
+        legend('variance','bound');
+        grid on;
+    end
 end
 
