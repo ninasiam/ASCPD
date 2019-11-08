@@ -49,7 +49,7 @@ function [ f_val_sd,fval_merged, x_sd_aver, norm_sd ] = stochastic_gradient( A, 
     end
     
     chi = 0.5; %in (0,1)
-    tau = 1.5;
+    tau = 1.1;
     
     while(1)
 
@@ -63,7 +63,7 @@ function [ f_val_sd,fval_merged, x_sd_aver, norm_sd ] = stochastic_gradient( A, 
             stoch_grad_sq_norm = norm(stoch_grad)^2;
             %create an approximation for the variance
             for ii=1:batch_s
-                stoch_grad_cov = [stoch_grad_cov (A(ii,:)'*A(ii,:)*x_sd(:,iter) - A(ii,:)'*b(ii))];
+                stoch_grad_cov = [stoch_grad_cov (A(batch(ii),:)'*A(batch(ii),:)*x_sd(:,iter) - A(batch(ii),:)'*b(batch(ii)))];
             end
             appr_var = trace(cov(stoch_grad_cov));
         end
@@ -101,6 +101,7 @@ function [ f_val_sd,fval_merged, x_sd_aver, norm_sd ] = stochastic_gradient( A, 
         if strcmp(options.averaging, 'true')
             x_sd_aver(:,iter+1) = (1/(iter + 1))*(sum(x_sd,2));
         end
+        
         norm_sd(iter+1) =  norm(x_sd(:,iter+1));
         
         f_val_sd(:,iter+1) = (1/(2*n))*norm(A*x_sd(:,iter+1) - b)^2;
@@ -112,15 +113,9 @@ function [ f_val_sd,fval_merged, x_sd_aver, norm_sd ] = stochastic_gradient( A, 
         
         %adaptive sample size
         if(strcmp(options.adaptive_sample,'true'))   
-            while(1)
-                if(appr_var/batch_s >= chi^2*stoch_grad_sq_norm && batch_s<n)
-                    batch_s = ceil(tau*batch_s);
-                    
-                else
-                    break;
-                    batch_s
-                end
-            end
+            if(appr_var/batch_s >= (chi^2)*stoch_grad_sq_norm) && (batch_s < 0.7*n)
+                batch_s = floor(tau*batch_s);
+            end    
         end
         
         if(crit_sg < options.epsilon || iter > options.MaxIter) 

@@ -1,8 +1,8 @@
 clc, clear all, close all
 
 %creation of data
-m = 2000;
-n = 100;
+m = 4000;
+n = 200;
 MaxIter = 20000;
 
 %creation of matrix A with specific eigenvalues
@@ -73,7 +73,7 @@ opts.MaxIter = 20000;
 % %iii)strongly convex variant step
 x_sd_sc_v = x_init_all;
 f_val = (1/(2*m))*norm(A*x_init_all - b)^2;
-eta_sd_sc_v = (0.1)/mu; %we use the mu of A'*A;
+eta_sd_sc_v = (m)/mu; %we use the mu of A'*A;
 
 opts = struct;
 opts.averaging = 'false';
@@ -87,7 +87,7 @@ opts.MaxIter = 20000;
 %)iv Bottou strongly convex constant step sizes
 x_sd_sc_bt = x_init_all;
 f_val = (1/(2*m))*norm(A*x_init_all - b)^2;
-eta_sd_sc_bt = (1)/(L*m);
+eta_sd_sc_bt = (m)/(L*(m));
 
 opts = struct;
 opts.average = 'false';
@@ -115,7 +115,7 @@ semilogy(abs(fval_sd_sc_v -f_star),'Linestyle',':','Linewidth',3);
 hold on;
 semilogy(abs(f_val_sd_sc_bt - f_star),'Linestyle','--','Linewidth',3)
 hold on;
-mean_value = (1)/(2*m*(mu)).*ones(1,MaxIter);
+mean_value = ((1)/(mu)).*ones(1,MaxIter);
 semilogy(mean_value,'Linestyle','-','Linewidth',3)
 hold off;
 grid on;
