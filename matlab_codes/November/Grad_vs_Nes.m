@@ -204,7 +204,7 @@ semilogy(f_val_gd_w - f_star2);
 hold on;
 semilogy(f_val_nes_w - f_star2);
 hold off
-xlim([0 10^4])
+%xlim([0 10^4])
 ylim([10^(-4) 10^6])
 % set(gca,'XTick',[bound_iter_nes bound_iter_gd],'XTickLabel',{'upper bound nesterov','upper bound gradient'})
 legend('Gradient', 'Nesterov');

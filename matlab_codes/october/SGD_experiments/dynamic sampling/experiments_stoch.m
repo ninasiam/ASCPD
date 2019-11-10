@@ -9,7 +9,7 @@ MaxIter = 20000;
 A_tmp = randn(m,n);
 [U,S,V] = svd(A_tmp,'econ');
 lambda_min = 1;
-lambda_max = 1000;
+lambda_max = 10;
 eigs = lambda_min + (lambda_max - lambda_min)*rand(n-2,1);
 eig_A = [lambda_min; lambda_max; eigs];
 Sigma = diag(eig_A);
@@ -57,7 +57,7 @@ opts.epsilon = 10^(-4);
 opts.mini_batch = 'true';
 opts.accelerate = 'true';
 opts.batch_size = m;
-opts.MaxIter = 5000;
+opts.MaxIter = 500;
 [~, f_val_merged_full_nes, ~, ~] = stochastic_gradient(A, b, eta_sd_sc_full_accel, x_sd_sc_full_accel, f_val, opts);
 
 %% %ii) Gradient (full batch)
@@ -72,7 +72,7 @@ opts.epsilon = 10^(-4);
 opts.mini_batch = 'true';
 opts.accelerate = 'false';
 opts.batch_size = m;
-opts.MaxIter = 5000;
+opts.MaxIter = 500;
 [~, f_val_merged_full_gd, ~, ~] = stochastic_gradient(A, b, eta_gd_sc_full, x_gd_sc_full, f_val, opts);
 
 %% %ii) Mini-Batch (m/20)
@@ -86,9 +86,9 @@ opts.Function ='strongly-convex';
 opts.epsilon = 10^(-4);
 opts.mini_batch = 'true';
 opts.accelerate = 'false';
-opts.batch_size = m/20;
+opts.batch_size = m/10;
 opts.adaptive_sample ='true';
-opts.MaxIter = 5000;
+opts.MaxIter = 500;
 [~, f_val_merged_mini, ~, ~] = stochastic_gradient(A, b, eta_sd_sc_mini, x_sd_sc_mini, f_val, opts);
  
 figure(1)
