@@ -5,7 +5,7 @@ clc, clear all, close all
 %creation of data
 m = 2000;
 n = 100;
-MAX_OUTER_ITER = 10000;
+MAX_OUTER_ITER = 100;
 
 %creation of matrix A with specific eigenvalues
 A_tmp = randn(m,n);
@@ -33,7 +33,7 @@ condition = L/mu;
 
 A_t_b = A'*b;
 %initial point
-x_init_all = randn(n,1);
+x_init_all = zeros(n,1);
 
 %Optimal
 x_star = inv(Hessian)*A_t_b;
@@ -41,76 +41,6 @@ f_star1 = (1/(2))*norm(A*x_star - b)^2;
 f_star2 = (1/(2*m))*norm(A*x_star - b)^2;
 
 ep = 10^(-4);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%              without 1/m
-
-
-tic();
-x_gd = [];
-x_gd(:,1) = x_init_all;
-
-
-iter = 1;
-f_val_gd_init = (1/(2))*norm(A*x_gd(:,1) - b)^2;
-f_val_gd(iter) = f_val_gd_init;
-
-eta_gd = 1/(L);
-
-while(1)
-
-    grad_f = Hessian*x_gd(:,iter) - A_t_b;
-    x_gd(:,iter+1) = x_gd(:,iter) - eta_gd*grad_f;
-    
-    f_val_gd(iter+1) = (1/(2))*norm(A*x_gd(:,iter+1) - b)^2;
-    
-    crit_gd = norm(x_gd(:,iter+1) - x_gd(:,iter))/norm(x_gd(:,iter));
-    
-    if((f_val_gd(iter+1) - f_star1 < ep) ||  iter > MAX_OUTER_ITER)% crit_gd < ep || iter > MAX_OUTER_ITER)
-        break;
-    end
-    
-    iter = iter + 1;
-        
-end
-
-fprintf('Gradient');
-time_gd = toc 
-
-
-%%Accelerated Gradient Descend
-tic();
-iter = 1;
-x_nes(:,iter) = x_init_all;
-y(:,iter) = x_init_all;
-
-f_val_nes_init = (1/(2))*norm(A*x_nes(:,iter) - b)^2;
-f_val_nes(iter) = f_val_nes_init;
-
-Q= mu/L;
-b_par = (1-sqrt(Q))/(1+sqrt(Q));
-
-%Nesterov main loop 
-
-while(1)
-
-    x_nes(:,iter+1) = y(:,iter) - (1/(L))*(Hessian*y(:,iter) - A_t_b);
-    
-    y(:,iter+1) = x_nes(:,iter+1) + b_par*(x_nes(:,iter+1) - x_nes(:,iter));
-
-    f_val_nes(iter+1) = (1/(2))*norm(A*x_nes(:,iter+1) - b)^2;
-    
-    crit_nes = norm(x_nes(:,iter+1) - x_nes(:,iter))/norm(x_nes(:,iter));
-    
-    if((f_val_nes(iter+1) - f_star1 < ep) ||  iter > MAX_OUTER_ITER)%crit_nes < ep || iter > MAX_OUTER_ITER)%abs(f_val_nes(k) - f_star) < ep)
-        break;
-    end
-    
-    iter = iter + 1;
-    
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fprintf('Nesterov');
-time_nes = toc 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%          with 1/m
@@ -181,33 +111,69 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fprintf('Nesterov');
 time_nes_w = toc 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+tic();
+iter = 1;
+x_sgd(:,iter) = x_init_all;
+f_val_sgd_init_w = (1/(2*m))*norm(A*x_sgd(:,iter) - b)^2;
+f_val_sgd_w(iter) = f_val_sgd_init_w;
 
+while (1)
+   
+   ind = randi(m,1,1);
+   grad_f_SGD = ( A(ind,:) * x_sgd(:,iter) - b(ind) ) * A(ind,:)';
+   
+   x_sgd(:,iter + 1) = x_sgd(:,iter) - 0.005 * grad_f_SGD;
+   %new_x_SGD = x_SGD -  (theta/iter) * grad_f_SGD;
+   if (mod(iter, n)==0) 
+      f_val_sgd_w = [f_val_sgd_w 1/(2*m) * norm(A * x_sgd(:,iter + 1) - b)^2];
+   end
+   if ( (f_val_sgd_w(end)-f_star2 )   < ep  || iter > n*MAX_OUTER_ITER)
+       break;
+   end
+   
+   iter = iter + 1;
+    
+end
+time_sgd = toc;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+tic();
+iter = 1;
+x_mini(:,iter) = x_init_all;
+f_val_mini_init = (1/(2*m))*norm(A*x_mini(:,iter) - b)^2;
+f_val_mini(iter) = f_val_mini_init;
+
+batch_s = 10;
+
+while(1)
+    
+    batch = randperm(m, batch_s);
+    grad_f_mini = ( A(batch,:) * x_mini(:,iter) - b(batch) ) * A(batch,:)';
+    
+    x_mini(:,iter + 1) = x_mini(:,iter) - 0.08/size_batch*grad_f_mini;
+    if (mod(iter, n)==0) 
+      f_val_mini = [f_val_mini 1/(2*m) * norm(A * x_mini(:,iter + 1) - b)^2];
+    end
+    if ( (f_val_mini(end)-f_star2 )   < ep  || iter > n*MAX_OUTER_ITER)
+       break;
+    end
+    
+end
 bound_iter_gd = condition*log(1/ep)
 bound_iter_nes = sqrt(condition)*log(1/ep)
-
-figure(1)
-semilogy(f_val_gd - f_star1);
-hold on;
-semilogy(f_val_nes - f_star1);
-hold off
-xlim([0 10^4])
-ylim([10^(-4) 10^6])
-% set(gca,'XTick',[bound_iter_nes bound_iter_gd],'XTickLabel',{'upper bound nesterov','upper bound gradient'})
-legend('Gradient', 'Nesterov');
-xlabel('iterations');
-ylabel('f_k - f_*');
-title(['condition number:', num2str(condition)])
-grid on;
 
 figure(2)
 semilogy(f_val_gd_w - f_star2);
 hold on;
 semilogy(f_val_nes_w - f_star2);
+hold on;
+semilogy(f_val_sgd_w - f_star2);
 hold off
 %xlim([0 10^4])
-ylim([10^(-4) 10^6])
+ylim([10^(-4) 10^(-1)])
 % set(gca,'XTick',[bound_iter_nes bound_iter_gd],'XTickLabel',{'upper bound nesterov','upper bound gradient'})
-legend('Gradient', 'Nesterov');
+legend('Gradient', 'Nesterov','SGD');
 xlabel('iterations');
 ylabel('f_k - f_*');
 title(['Using 1/m condition number:', num2str(condition)])

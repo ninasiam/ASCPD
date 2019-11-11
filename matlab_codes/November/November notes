@@ -1,2 +1,16 @@
 -> only sto least squares gradient and nesterov
 -> kai sto 1/m
+
+--> 11/11/2019 <--
+
+-keep the residual and condition number stable 
+	change the dimensions
+
+-keep the residual and dimension stable 
+	change the condition number
+
+-keep the dimension stable and condittion number 
+	change the residual
+
+
+
