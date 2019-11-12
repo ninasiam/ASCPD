@@ -5,7 +5,7 @@
 
 -keep the residual and condition number stable 
 	change the dimensions
-
+	
 -keep the residual and dimension stable 
 	change the condition number
 
@@ -13,4 +13,10 @@
 	change the residual
 
 
+-->12/11/2019<--
 
+FOR GOOD CONDITION NUMBER
+-WE know the direction of gradient (see contour lines)
+Thus, we can use it to take a good stochastic direction.
+
+-LMS algorithm steps

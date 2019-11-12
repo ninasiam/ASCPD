@@ -5,13 +5,13 @@ clc, clear all, close all
 %creation of data
 m = 2000;
 n = 100;
-MAX_OUTER_ITER = 100;
+MAX_OUTER_ITER = 1000;
 
 %creation of matrix A with specific eigenvalues
 A_tmp = randn(m,n);
 [U,S,V] = svd(A_tmp,'econ');
-lambda_min = .1;
-lambda_max = 10;
+lambda_min = 1;
+lambda_max = 1000;
 eigs = lambda_min + (lambda_max - lambda_min)*rand(n-2,1);
 eig_A = [lambda_min; lambda_max; eigs];
 Sigma = diag(eig_A);
@@ -23,7 +23,7 @@ A = U*Sigma*V';
 %vector of parameters
 %b = rand(m,1);
 %or
-b = A*randn(n,1) + 0.001*randn(m,1);
+b = A*randn(n,1) + 0.1*randn(m,1);
 
 %Problem parameters
 Hessian = A'*A;
@@ -124,7 +124,7 @@ while (1)
    ind = randi(m,1,1);
    grad_f_SGD = ( A(ind,:) * x_sgd(:,iter) - b(ind) ) * A(ind,:)';
    
-   x_sgd(:,iter + 1) = x_sgd(:,iter) - 1* grad_f_SGD;
+   x_sgd(:,iter + 1) = x_sgd(:,iter) - 2/(L+mu)*grad_f_SGD;
    %new_x_SGD = x_SGD -  (theta/iter) * grad_f_SGD;
    if (mod(iter, n)==0) 
       f_val_sgd_w = [f_val_sgd_w 1/(2*m) * norm(A * x_sgd(:,iter + 1) - b)^2];
@@ -146,14 +146,14 @@ x_mini(:,iter) = x_init_all;
 f_val_mini_init = (1/(2*m))*norm(A*x_mini(:,iter) - b)^2;
 f_val_mini(iter) = f_val_mini_init;
 
-batch_s = 10;
-
+batch_s = 20;
 while(1)
     
     batch = randperm(m, batch_s);
     grad_f_mini = A(batch,:)'*(A(batch,:)*x_mini(:,iter) - b(batch));
     
-    x_mini(:,iter + 1) = x_mini(:,iter) - 0.08/batch_s*grad_f_mini;
+    
+    x_mini(:,iter + 1) = x_mini(:,iter) - 2*batch_s/((L+mu))*grad_f_mini;
     if (mod(iter, n/batch_s)==0) 
       f_val_mini = [f_val_mini 1/(2*m) * norm(A * x_mini(:,iter + 1) - b)^2];
     end
@@ -163,6 +163,7 @@ while(1)
     
     iter = iter + 1;
 end
+
 fprintf('Mini-batch');
 time_mini = toc
 bound_iter_gd = condition*log(1/ep)
@@ -178,7 +179,7 @@ hold on;
 semilogy(f_val_mini - f_star2);
 hold off
 %xlim([0 10^4])
-ylim([10^(-4) 10^(4)])
+ylim([10^(-5) 10^(4)])
 % set(gca,'XTick',[bound_iter_nes bound_iter_gd],'XTickLabel',{'upper bound nesterov','upper bound gradient'})
 legend('Gradient', 'Nesterov','SGD','Mini');
 xlabel('iterations');
