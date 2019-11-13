@@ -151,10 +151,10 @@ x_sgd_win(:,iter) = x_init_all;
 f_val_sgd_init_win = (1/(2*m))*norm(A*x_sgd_win(:,iter) - b)^2;
 f_val_sgd_win(iter) = f_val_sgd_init_win;
 
-window_length = 100;
+window_length = 10;
 
 eta_sgd = 100/L;
-scaling_parameter = 2;
+scaling_parameter = 1.1;
 alert_counter = 0;
 rng('default');
 while (1)
@@ -166,7 +166,7 @@ while (1)
    if iter > window_length
       [eta_sgd, alert_counter ] = check_error(error, window_length, eta_sgd, scaling_parameter, alert_counter);
    end
-   
+   eta_sgd
    x_sgd_win(:,iter + 1) = x_sgd_win(:,iter) - eta_sgd*grad_f_SGD;
    %new_x_SGD = x_SGD -  (theta/iter) * grad_f_SGD;
    %if (mod(iter, n)==0) 
