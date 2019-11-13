@@ -20,3 +20,13 @@ FOR GOOD CONDITION NUMBER
 Thus, we can use it to take a good stochastic direction.
 
 -LMS algorithm steps
+
+--> 13/11/2019 <--
+
+check the error and window scheme
+
+--> 14/11/2019 <--
+
+to do: check which stochastic gradients are good
+
+

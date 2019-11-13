@@ -118,13 +118,13 @@ iter = 1;
 x_sgd(:,iter) = x_init_all;
 f_val_sgd_init_w = (1/(2*m))*norm(A*x_sgd(:,iter) - b)^2;
 f_val_sgd_w(iter) = f_val_sgd_init_w;
-
+cache = zeros(n,1);
 while (1)
    
    ind = randi(m,1,1);
    grad_f_SGD = ( A(ind,:) * x_sgd(:,iter) - b(ind) ) * A(ind,:)';
-   
-   x_sgd(:,iter + 1) = x_sgd(:,iter) - 2/(L+mu)*grad_f_SGD;
+   cache = cache + grad_f_SGD;
+   x_sgd(:,iter + 1) = x_sgd(:,iter) - (1/(L+mu))*(1/iter)*cache;%2/(L+mu)*grad_f_SGD;
    %new_x_SGD = x_SGD -  (theta/iter) * grad_f_SGD;
    if (mod(iter, n)==0) 
       f_val_sgd_w = [f_val_sgd_w 1/(2*m) * norm(A * x_sgd(:,iter + 1) - b)^2];
