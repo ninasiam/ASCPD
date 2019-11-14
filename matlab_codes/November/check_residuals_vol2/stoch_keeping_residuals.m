@@ -11,7 +11,7 @@ MAX_OUTER_ITER = 1000;
 A_tmp = randn(m,n);
 [U,S,V] = svd(A_tmp,'econ');
 lambda_min = 1;
-lambda_max = 10;
+lambda_max = 100;
 eigs = lambda_min + (lambda_max - lambda_min)*rand(n-2,1);
 eig_A = [lambda_min; lambda_max; eigs];
 Sigma = diag(eig_A);
@@ -23,7 +23,7 @@ A = U*Sigma*V';
 %vector of parameters
 %b = rand(m,1);
 %or
-b = A*randn(n,1) + 0.01*randn(m,1);
+b = A*randn(n,1) + 0.1*randn(m,1);
 
 %Problem parameters
 Hessian = A'*A;
@@ -42,77 +42,6 @@ f_star2 = (1/(2*m))*norm(A*x_star - b)^2;
 
 ep = 10^(-4);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%          with 1/m
-
-% tic();
-% x_gd_w = [];
-% x_gd_w(:,1) = x_init_all;
-% 
-% 
-% iter = 1;
-% f_val_gd_init_w = (1/(2*m))*norm(A*x_gd_w(:,1) - b)^2;
-% f_val_gd_w(iter) = f_val_gd_init_w;
-% 
-% eta_gd = m/(L);
-% 
-% while(1)
-% 
-%     grad_f = (1/m)*(Hessian*x_gd_w(:,iter) - A_t_b);
-%     x_gd_w(:,iter+1) = x_gd_w(:,iter) - eta_gd*grad_f;
-%     
-%     f_val_gd_w(iter+1) = (1/(2*m))*norm(A*x_gd_w(:,iter+1) - b)^2;
-%     
-%     crit_gd_w = norm(x_gd_w(:,iter+1) - x_gd_w(:,iter))/norm(x_gd_w(:,iter));
-%     
-%     if((f_val_gd_w(iter+1) - f_star2 < ep) ||  iter > MAX_OUTER_ITER)% crit_gd < ep || iter > MAX_OUTER_ITER)
-%         break;
-%     end
-%     
-%     iter = iter + 1;
-%         
-% end
-% 
-% fprintf('Gradient');
-% time_gd_w = toc 
-% 
-% 
-% %%Accelerated Gradient Descend
-% tic();
-% iter = 1;
-% x_nes_w(:,iter) = x_init_all;
-% y_w(:,iter) = x_init_all;
-% 
-% f_val_nes_init_w = (1/(2*m))*norm(A*x_nes_w(:,iter) - b)^2;
-% f_val_nes_w(iter) = f_val_nes_init_w;
-% 
-% Q= mu/L;
-% b_par = (1-sqrt(Q))/(1+sqrt(Q));
-% 
-% %Nesterov main loop 
-% 
-% while(1)
-% 
-%     x_nes_w(:,iter+1) = y_w(:,iter) - (m/(L))*(1/m)*(Hessian*y_w(:,iter) - A_t_b);
-%     
-%     y_w(:,iter+1) = x_nes_w(:,iter+1) + b_par*(x_nes_w(:,iter+1) - x_nes_w(:,iter));
-% 
-%     f_val_nes_w(iter+1) = (1/(2*m))*norm(A*x_nes_w(:,iter+1) - b)^2;
-%     
-%     crit_nes_w = norm(x_nes_w(:,iter+1) - x_nes_w(:,iter))/norm(x_nes_w(:,iter));
-%     
-%     if((f_val_nes_w(iter+1) - f_star2 < ep) ||  iter > MAX_OUTER_ITER)%crit_nes < ep || iter > MAX_OUTER_ITER)%abs(f_val_nes(k) - f_star) < ep)
-%         break;
-%     end
-%     
-%     iter = iter + 1;
-%     
-% end
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% fprintf('Nesterov');
-% time_nes_w = toc 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %%  Stochastic gradient descent 
 tic();
 iter = 1;
@@ -120,7 +49,7 @@ x_sgd(:,iter) = x_init_all;
 f_val_sgd_init = (1/(2*m))*norm(A*x_sgd(:,iter) - b)^2;
 f_val_sgd(iter) = f_val_sgd_init;
 
-eta_sgd = 100/L;
+eta_sgd = 1/L;
 rng('default');
 while (1)
    
@@ -143,6 +72,7 @@ end
 fprintf('SGD');
 time_sgd = toc
 time_per_iter = time_sgd/iter
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Stochastic gradient descent with window
 tic();
@@ -151,10 +81,10 @@ x_sgd_win(:,iter) = x_init_all;
 f_val_sgd_init_win = (1/(2*m))*norm(A*x_sgd_win(:,iter) - b)^2;
 f_val_sgd_win(iter) = f_val_sgd_init_win;
 
-window_length = 100;
+window_length = 1000;
 
-eta_sgd = 100/L;
-scaling_parameter = 0.1; % 1 +/- scaling_parameter
+eta_sgd = 1/L;
+scaling_parameter = 0.2; % 1 +/- scaling_parameter
 alert_counter = 0;
 rng('default');
 while (1)
@@ -185,34 +115,45 @@ time_sgd_win = toc
 time_per_iter_win = time_sgd_win/iter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% tic();
-% iter = 1;
-% x_mini(:,iter) = x_init_all;
-% f_val_mini_init = (1/(2*m))*norm(A*x_mini(:,iter) - b)^2;
-% f_val_mini(iter) = f_val_mini_init;
-% 
-% batch_s = 20;
-% while(1)
-%     
-%     batch = randperm(m, batch_s);
-%     grad_f_mini = A(batch,:)'*(A(batch,:)*x_mini(:,iter) - b(batch));
-%     
-%     
-%     x_mini(:,iter + 1) = x_mini(:,iter) - 2*batch_s/10*((L+mu))*grad_f_mini;
-%    % if (mod(iter, n/batch_s)==0) 
-%       f_val_mini = [f_val_mini 1/(2*m) * norm(A * x_mini(:,iter + 1) - b)^2];
-%     %end
-%     if ( (f_val_mini(end)-f_star2 )   < ep  || iter > n*MAX_OUTER_ITER/batch_s)
-%        break;
-%     end
-%     
-%     iter = iter + 1;
-% end
-% 
-% fprintf('Mini-batch');
-% time_mini = toc
-% bound_iter_gd = condition*log(1/ep)
-% bound_iter_nes = sqrt(condition)*log(1/ep)
+tic();
+iter = 1;
+x_mini(:,iter) = x_init_all;
+f_val_mini_init = (1/(2*m))*norm(A*x_mini(:,iter) - b)^2;
+f_val_mini(iter) = f_val_mini_init;
+
+batch_s = 20;
+beta = 0.7;
+alpha = 0.2;
+while(1)
+    
+    t = 1;
+    batch = randperm(m, batch_s);
+    grad_f_mini = (1/batch_s)*A(batch,:)'*(A(batch,:)*x_mini(:,iter) - b(batch));
+    x_mini(:,iter + 1) = x_mini(:,iter) - t*grad_f_mini;
+    
+    f_fixed = 1/(2*batch_s) * norm(A(batch,:) * x_mini(:,iter) - b(batch))^2;
+    
+    while((1/(2*batch_s) * norm(A(batch,:) * x_mini(:,iter + 1) - b(batch))^2)  >  f_fixed - alpha*t*norm(grad_f_mini)^2)
+        t = t*beta%backtracking..
+        x_mini(:, iter + 1) = x_mini(:, iter) - t*grad_f_mini; 
+    end
+    
+    x_mini(:, iter + 1) = x_mini(:, iter) - t*grad_f_mini; 
+   % if (mod(iter, n/batch_s)==0) 
+      f_val_mini = [f_val_mini 1/(2*m)* norm(A * x_mini(:,iter + 1) - b)^2];
+    %end
+    if ( (f_val_mini(end)-f_star2 )   < ep  || iter > n*MAX_OUTER_ITER/batch_s)
+       break;
+    end
+    
+    iter = iter + 1;
+end
+
+fprintf('Mini-batch');
+time_mini = toc
+
+figure(1)
+semilogy(error)
 
 figure(2)
 % semilogy(f_val_gd_w - f_star2);
@@ -222,13 +163,13 @@ figure(2)
 semilogy(f_val_sgd - f_star2);
 hold on;
 semilogy(f_val_sgd_win - f_star2);
-% hold on;
-% semilogy(f_val_mini - f_star2);
+hold on;
+semilogy(f_val_mini - f_star2);
 hold off
 %xlim([0 10^4])
 ylim([10^(-5) 10^(4)])
 % set(gca,'XTick',[bound_iter_nes bound_iter_gd],'XTickLabel',{'upper bound nesterov','upper bound gradient'})
-legend('SGD','SGD window');
+legend('SGD','SGD window','Mini batch back tracking');
 xlabel('stochastic gradients');
 ylabel('f_k - f_*');
 title(['Using 1/m condition number:', num2str(condition)])
