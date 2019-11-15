@@ -5,7 +5,7 @@ clc, clear all, close all
 %creation of data
 m = 2000;
 n = 100;
-MAX_OUTER_ITER = 1000;
+MAX_OUTER_ITER = 5000;
 
 %creation of matrix A with specific eigenvalues
 A_tmp = randn(m,n);
@@ -23,7 +23,7 @@ A = U*Sigma*V';
 %vector of parameters
 %b = rand(m,1);
 %or
-b = A*randn(n,1) + 0.1*randn(m,1);
+b = A*randn(n,1) + 0.0001*randn(m,1);
 
 %Problem parameters
 Hessian = A'*A;
@@ -49,7 +49,7 @@ x_sgd(:,iter) = x_init_all;
 f_val_sgd_init = (1/(2*m))*norm(A*x_sgd(:,iter) - b)^2;
 f_val_sgd(iter) = f_val_sgd_init;
 
-eta_sgd = 1/L;
+eta_sgd = (4*m)/(L*n);
 rng('default');
 while (1)
    
@@ -59,9 +59,9 @@ while (1)
    error_sgd(iter) = res.^2;
    x_sgd(:,iter + 1) = x_sgd(:,iter) - eta_sgd*grad_f_SGD;
    %new_x_SGD = x_SGD -  (theta/iter) * grad_f_SGD;
-   %if (mod(iter, n)==0) 
+   if (mod(iter, n)==0) 
       f_val_sgd = [f_val_sgd 1/(2*m) * norm(A * x_sgd(:,iter + 1) - b)^2];
-  % end
+   end
    if ( (f_val_sgd(end)-f_star2 )   < ep  || iter > n*MAX_OUTER_ITER)
        break;
    end
@@ -83,8 +83,9 @@ f_val_sgd_win(iter) = f_val_sgd_init_win;
 
 window_length = 1000;
 
-eta_sgd = 1/L;
-scaling_parameter = 0.2; % 1 +/- scaling_parameter
+eta_sgd_win_init = (4*m)/(L*n);
+eta_sgd_win = eta_sgd_win_init;
+scaling_parameter = 0.005; % 1 +/- scaling_parameter
 alert_counter = 0;
 rng('default');
 while (1)
@@ -94,15 +95,15 @@ while (1)
    grad_f_SGD = residual* A(ind,:)';
    error(iter) = residual.^2;
    if iter > window_length
-      [eta_sgd, alert_counter ] = check_error(error, window_length, eta_sgd, scaling_parameter, alert_counter);
+      [eta_sgd_win, alert_counter ] = check_error(error, window_length, eta_sgd_win, scaling_parameter, alert_counter);
    end
    
-   x_sgd_win(:,iter + 1) = x_sgd_win(:,iter) - eta_sgd*grad_f_SGD;
+   x_sgd_win(:,iter + 1) = x_sgd_win(:,iter) - eta_sgd_win*grad_f_SGD;
    %new_x_SGD = x_SGD -  (theta/iter) * grad_f_SGD;
-   %if (mod(iter, n)==0) 
+   if (mod(iter, n)==0) 
       f_val_sgd_win = [f_val_sgd_win 1/(2*m) * norm(A * x_sgd_win(:,iter + 1) - b)^2];
-   %end
-   if ( (f_val_sgd_win(end)-f_star2 )   < ep  || iter > n*MAX_OUTER_ITER)
+   end
+   if ( (f_val_sgd_win(end)-f_star2 ) < ep || iter > n*MAX_OUTER_ITER)
        break;
    end
    
@@ -134,14 +135,14 @@ while(1)
     f_fixed = 1/(2*batch_s) * norm(A(batch,:) * x_mini(:,iter) - b(batch))^2;
     
     while((1/(2*batch_s) * norm(A(batch,:) * x_mini(:,iter + 1) - b(batch))^2)  >  f_fixed - alpha*t*norm(grad_f_mini)^2)
-        t = t*beta%backtracking..
+        t = t*beta;%backtracking..
         x_mini(:, iter + 1) = x_mini(:, iter) - t*grad_f_mini; 
     end
     
     x_mini(:, iter + 1) = x_mini(:, iter) - t*grad_f_mini; 
-   % if (mod(iter, n/batch_s)==0) 
+    if (mod(iter, n/batch_s)==0) 
       f_val_mini = [f_val_mini 1/(2*m)* norm(A * x_mini(:,iter + 1) - b)^2];
-    %end
+    end
     if ( (f_val_mini(end)-f_star2 )   < ep  || iter > n*MAX_OUTER_ITER/batch_s)
        break;
     end
@@ -156,10 +157,6 @@ figure(1)
 semilogy(error)
 
 figure(2)
-% semilogy(f_val_gd_w - f_star2);
-% hold on;
-% semilogy(f_val_nes_w - f_star2);
-% hold on;
 semilogy(f_val_sgd - f_star2);
 hold on;
 semilogy(f_val_sgd_win - f_star2);
@@ -170,7 +167,7 @@ hold off
 ylim([10^(-5) 10^(4)])
 % set(gca,'XTick',[bound_iter_nes bound_iter_gd],'XTickLabel',{'upper bound nesterov','upper bound gradient'})
 legend('SGD','SGD window','Mini batch back tracking');
-xlabel('stochastic gradients');
+xlabel('epochs');
 ylabel('f_k - f_*');
 title(['Using 1/m condition number:', num2str(condition)])
 grid on;

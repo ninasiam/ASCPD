@@ -31,7 +31,10 @@ to do: check which stochastic gradients are good
 
 We observed that when we have oscillations (around the optimum maybe) (often in small condition number) we had to adapt the window scheme in order to decrease the stepsize
 However in larger condition numbers, we observed that we had a plateau (very slow decrease of cost function) thus an adaptation for a larger stepsize should be implemented.
+
+-->15/11/2019<--
 	
 
-
+check again for the step with L
+using as initial step in backtracking 1/L(overestimated).
 

@@ -3,15 +3,15 @@ clc, clear all, close all
 %%Check gradient and nesterov for 1/2||Ax - b||2^2 and  1/(2m)||Ax - b||2^2 
 
 %creation of data
-m = 2000;
-n = 100;
+m = 200;
+n = 10;
 MAX_OUTER_ITER = 1;
 
 %creation of matrix A with specific eigenvalues
 A_tmp = randn(m,n);
 [U,S,V] = svd(A_tmp,'econ');
 lambda_min = 1;
-lambda_max = 100;
+lambda_max = 1000;
 eigs = lambda_min + (lambda_max - lambda_min)*rand(n-2,1);
 eig_A = [lambda_min; lambda_max; eigs];
 Sigma = diag(eig_A);
@@ -45,27 +45,32 @@ ep = 10^(-4);
 tic();
 iter = 1;
 x_sgd(:,iter) = x_init_all;
-f_val_sgd_init = (1/(2*m))*norm(A*x_sgd(:,iter) - b)^2;
-f_val_sgd(iter) = f_val_sgd_init;
+
 
 eta_sgd = 100/L;
-while (1)
+
+while (iter < 10)
    
-   grad = (1/m)*A'*(A*x_sgd(:,iter) - b);
-   ind = randi(m,1,1);
-   res = (A(ind,:) * x_sgd(:,iter) - b(ind));
-   grad_f_SGD = res* A(ind,:)';
-   error_sgd(iter) = res.^2;
+   grad = -(1/m)*A'*(A*x_sgd(:,iter) - b);
    
-   costheta = dot(grad,grad_f_SGD)/(norm(grad_f_SGD)*norm(grad))
-   x_sgd(:,iter + 1) = x_sgd(:,iter) - eta_sgd*grad_f_SGD;
-   %new_x_SGD = x_SGD -  (theta/iter) * grad_f_SGD;
-   if (mod(iter, n)==0) 
-      f_val_sgd = [f_val_sgd 1/(2*m) * norm(A * x_sgd(:,iter + 1) - b)^2];
+   for ii = 1 : m
+       res = (A(ii,:) * x_sgd(:,iter) - b(ii));
+       grad_f_SGD = -res* A(ii,:)';
+       costheta(ii,iter) = dot(grad,grad_f_SGD)/(norm(grad_f_SGD)*norm(grad));
+       
    end
-   if ( (f_val_sgd(end)-f_star2 )   < ep  || iter > n*MAX_OUTER_ITER)
-       break;
-   end
+%    
+%    signed_costheta = sign( costheta(:,iter) );
+%    positive_angles = sum(signed_costheta>0);
+%    negative_angles = m - positive_angles;
+%    
+%    prob_positive = positive_angles/m;
+%    prob_negative = 1 - prob_positive;
+%    
+   figure(1)
+   hist(costheta(:,iter))
+   pause;
+   x_sgd(:,iter + 1) = x_sgd(:,iter) - eta_sgd*grad;
 
    iter = iter + 1;
     
