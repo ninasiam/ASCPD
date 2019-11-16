@@ -122,12 +122,14 @@ x_mini(:,iter) = x_init_all;
 f_val_mini_init = (1/(2*m))*norm(A*x_mini(:,iter) - b)^2;
 f_val_mini(iter) = f_val_mini_init;
 
-batch_s = 20;
+batch_s = 30;
 beta = 0.7;
 alpha = 0.2;
+t_init = norm(A'*b);
+t = t_init;
 while(1)
     
-    t = 1;
+    t = t_init;
     batch = randperm(m, batch_s);
     grad_f_mini = (1/batch_s)*A(batch,:)'*(A(batch,:)*x_mini(:,iter) - b(batch));
     x_mini(:,iter + 1) = x_mini(:,iter) - t*grad_f_mini;
