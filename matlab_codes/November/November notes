@@ -38,3 +38,9 @@ However in larger condition numbers, we observed that we had a plateau (very slo
 check again for the step with L
 using as initial step in backtracking 1/L(overestimated).
 
+-->18/11/2019<--
+
+->using an estimation for L~norm(A_t_b) we have better resutls for small condtion numbers and relative small noise (0.01)
+->We have noticed that t = 1 doesnot deacrease it remains constant, so we nedd a bigger initial step
+-> (norm(mu*randn(n,1) - 2*A_t_b))/norm(randn(n,1)) needs revision. for small condtion numbers we have good performance
+

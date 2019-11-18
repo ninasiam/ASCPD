@@ -16,7 +16,7 @@ function [ eta, alert_counter ] = check_error( error, window_length, eta, scalin
             if alert_counter > MAX_ITER  
                 fprintf('iter = %d',length(error));
                 fprintf('\n---');
-                eta = eta*(1-scaling_parameter)
+                eta = eta*(1-scaling_parameter);
                 alert_counter = 0;
             else
                 eta = eta;
@@ -40,7 +40,7 @@ function [ eta, alert_counter ] = check_error( error, window_length, eta, scalin
     end
     
     if eta <= 10^(-5) 
-        eta = 2*10^(-4);
+        eta = 2*10^(-3);
     end
     
 end

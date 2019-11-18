@@ -130,7 +130,7 @@ f_val_mini(iter) = f_val_mini_init;
 batch_s = 10;
 beta = 0.8;
 alpha = 0.3;
-t_init = (norm(mu*randn(n,1) - 2*A_t_b))/norm(randn(n,1)); %norm(A_t_b);%better than t_init = 1
+t_init = (norm(mu*randn(n,1) - 2*A_t_b))/norm(randn(n,1)); %norm(A_t_b)/norm(b); %better than t_init = 1
 % t = t_init/norm(randn(n,1));
 while(1)
     
@@ -145,7 +145,7 @@ while(1)
         t = t*beta;%backtracking..
         x_mini(:, iter + 1) = x_mini(:, iter) - t*grad_f_mini; 
     end
-    t
+    
 %     t_init = t;
     %x_mini(:, iter + 1) = x_mini(:, iter) - t*grad_f_mini; 
     if (mod(iter, n/batch_s)==0) 
