@@ -44,3 +44,38 @@ using as initial step in backtracking 1/L(overestimated).
 ->We have noticed that t = 1 doesnot deacrease it remains constant, so we nedd a bigger initial step
 -> (norm(mu*randn(n,1) - 2*A_t_b))/norm(randn(n,1)) needs revision. for small condtion numbers we have good performance
 
+->19/11/2019<-
+
+SUMMARIZE ALL THE WORK THAT HAS BEEN DONE
+
+-> experiment with plain SGD its accelerated version using nesterov Momentum, GD, NAG, Katyusha
+	- SGD, SNAG very sensitive to stepsize       (stochastic_algs_compare.m)
+-> implementation of our own stochastic gradient descent function for the mean least squares error
+   using the stepsizes and theorems of bottou
+	- Strongly convex, Smooth function variant, not variant, as well as the stepsizes of understanding machine learning book.
+		-> We observed that the constant step sizes have relativelly better performance than the variant counter parts for the same assumptions in the cost function.
+		-> In the sequel, we tried, to bound the variance of the term E[g(x,ksi)^2] to obtain M, M_v, M_G. This is particularly a tricky part as it is beyond our control. I have made some 
+		   estimations for M, M_G as the can be seen in the files (stochastic experiments.m and stochastic_gradient_descend /October).
+		-> Also, we used the averaging technique introduced by Polyak			
+		-> Maximum residual seems to play a role in the bound.
+		-> We need to perform many monte carlo experiments in order to have accurate results.
+		-> Proofs and derivations can be found in handwritten notes and reports.
+		-> Based on Bottou, we implement the scheme for mini match SGD, where the batchsize is adaptive. We use the criterion given and it seems to have good results vs NAG, GD.
+
+-> In the sequel, we performed experiments only with NAG and GD. We observed that stepsizze for SGD and mini batch depends on dimension, condition number, and residual.T
+   Thus, we nned to search for other   ways to calculate stepsize. A possible way is backtracking, having an initial estimate for the step size. 
+	-> We performed backtracking in SGD mini batch, having an initial estimate about L (assumption function is smooth). (see in hand written files).
+		-> we observed good performance but it needs improvement.
+		-> sensitive to changes on problem parameters.
+
+-> Also, we performed a mechanism to identify oscillations using windows and alerts. When, oscillation are identified the stepsize is diminished.
+   Intuition, behind this scheme is that, when oscillations appear SGD may overshoots the otpimum, thus the stepsize needs to decrease.
+		-> This implementation along with backtracking can be found in November/check_residuals_vol2.
+		-> We also tried to implement a mexhanism that increses the stepsize in case we fall on plateau, but it still needs some work.
+-> Motivated by the observations of some degenerate cases where stochastic gradient immediately increases (the step size is too large or/and bad stochastic gradient is chosen) we perform a test to see 
+   which are the good stochastic gradients in respect to the actual gradient. We plot the histogram based on the angle of sg and gradients.
+		-> we observed that the majority should be goood, however the better ones should be contained in a cone.
+-> Need to check LMS steps with mach more care!
+-> Today gradient boosting and keyjun. 
+		
+

@@ -8,10 +8,11 @@ n = 10;
 MAX_OUTER_ITER = 1;
 
 %creation of matrix A with specific eigenvalues
+rng('default');
 A_tmp = randn(m,n);
 [U,S,V] = svd(A_tmp,'econ');
 lambda_min = 1;
-lambda_max = 1000;
+lambda_max = 100;
 eigs = lambda_min + (lambda_max - lambda_min)*rand(n-2,1);
 eig_A = [lambda_min; lambda_max; eigs];
 Sigma = diag(eig_A);
@@ -23,7 +24,7 @@ A = U*Sigma*V';
 %vector of parameters
 %b = rand(m,1);
 %or
-b = A*randn(n,1) + 0.01*randn(m,1);
+b = A*randn(n,1) + 0.1*randn(m,1);
 
 %Problem parameters
 Hessian = A'*A;
@@ -51,11 +52,11 @@ eta_sgd = 100/L;
 
 while (iter < 10)
    
-   grad = -(1/m)*A'*(A*x_sgd(:,iter) - b);
+   grad = (1/m)*A'*(A*x_sgd(:,iter) - b);
    
    for ii = 1 : m
        res = (A(ii,:) * x_sgd(:,iter) - b(ii));
-       grad_f_SGD = -res* A(ii,:)';
+       grad_f_SGD = res* A(ii,:)';
        costheta(ii,iter) = dot(grad,grad_f_SGD)/(norm(grad_f_SGD)*norm(grad));
        
    end
