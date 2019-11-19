@@ -19,16 +19,16 @@ int main(int argc, char **argv){
 	int order = 3;											// Tensor Order
 	int I, J, K;										    // Tensor Dimensions
 	int R;												    // Rank of factorization
-	// time_t start_t, stop_t;									// Timer
+	// time_t start_t, stop_t;							    // Timer
 	// start_t = time(0);
 	srand(time(NULL));
 
 	const double AO_tol = 1e-3;							    // Tolerance for AO Algorithm
-	int max_iter = 50000;										// Maximum Number of iterations
+	int max_iter = 5000;									// Maximum Number of iterations
 	int AO_iter  = 1;										// Iterations counter
 
 	VectorXi block_size(3,1);								// |
-	block_size.setConstant(1000);								// | Parameters for stochastic
+	block_size.setConstant(1000);							// | Parameters for stochastic
 	const double alpha_init = 0.1;							// | gradient
 	const double beta = 1e-4;								// | 
 	double alpha;											// |
@@ -71,6 +71,9 @@ int main(int argc, char **argv){
 	MatrixXd Grad_B(J,R);									//| Gradients 
 	MatrixXd Grad_C(K,R);									//|
 
+	MatrixXd Zero_Matrix_A = MatrixXd::Zero(I, R);			//|
+	MatrixXd Zero_Matrix_B = MatrixXd::Zero(J, R);			//| For Projection
+	MatrixXd Zero_Matrix_C = MatrixXd::Zero(K, R);			//|
 
 	Read_Data(A, B, C, X_A, X_B, X_C, I, J, K, R);			// Read Factors and matricization from file
 
@@ -94,15 +97,15 @@ int main(int argc, char **argv){
 		// cout << alpha << endl;
 		cout << AO_iter << " -- " << f_value/sqrt(frob_X) << " -- " << f_value << " -- " << frob_X << " -- " <<  endl;
 		Sampling_Operator(order, block_size, dims, F_n, factor);
-		//cout << factor << endl;
+		// cout << factor << endl;
 		if(factor == 0)										// Factor A
 		{	
 			Sampling_Sub_Matrices(F_n, KhatriRao_CB, X_A, C, B, KhatriRao_CB_sub, X_A_sub);
 			// cout << KhatriRao_CB_sub << endl;
 			Calculate_Batch_Gradient(block_size(0), A, KhatriRao_CB_sub, X_A_sub, Grad_A);	
 			// cout << X_A_sub << endl;
-			A.noalias() = A - alpha*Grad_A;
-			//cout << A.norm() << endl;
+			A.noalias() = A - alpha*Grad_A.cwiseMax(Zero_Matrix_A);
+			// cout << A.norm() << endl;
 			A_T_A.noalias() = A.transpose()*A;
 		}
 		if(factor == 1)										// Factor B
@@ -111,8 +114,8 @@ int main(int argc, char **argv){
 			// cout << KhatriRao_CA_sub << endl;
 			Calculate_Batch_Gradient(block_size(1), B, KhatriRao_CA_sub, X_B_sub, Grad_B);	
 			// cout << X_B_sub << endl;
-			B.noalias() = B - alpha*Grad_B;
-			//cout << B.norm() << endl;
+			B.noalias() = B - alpha*Grad_B.cwiseMax(Zero_Matrix_B);
+			// cout << B.norm() << endl;
 			B_T_B.noalias() = B.transpose()*B;
 		}
 		if(factor == 2)										// Factor C
@@ -122,8 +125,8 @@ int main(int argc, char **argv){
 			// cout << KhatriRao_BA_sub << endl;
 			Calculate_Batch_Gradient(block_size(2), C, KhatriRao_BA_sub, X_C_sub, Grad_C);	
 			// cout << X_C_sub << endl;
-			C.noalias() = C - alpha*Grad_C;
-			//cout << C.norm() << endl;
+			C.noalias() = C - alpha*Grad_C.cwiseMax(Zero_Matrix_C);
+			// cout << C.norm() << endl;
 			C_T_C.noalias() = C.transpose()*C;
 		}
 
