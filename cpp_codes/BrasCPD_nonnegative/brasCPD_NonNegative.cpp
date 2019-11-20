@@ -28,8 +28,8 @@ int main(int argc, char **argv){
 	int AO_iter  = 1;										// Iterations counter
 
 	VectorXi block_size(3,1);								// |
-	block_size.setConstant(1000);							// | Parameters for stochastic
-	const double alpha_init = 0.1;							// | gradient
+	block_size.setConstant(100);							// | Parameters for stochastic
+	const double alpha_init = 1.2;							// | gradient
 	const double beta = 1e-4;								// | 
 	double alpha;											// |
 	VectorXi F_n(block_size(0),1);							// | fibers to be selected
@@ -52,6 +52,8 @@ int main(int argc, char **argv){
 	MatrixXd X_A(I, size_t(K * J));							// |
 	MatrixXd X_B(J, size_t(K * I));							// | Tensor Matricization 
 	MatrixXd X_C(K, size_t(I * J));							// |
+	MatrixXd W_A = A;
+	MatrixXd W_B = B;
 	MatrixXd W_C(K, R);										// | MTTKRP X_C*kr(B,A) 
 
 	MatrixXd X_A_sub(I, block_size(0));						// |
@@ -95,7 +97,7 @@ int main(int argc, char **argv){
 	{	
 		alpha = alpha_init/(pow(AO_iter,beta));
 		// cout << alpha << endl;
-		cout << AO_iter << " -- " << f_value/sqrt(frob_X) << " -- " << f_value << " -- " << frob_X << " -- " <<  endl;
+		
 		Sampling_Operator(order, block_size, dims, F_n, factor);
 		// cout << factor << endl;
 		if(factor == 0)										// Factor A
@@ -104,9 +106,16 @@ int main(int argc, char **argv){
 			// cout << KhatriRao_CB_sub << endl;
 			Calculate_Batch_Gradient(block_size(0), A, KhatriRao_CB_sub, X_A_sub, Grad_A);	
 			// cout << X_A_sub << endl;
-			A.noalias() = A - alpha*Grad_A.cwiseMax(Zero_Matrix_A);
+			A.noalias() -= alpha*Grad_A;
+			A = A.cwiseMax(Zero_Matrix_A);
 			// cout << A.norm() << endl;
 			A_T_A.noalias() = A.transpose()*A;
+			if( int(AO_iter % (J*K/block_size(factor))) == 0)
+			{
+				W_A = X_A*KhatriRao_CB;
+				f_value = Get_Objective_Value(A, W_A, A_T_A, B_T_B, C_T_C, frob_X);
+				cout << AO_iter << " -- " << f_value/sqrt(frob_X) << " -- " << f_value << " -- " << frob_X << " -- " <<  endl;
+			}
 		}
 		if(factor == 1)										// Factor B
 		{				
@@ -114,9 +123,16 @@ int main(int argc, char **argv){
 			// cout << KhatriRao_CA_sub << endl;
 			Calculate_Batch_Gradient(block_size(1), B, KhatriRao_CA_sub, X_B_sub, Grad_B);	
 			// cout << X_B_sub << endl;
-			B.noalias() = B - alpha*Grad_B.cwiseMax(Zero_Matrix_B);
+			B.noalias() -= alpha*Grad_B;
+			B = B.cwiseMax(Zero_Matrix_B);
 			// cout << B.norm() << endl;
 			B_T_B.noalias() = B.transpose()*B;
+			if( int(AO_iter % (I*K/block_size(factor))) == 0)
+			{
+				W_B = X_B*KhatriRao_CA;
+				f_value = Get_Objective_Value(B, W_B, A_T_A, B_T_B, C_T_C, frob_X);
+				cout << AO_iter << " -- " << f_value/sqrt(frob_X) << " -- " << f_value << " -- " << frob_X << " -- " <<  endl;
+			}
 		}
 		if(factor == 2)										// Factor C
 		{
@@ -125,16 +141,21 @@ int main(int argc, char **argv){
 			// cout << KhatriRao_BA_sub << endl;
 			Calculate_Batch_Gradient(block_size(2), C, KhatriRao_BA_sub, X_C_sub, Grad_C);	
 			// cout << X_C_sub << endl;
-			C.noalias() = C - alpha*Grad_C.cwiseMax(Zero_Matrix_C);
+			C.noalias() -= alpha*Grad_C;
+			C = C.cwiseMax(Zero_Matrix_C);
 			// cout << C.norm() << endl;
 			C_T_C.noalias() = C.transpose()*C;
+			if( int(AO_iter % (I*J/block_size(factor))) == 0)
+			{
+				W_C = X_C*KhatriRao_BA;
+				f_value = Get_Objective_Value(C, W_C, A_T_A, B_T_B, C_T_C, frob_X);
+				cout << AO_iter << " -- " << f_value/sqrt(frob_X) << " -- " << f_value << " -- " << frob_X << " -- " <<  endl;
+			}
 		}
 
-		W_C = X_C*KhatriRao_BA;
-		f_value = Get_Objective_Value(C, W_C, A_T_A, B_T_B, C_T_C, frob_X);
 		
 
-		if(f_value/sqrt(frob_X)  < AO_tol || AO_iter + 1 > max_iter)
+		if(f_value/sqrt(frob_X)  < AO_tol || AO_iter >= max_iter)
 		{
 			cout << "Exit Algorithm" << endl;
 			break; 
