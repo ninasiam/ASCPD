@@ -78,4 +78,8 @@ SUMMARIZE ALL THE WORK THAT HAS BEEN DONE
 -> Need to check LMS steps with mach more care!
 -> Today gradient boosting and keyjun. 
 		
+-->22/11/2019<--
+
+We checked the nonnegative for the least squares using projections. The stepsizes tha liavas proposed do not work!
+
 
