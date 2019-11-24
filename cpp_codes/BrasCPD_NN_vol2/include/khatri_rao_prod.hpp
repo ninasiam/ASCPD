@@ -3,7 +3,8 @@
 
 #include "master_library.hpp"
 
-inline void Khatri_Rao_Product(const Ref<const MatrixXd> U2, const Ref<const MatrixXd> U1, Ref<MatrixXd> Kr){
+inline void Khatri_Rao_Product(const Ref<const MatrixXd> U2, const Ref<const MatrixXd> U1, Ref<MatrixXd> Kr)
+{
 	int i,j;
 	VectorXd temp = VectorXd::Zero(U1.rows());
 	for (j = 0; j < U2.cols(); j++){
@@ -12,5 +13,5 @@ inline void Khatri_Rao_Product(const Ref<const MatrixXd> U2, const Ref<const Mat
 			Kr.block(i*U1.rows(), j, U1.rows(), 1).noalias() =  U2(i,j) * temp;
 
 	}
-
+}
 #endif

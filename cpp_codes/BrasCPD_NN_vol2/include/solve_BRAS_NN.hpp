@@ -9,8 +9,9 @@
 #include "omp_lib.hpp"
 #include "calc_gradient.hpp"
 
-inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, MatrixXd &X_B, MatrixXd &X_C, const int I, const int J, const int K,
- const int R, VectorXi &block_size, const double AO_tol, const double MAX_ITERS, const double alpha_init, const double beta = 1e-4, double &f_value, int &AO_iter)
+inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, MatrixXd &X_B, MatrixXd &X_C, MatrixXd &KhatriRao_CB, MatrixXd &KhatriRao_CA, MatrixXd &KhatriRao_BA,
+						 const int I, const int J, const int K, const int R, VectorXi &block_size, const double AO_tol, const double MAX_ITERS, 
+						 const double alpha_init, const double beta , double &f_value, int &AO_iter)
 {
     double frob_X;				                		    // Frobenius norm of Tensor
     VectorXi F_n(block_size(0),1);							// | fibers to be selected
@@ -34,10 +35,6 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 	MatrixXd X_C_sub(K, block_size(2));						// |
 	
 
-	MatrixXd KhatriRao_CB(size_t(J * K), R);				// |
-	MatrixXd KhatriRao_CA(size_t(I * K), R);				// | Khatri Rao products
-	MatrixXd KhatriRao_BA(size_t(I * J), R);				// |
-
 	MatrixXd KhatriRao_CB_sub(R, block_size(0));			// |
 	MatrixXd KhatriRao_CA_sub(R, block_size(1));			// | Khatri Rao products (sub)
 	MatrixXd KhatriRao_BA_sub(R, block_size(2));			// |
@@ -60,7 +57,6 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 
 	// MatrixXd KhatriRao_BA(size_t(I * J),R);
     init_mode = 2; 
-	Khatri_Rao_Product(B, A, KhatriRao_BA);
 	mttkrp(X_C, KhatriRao_BA, dims, init_mode, threads_num,  W_C);
 
 	Get_Objective_Value(C, W_C, A_T_A, B_T_B, C_T_C, frob_X, f_value);
@@ -144,7 +140,8 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 	duration<double> stop_t = duration_cast<duration<double>>(t2-t1);
 	cout << " CPU time = " << stop_t.count() << endl; 
 	cout << " AO_iter = " << AO_iter << endl;
-	cout << " relative f_value = " << f_value/sqrt(frob_X) << endl << endl;
+	cout << " relative f_value = " << f_value/sqrt(frob_X) << endl;
+	cout << " number of threads = " << threads_num << endl << endl;
 
 }
 #endif

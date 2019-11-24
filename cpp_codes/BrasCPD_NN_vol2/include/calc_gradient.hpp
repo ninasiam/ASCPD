@@ -1,8 +1,9 @@
 #ifndef CALC_GRADIENT_HPP
 #define CALC_GRADIENT_HPP
 
-#include "mttkrp.hpp"
 #include "master_library.hpp"
+#include "mttkrp.hpp"
+
 
 inline void Calc_gradient(int batch, const VectorXi &Tns_dims, int Mode, const unsigned int thrds,  const MatrixXd &U_prev, const MatrixXd &KhatriRao_sub, const MatrixXd &X_sub, MatrixXd &Gradient)
 {   
