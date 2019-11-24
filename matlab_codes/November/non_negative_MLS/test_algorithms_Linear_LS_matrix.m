@@ -27,11 +27,11 @@ fprintf('\nSolution using Nesterov 2...')
 [A_N2, ~, f_N2] = Nesterov_MNLS_proximal_adapt(B, X', A_init', 10^(-8));
 
 fprintf('\nSolution using plain SGD...')
-[A_SGD, f_SGD] = algo_SGD_matrix(B, X, A_init, L, mu, maxiters*m);
+[A_SGD, f_SGD] = algo_SGD_matrix(B, X, A_init, L, mu, maxiters*n);
 
 fprintf('\nSolution using mini-batch SGD...')
-batch_s = 10;
-[A_SGD_mb, f_SGD_mb] = algo_SGD_mini_batch_matrix(B, X, A_init, L, mu, batch_s, maxiters*m/batch_s);
+batch_s = 100;
+[A_SGD_mb, f_SGD_mb] = algo_SGD_mini_batch_matrix(B, X, A_init, L, mu, batch_s, maxiters*n/batch_s);
 
 figure(1)
 semilogy((f_GD))
@@ -46,4 +46,6 @@ semilogy( (f_SGD_mb(1:1:end)),  'm')
 hold off;
 legend('gradient','nesterov','nesterov2','sgd','mini-batch sgd')
 grid on;
+ylabel('f_val');
+xlabel('epochs');
 fprintf('\n')

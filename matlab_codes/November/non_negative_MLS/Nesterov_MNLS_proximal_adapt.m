@@ -35,7 +35,7 @@ q = L/mu;
 
 H = H_init;
 Y = H;
-f_val(1) = (1/2)*norm(W*H_init - X_AT','fro')^2;
+f_val(1) = (1/2)*norm(W*H_init - X_AT,'fro')^2;
 alpha = 1;
 iters = 1;
 while (1)

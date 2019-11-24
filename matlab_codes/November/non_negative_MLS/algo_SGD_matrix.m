@@ -18,6 +18,7 @@ A = A_init;
 fval(1) = (1/2)*norm(X - A_init*B','fro')^2;
 iters = 1;
 ii = 2;
+step_size = 100/L ;
 while (1)
     
     idx = randi(n,1);
@@ -26,7 +27,7 @@ while (1)
     if(iters > maxiters)
         break
     else
-        new_A = max(0, A - 1/L * grad_A);
+        new_A = max(0, A - step_size * grad_A);
         if(mod(iters,n) == 0)   %epoch is defined on dataset
             fval(ii) = (1/2)*norm(X - new_A*B','fro')^2;
             ii = ii + 1;
