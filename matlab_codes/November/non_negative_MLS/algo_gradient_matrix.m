@@ -1,4 +1,4 @@
-function [A_GD, f_GD] = algo_GD_matrix(B, X, A_init, L, mu, maxiters)
+function [A_GD, f_GD] = algo_gradient_matrix(B, X, A_init, L, mu, maxiters)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % [A, f_GD] = gradient_MNLS(B, X, A_init, lambda, tol_inner)               %
 %                                                                           %

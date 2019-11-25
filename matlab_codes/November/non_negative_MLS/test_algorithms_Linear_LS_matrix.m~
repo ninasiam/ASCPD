@@ -1,9 +1,9 @@
 clear, clc, clf
 
 % Define dimensions and condition number of LS problems
-m = 200;
-n = 2000;
-r = 20;
+m = 100;
+n = 1000;
+r = 10;
 
 A = rand(m,r);
 B = rand(n,r);
@@ -15,10 +15,10 @@ L = max(s);
 mu = min(s);
 
 A_init = rand(m,r);
-maxiters = 1000;
+maxiters = 100;
 
 fprintf('\nSolution using gradient...')
-[A_GD, f_GD] = algo_gradient_matrix(B, X, A_init, L, mu, maxiters);
+[A_GD, f_GD] = algo_GD_matrix(B, X, A_init, L, mu, maxiters);
 
 fprintf('\nSolution using Nesterov...')
 [A_N, f_N] = algo_nesterov_matrix(B, X, A_init, L, mu, maxiters);
@@ -30,7 +30,7 @@ fprintf('\nSolution using plain SGD...')
 [A_SGD, f_SGD] = algo_SGD_matrix(B, X, A_init, L, mu, maxiters*n);
 
 fprintf('\nSolution using mini-batch SGD...')
-batch_s = 50;
+batch_s = 100;
 [A_SGD_mb, f_SGD_mb] = algo_SGD_mini_batch_matrix(B, X, A_init, L, mu, batch_s, maxiters*n/batch_s);
 
 figure(1)

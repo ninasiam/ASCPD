@@ -41,7 +41,7 @@ iters = 1;
 while (1)
     grad_Y = Z * Y - w;% - lambda * H_init;
 
-    if(iters > 500)
+    if(iters > 1000)
         break
     else
         new_H = max(0, Y - 1/L * grad_Y);

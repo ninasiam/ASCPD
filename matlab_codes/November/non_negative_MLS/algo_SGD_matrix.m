@@ -1,4 +1,4 @@
-function [A_SGD, f_SGD] = algo_GD_matrix(B, X, A_init, L, mu, maxiters)
+function [A_SGD, f_SGD] = algo_SGD_matrix(B, X, A_init, L, mu, maxiters)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % [A, f_GD] = SGD_MNLS(B, X, A_init, L, mu, maxiters)                       %
 %                                                                           %
