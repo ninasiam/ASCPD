@@ -25,7 +25,7 @@ while (1)
     if(iters > maxiters)
         break
     else
-        new_A = max(0, A - 1/L * grad_A);
+        new_A = max(0, A - (1/L) * grad_A);
         f_val(iters+1) = (1/2)*norm(X - new_A*B','fro')^2;
     end
     A = new_A;

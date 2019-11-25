@@ -31,7 +31,7 @@ while (1)
     if(iters > max_iters)
         break
     else
-        new_A = max(0, Y - 1/L * grad_Y);
+        new_A = max(0, Y - (1/L) * grad_Y);
         Y = new_A + beta * (new_A - A);
         f_val(iters+1) = (1/2)*norm(X - new_A*B','fro')^2;
     end
