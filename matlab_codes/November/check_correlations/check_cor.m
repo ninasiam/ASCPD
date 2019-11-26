@@ -11,7 +11,7 @@ MAX_OUTER_ITER = 100;
 A_tmp = randn(m,n);
 [U,S,V] = svd(A_tmp,'econ');
 lambda_min = 1;
-lambda_max = 10;
+lambda_max = 100;
 eigs = lambda_min + (lambda_max - lambda_min)*rand(n-2,1);
 eig_A = [lambda_min; lambda_max; eigs];
 Sigma = diag(eig_A);
@@ -59,3 +59,10 @@ hold on
 stem(a_jx_bj - eye(m)*a_b_i_sq);
 hold off;
 grid on;
+
+min_values_a_i_a_j = min(a_i_a_j(1,:));
+max_values_a_i_a_j = max(a_i_a_j(1,:));
+figure(3)
+edges = min_values_a_i_a_j:50:max_values_a_i_a_j;
+h1 = histogram(a_i_a_j(1,:),edges)
+
