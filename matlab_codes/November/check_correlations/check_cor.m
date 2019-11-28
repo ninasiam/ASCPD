@@ -60,9 +60,23 @@ stem(a_jx_bj - eye(m)*a_b_i_sq);
 hold off;
 grid on;
 
-min_values_a_i_a_j = min(a_i_a_j(1,:));
-max_values_a_i_a_j = max(a_i_a_j(1,:));
-figure(3)
-edges = min_values_a_i_a_j:50:max_values_a_i_a_j;
-h1 = histogram(a_i_a_j(1,:),edges)
+for rows = 1:m
+    min_values_a_i_a_j = min(a_i_a_j(rows,:));
+    max_values_a_i_a_j = max(a_i_a_j(rows,:));
+    edges = min_values_a_i_a_j:10:max_values_a_i_a_j;
+    figure()
+    hist(a_i_a_j(rows,:),10);
+    hold on;
+    plot(a_i_sq(rows)*ones(100,1),20*rand(100,1),'Linestyle', '--');
+    title('product (a_i*a_j)');
+    pause();
+end
 
+for rows = 1:m
+    figure()
+    hist(a_jx_bj(rows,:),10);
+    hold on;
+    plot(a_b_i_sq(rows)*ones(100,1),20*rand(100,1),'Linestyle', '--');
+    title('product (a_ix-b_i)*(a_jx-b_j)');
+    pause();
+end
