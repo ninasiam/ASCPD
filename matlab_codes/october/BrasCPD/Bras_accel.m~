@@ -36,8 +36,8 @@ sigma(1) = min(Hessian_1);
 sigma(2) = min(Hessian_1);
 sigma(3) = min(Hessian_1);
 
-lambda = [0 0 0];%10*sigma;%1*sigma./100 ;
-Q = (sigma + lambda)./(L + lambda);
+lambda = 1*sigma./100;%10*sigma;
+Q = (L + lambda)./(sigma + lambda);
 
 %Calculate required quantities 
 T_1 = tens2mat(T,1,[2 3])';
@@ -50,7 +50,7 @@ A_est = A_init;
 A_est_y = A_init;
 
 alpha0 = 0.01;
-beta = 10^(-4);
+beta = 10^(-4)
 % gamma = 0.001;
 % beta = 1./(100.*sigma);
 
@@ -84,9 +84,9 @@ while(1)
     Hessian = svd((A_est{kr_idx(2)}'*A_est{kr_idx(2)}).*(A_est{kr_idx(1)}'*A_est{kr_idx(1)}));
     L(n) = max(Hessian);
     sigma(n) = min(Hessian);
-    Q(n) = (sigma(n) + lambda(n))/(L(n) + lambda(n));
+    Q = (L(n) + lambda(n))./(sigma(n) + lambda(n));
     
-    A_est_next = A_est_y{n} - (1/L(n))*G_n;
+    A_est_next = A_est_y{n} - (1/(L(n)+lambda(n)))*G_n;
 
     A_est_y_next{n} = A_est_next + ((1-sqrt(Q(n)))/(1 + sqrt(Q(n))))*(A_est_next - A_est{n});
 
