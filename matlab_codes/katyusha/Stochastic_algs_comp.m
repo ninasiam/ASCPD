@@ -65,7 +65,7 @@ b(1) = 0;
 %Nesterov main loop (scheme II and scheme III)
 while(1)
     
-    x_nes(:,k+1) = y(:,k) - (1/L)*(*y(:,k) + q);
+    x_nes(:,k+1) = y(:,k) - (1/L)*(y(:,k) + q);
     
     %for scheme II
     c = [1 (a(k)^2 - Q) -a(k)^2];

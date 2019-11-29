@@ -2,7 +2,7 @@
 clear, clc, clf
 
 % Define dimensions and condition number of LS problems
-m = 1000;
+m = 10000;
 n = 100;
 
 tmp = randn(m,n);
@@ -20,7 +20,7 @@ x_star = pinv(A) * b;
 f_star = 1/(2*m) * norm(A * x_star - b)^2;
 
 tol = 10^(-4);
-maxiters = 1000;
+maxiters = 100;
 
 fprintf('\nSolution using gradient...')
 [x_GD, f_GD] = algo_gradient(A, b, tol, maxiters);
@@ -42,6 +42,9 @@ fprintf('\nSolution using mini-batch SGD acceleration...')
 size_batch = 10;
 [x_SGD_mb_accel, f_SGD_mb_accel] = algo_SGD_mini_batch_accel(A, b, size_batch, tol, f_star, maxiters*m/size_batch);
 
+fprintf('\nSolution using Katyusha...')
+[ x_KAT, f_KAT ] = katyusha(A, b, f_star, tol, maxiters*2*n);
+
 figure(1)
 semilogy((f_GD-f_star),'c')
 hold on
@@ -54,7 +57,9 @@ hold on;
 semilogy( (f_SGD_mb-f_star),  'm')
 hold on;
 semilogy( (f_SGD_mb_accel-f_star),  'y')
+hold on;
+semilogy(f_KAT - f_star, 'b')
 hold off;
-legend('gradient','nesterov','sgd','sgd accel','mini-batch sgd', 'mini-batch sgd accel')
+legend('gradient','nesterov','sgd','sgd accel','mini-batch sgd', 'mini-batch sgd accel','katyusha')
 grid on;
 fprintf('\n')

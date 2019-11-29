@@ -82,7 +82,7 @@ while(1)
     end
 
 
-    A_est_y_next{n} = A_est_next + ((sqrt(Q(n))-1)/(sqrt(Q(n))+1))*(A_est_next - A_est{n});
+    A_est_y_next{n} = A_est_next + ((1-sqrt(Q(n)))/(1 + sqrt(Q(n))))*(A_est_next - A_est{n});
 
     A_est{n} = A_est_next;
     A_est_y{n} = A_est_y_next{n};

@@ -82,4 +82,11 @@ SUMMARIZE ALL THE WORK THAT HAS BEEN DONE
 
 We checked the nonnegative for the least squares using projections. The stepsizes tha liavas proposed do not work!
 
+-->28/11/2019 <--
+We checked the acceleration of mini batch and stochastic gradient
+The step size that does not cause increase is (1/L*m*n), we wish to have a small step
+The stepsize depends on condition number as well as in noise
 
+--> 29/11/2019 <--
+
+Adapt L to each iteration because the problem changes!!!!

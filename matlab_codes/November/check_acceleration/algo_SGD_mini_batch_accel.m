@@ -19,7 +19,7 @@ y_SGD = x_SGD;
 f_SGD(1) = 1/(2*m) * norm(b)^2;
 
 
-step_size = 1/(L*m*n);0.00000001%(4)/(L*n);
+step_size = 1/(L*m*n);%0.00000001(4)/(L*n);
 iter = 1;
 while (1)
    
