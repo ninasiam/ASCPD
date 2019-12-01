@@ -1,5 +1,6 @@
 %Bras CPD accel
-
+clc, close all, clear all;
+addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
 %Initializations
 I = 100;
 J = 100;
@@ -24,20 +25,20 @@ for jj = 1:order
 end
 
 
-Hessian_1 = svd((A_init{3}'*A_init{3}).*(A_init{2}'*A_init{2}));
-Hessian_2 = svd((A_init{3}'*A_init{3}).*(A_init{1}'*A_init{1}));
-Hessian_3 = svd((A_init{2}'*A_init{2}).*(A_init{1}'*A_init{1}));
-
-L(1) = max(Hessian_1);
-L(2) = max(Hessian_2);
-L(3) = max(Hessian_3);
-
-sigma(1) = min(Hessian_1);
-sigma(2) = min(Hessian_1);
-sigma(3) = min(Hessian_1);
+% Hessian_1 = svd((A_init{3}'*A_init{3}).*(A_init{2}'*A_init{2}));
+% Hessian_2 = svd((A_init{3}'*A_init{3}).*(A_init{1}'*A_init{1}));
+% Hessian_3 = svd((A_init{2}'*A_init{2}).*(A_init{1}'*A_init{1}));
+% 
+% L(1) = max(Hessian_1);
+% L(2) = max(Hessian_2);
+% L(3) = max(Hessian_3);
+% 
+% sigma(1) = min(Hessian_1);
+% sigma(2) = min(Hessian_1);
+% sigma(3) = min(Hessian_1);
 
 lambda = [0 0 0];%10*sigma;%1*sigma./100 ;
-Q = (sigma + lambda)./(L + lambda);
+% Q = (sigma + lambda)./(L + lambda);
 
 %Calculate required quantities 
 T_1 = tens2mat(T,1,[2 3])';
@@ -86,7 +87,7 @@ while(1)
     sigma(n) = min(Hessian);
     Q(n) = (sigma(n) + lambda(n))/(L(n) + lambda(n));
     
-    A_est_next = A_est_y{n} - (1/L(n))*G_n;
+    A_est_next = A_est_y{n} - (J_n/(L(n)*dims(n)))*G_n;
 
     A_est_y_next{n} = A_est_next + ((1-sqrt(Q(n)))/(1 + sqrt(Q(n))))*(A_est_next - A_est{n});
 
