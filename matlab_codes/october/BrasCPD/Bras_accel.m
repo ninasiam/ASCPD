@@ -1,6 +1,7 @@
 %Bras CPD accel
 clc, close all, clear all;
-addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
+%addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
+addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
 %Initializations
 I = 100;
 J = 100;
