@@ -1,7 +1,7 @@
 %Bras CPD non-negative
 clear all, close all;
-%addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
-addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
+addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
+%addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
 %Initializations
 I = 150;
 J = 150;
@@ -43,12 +43,16 @@ beta = 10^(-6);
 %Adaptive step size
 
 eta = 0.1;
-beta = 10^(-4);
 epsilon = 10^(-4); %it seems sensitive in changing epsilon
 
 sum_G_n = [];
 iter = 1;
 
+error_init = frob(T - cpdgen(A_init))/frob(T);
+error = error_init;
+error_accel = error_init;
+error_wo_adapt = error_init;
+iter_per_epoch = I*J/B(1);
 while(1)
     %for the specific problem of updating a fa
     n = randi(order,1); %choose factor to update
@@ -58,11 +62,12 @@ while(1)
     idx = randperm(J_n,B(n)); %choose the sample size
     F_n = sort(idx);
 
-    H = kr(A_est{kr_idx(2)},A_est{kr_idx(1)});
+    
     
     T_s = T_mat{n};
     T_s = T_s(F_n,:);
     
+    H = kr(A_est{kr_idx(2)},A_est{kr_idx(1)});
     G_n = (1/B(n))*(A_est{n}*H(F_n,:)'*H(F_n,:) - T_s'*H(F_n,:));
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -93,7 +98,8 @@ while(1)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Simple step size
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    G_n_Bras = (1/B(n))*(A_est_wo_adapt{n}*H(F_n,:)'*H(F_n,:) - T_s'*H(F_n,:));
+    H_Bras = kr(A_est_wo_adapt{kr_idx(2)},A_est_wo_adapt{kr_idx(1)});
+    G_n_Bras = (1/B(n))*(A_est_wo_adapt{n}*H_Bras(F_n,:)'*H_Bras(F_n,:) - T_s'*H_Bras(F_n,:));
     
     alpha = alpha0/(iter^beta);
     
@@ -102,17 +108,18 @@ while(1)
     A_est_wo_adapt{n} = A_est_next_wo_adapt;
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    H_Bras_accel = kr(A_est_accel{kr_idx(2)},A_est_accel{kr_idx(1)});
     Hessian = svd((A_est_accel{kr_idx(2)}'*A_est_accel{kr_idx(2)}).*(A_est_accel{kr_idx(1)}'*A_est_accel{kr_idx(1)}));
     L(n) = max(Hessian);
     sigma(n) = min(Hessian);
     
-    G_n_accel = (1/B(n))*(A_est_y{n}*H(F_n,:)'*H(F_n,:) - T_s'*H(F_n,:));
+    G_n_accel = (1/B(n))*(A_est_y{n}*H_Bras_accel(F_n,:)'*H_Bras_accel(F_n,:) - T_s'*H_Bras_accel(F_n,:));
     Q(n) = (sigma(n))/(L(n));
     
     A_est_next_accel = max(0,A_est_y{n} - ((J_n*B(n))/(L(n)*dims(n)))*G_n_accel);
     
-    beta = ((1-sqrt(Q(n)))/(1 + sqrt(Q(n))));
-    A_est_y_next{n} = A_est_next_accel + beta*(A_est_next_accel - A_est_accel{n});
+    beta_accel = ((1-sqrt(Q(n)))/(1 + sqrt(Q(n))));
+    A_est_y_next{n} = A_est_next_accel + beta_accel*(A_est_next_accel - A_est_accel{n});
 
     A_est_accel{n} = A_est_next_accel;
     A_est_y{n} = A_est_y_next{n};
@@ -121,17 +128,21 @@ while(1)
         break;
     end
     
-    if(mod(iter,100) == 0 && iter > 0)
-        i = iter/100;
-        error(i) = frob(T - cpdgen(A_est))/frob(T); %Error for adaptive scheme
-        error_wo_adapt(i) = frob(T - cpdgen(A_est_wo_adapt))/frob(T); %error for vanilla case
-        error_accel(i) = frob(T - cpdgen(A_est_accel))/frob(T);
+    
+    if(mod(iter,iter_per_epoch) == 0 && iter > 0)
+        i = iter/iter_per_epoch;
+        error(i+1) = frob(T - cpdgen(A_est))/frob(T); %Error for adaptive scheme
+        error_wo_adapt(i+1) = frob(T - cpdgen(A_est_wo_adapt))/frob(T); %error for vanilla case
+        error_accel(i+1) = frob(T - cpdgen(A_est_accel))/frob(T);
         semilogy(error,'m')
         hold on;
         semilogy(error_wo_adapt,'y')
         hold on;
         semilogy(error_accel,'g')
-        legend('Adagrad Bras','Bras', 'Bras_accel')
+        legend('Adagrad Bras','Bras', 'Bras accel')
+        xlabel('epochs');
+        ylabel('error');
+        grid on;
         pause(0.001)
     end
     
