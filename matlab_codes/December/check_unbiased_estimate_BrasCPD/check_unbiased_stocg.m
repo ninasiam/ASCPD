@@ -1,15 +1,15 @@
 %Bras CPD accel chech unbiased estimate
 clc, close all, clear all;
-addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
-%addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
+%addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
+addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
 
 %Initializations
-I = 150;
-J = 150;
-K = 150;
+I = 100;
+J = 100;
+K = 100;
 dims = [I J K];
-R = 10;
-B = 15*[10 10 10]; %can be smaller than rank
+R = 20;
+B = 2*[10 10 10]; %can be smaller than rank
 order = 3;
 I_cal = {1:dims(1), 1:dims(2), 1:dims(3)};
 MAX_OUTER_ITER = 10000;
@@ -47,7 +47,7 @@ iter = 1;
 error = frob(T - cpdgen(A_est))/frob(T);
 error_Bras = frob(T - cpdgen(A_est_Bras))/frob(T);
 
-iter_per_epoch = I*J/B(1);
+iter_per_epoch = floor(I*J/B(1));
 while(1)
     %for the specific problem of updating a factor
     n = randi(order,1); %choose factor to update
@@ -82,6 +82,7 @@ while(1)
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %simple Bras
+   
     H_Bras = kr(A_est_Bras{kr_idx(2)},A_est_Bras{kr_idx(1)});
     G_n_bras = (1/B(n))*(A_est_Bras{n}*H_Bras(F_n,:)'*H_Bras(F_n,:) - T_s'*H_Bras(F_n,:));
     
