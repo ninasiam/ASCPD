@@ -70,7 +70,7 @@ while(1)
     G_n = (1/B(n))*(A_est_y{n}*H(F_n,:)'*H(F_n,:) - T_s'*H(F_n,:)) - lambda(n)*(A_est_y{n} - A_est{n});
     Q(n) = (sigma(n) + lambda(n))/(L(n) + lambda(n));
     
-    A_est_next = A_est_y{n} - ((J_n*B(n))/(L(n)*dims(n)))*G_n;% (((alpha0))/(iter^beta_Bras_accel))*G_n;
+    A_est_next = A_est_y{n} - ((100*J_n)/(L(n)*dims(n)*B(n)))*G_n;%((J_n*B(n))/(L(n)*dims(n)))*G_n;% (((alpha0))/(iter^beta_Bras_accel))*G_n;
     
     beta = ((1-sqrt(Q(n)))/(1 + sqrt(Q(n))));
     A_est_y_next{n} = A_est_next + beta*(A_est_next - A_est{n});
