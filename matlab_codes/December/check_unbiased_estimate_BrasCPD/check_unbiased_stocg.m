@@ -1,7 +1,7 @@
 %Bras CPD accel chech unbiased estimate
 clc, close all, clear all;
-addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
-%addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
+%addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
+addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
 
 %Initializations
 I = 150;
@@ -43,7 +43,7 @@ A_est_Bras = A_init;
 
 alpha0 = 0.1;
 beta_Bras = 10^(-6);
-beta_Bras_accel = 10^(-3);
+beta_Bras_accel = 10^(-6);
 iter = 1;
 error = frob(T - cpdgen(A_est))/frob(T);
 error_Bras = frob(T - cpdgen(A_est_Bras))/frob(T);
@@ -71,7 +71,7 @@ while(1)
     G_n = (1/B(n))*(A_est_y{n}*H(F_n,:)'*H(F_n,:) - T_s'*H(F_n,:)) - lambda(n)*(A_est_y{n} - A_est{n});
     Q(n) = (sigma(n) + lambda(n))/(L(n) + lambda(n));
     
-    A_est_next = A_est_y{n} - ((100*J_n)/(L(n)*dims(n)*B(n)))*G_n;%((J_n*B(n))/(L(n)*dims(n)))*G_n;% (((alpha0))/(iter^beta_Bras_accel))*G_n;
+    A_est_next = A_est_y{n} - ((J_n*B(n))/(L(n)*dims(n)*sqrt(iter)))*G_n;%  ((J_n*B(n))/(L(n)*dims(n)))*G_n;(((alpha0))/(iter^beta_Bras_accel))*G_n;
     
     beta = ((1-sqrt(Q(n)))/(1 + sqrt(Q(n))));
     A_est_y_next{n} = A_est_next + beta*(A_est_next - A_est{n});
