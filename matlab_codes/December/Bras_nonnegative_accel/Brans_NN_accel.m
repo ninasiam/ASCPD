@@ -1,7 +1,7 @@
 %Bras CPD non-negative
 clear all, close all;
-%addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
-addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
+addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
+%addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
 %Initializations
 I = 150;
 J = 150;
@@ -118,7 +118,7 @@ while(1)
     G_n_accel = (1/B(n))*(A_est_y{n}*H_Bras_accel(F_n,:)'*H_Bras_accel(F_n,:) - T_s'*H_Bras_accel(F_n,:));
     Q(n) = (sigma(n))/(L(n));
     alpha_accel = alpha0/(iter^beta);
-    A_est_next_accel = max(0,A_est_y{n} - alpha_accel*G_n_accel);%max(0,A_est_y{n} - ((J_n*B(n))/(L(n)*dims(n)))*G_n_accel);
+    A_est_next_accel = max(0,A_est_y{n} - ((J_n*B(n))/(L(n)*dims(n)))*G_n_accel); %max(0,A_est_y{n} - alpha_accel*G_n_accel);%
     
     beta_accel = ((1-sqrt(Q(n)))/(1 + sqrt(Q(n))));
     A_est_y_next{n} = A_est_next_accel + beta_accel*(A_est_next_accel - A_est_accel{n});
@@ -151,6 +151,6 @@ while(1)
     iter = iter + 1;
     
 end
-file_name = ['i' '_' num2str(scale) '_' 'R' '_' num2str(R) '_' 'NN'];
+file_name = ['i' '_' num2str(scale) '_' 'R' '_' num2str(R) '_''stepAd' 'NN'];
 saveas(fig1,[file_name '.pdf']);
 cpd(T,A_init);

@@ -1,20 +1,20 @@
 %Bras CPD accel chech unbiased estimate
 clc, close all, clear all;
-%addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
-addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
+addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
+%addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
 
 %Initializations
 I = 150;
 J = 150;
 K = 150;
 dims = [I J K];
-R = 20;
+R = 40;
 scale = 20;
 B = scale*[10 10 10]; %can be smaller than rank
 
 order = 3;
 I_cal = {1:dims(1), 1:dims(2), 1:dims(3)};
-MAX_OUTER_ITER = 5000;
+MAX_OUTER_ITER = 10000;
 
 %create true factors 
 for ii = 1:order
@@ -73,7 +73,7 @@ while(1)
     G_n = (1/B(n))*(A_est_y{n}*H(F_n,:)'*H(F_n,:) - T_s'*H(F_n,:)) - lambda(n)*(A_est_y{n} - A_est{n});
     Q(n) = (sigma(n) + lambda(n))/(L(n) + lambda(n));
     
-    A_est_next = A_est_y{n} - (((alpha0))/(iter^beta_Bras_accel))*G_n;%((J_n*B(n))/(L(n)*dims(n)*sqrt(iter)))*G_n;%  ((J_n*B(n))/(L(n)*dims(n)))*G_n;(((alpha0))/(iter^beta_Bras_accel))*G_n;
+    A_est_next = A_est_y{n} - ((J_n*B(n))/(L(n)*dims(n)))*G_n;%(((alpha0))/(iter^beta_Bras_accel))*G_n;%((J_n*B(n))/(L(n)*dims(n)*sqrt(iter)))*G_n;%  (((alpha0))/(iter^beta_Bras_accel))*G_n;
     
     beta = ((1-sqrt(Q(n)))/(1 + sqrt(Q(n))));
     A_est_y_next{n} = A_est_next + beta*(A_est_next - A_est{n});
@@ -120,7 +120,7 @@ while(1)
     iter = iter + 1;
 
 end
-file_name = ['i' '_' num2str(scale) '_' 'R' '_' num2str(R)];
+file_name = ['i' '_' num2str(scale) '_' 'R' '_' num2str(R) 'stepAd'];
 saveas(fig1,[file_name '.pdf']);
 err_Bras_accel = cpderr(A_true,A_est)
 err_Bras = cpderr(A_true,A_est_Bras)
