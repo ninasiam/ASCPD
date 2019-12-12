@@ -1,14 +1,14 @@
 %Bras CPD accel chech unbiased estimate
 clc, close all, clear all;
-addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
-%addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
+%addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
+addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
 
 %Initializations
 I = 150;
 J = 150;
 K = 150;
 dims = [I J K];
-R = 40;
+R = 80;
 scale = 20;
 B = scale*[10 10 10]; %can be smaller than rank
 
@@ -21,6 +21,11 @@ for ii = 1:order
     A_true{ii} = randn(dims(ii),R);
 end
 
+%first in one factor
+A_corr = A_true{1};
+A_corr(:,2) = 0.9999999*A_corr(:,1);
+
+A_true{1} = A_corr;
 T = cpdgen(A_true);
 
 %create initial point
@@ -50,7 +55,7 @@ error = frob(T - cpdgen(A_est))/frob(T);
 error_Bras = frob(T - cpdgen(A_est_Bras))/frob(T);
 
 iter_per_epoch = floor(I*J/B(1));
-fig1 = figure('units','normalized','outerposition',[0 0 0.4 0.4]);
+% fig1 = figure('units','normalized','outerposition',[0 0 0.4 0.4]);
 while(1)
     %for the specific problem of updating a factor
     n = randi(order,1); %choose factor to update
@@ -73,7 +78,7 @@ while(1)
     G_n = (1/B(n))*(A_est_y{n}*H(F_n,:)'*H(F_n,:) - T_s'*H(F_n,:)) - lambda(n)*(A_est_y{n} - A_est{n});
     Q(n) = (sigma(n) + lambda(n))/(L(n) + lambda(n));
     
-    A_est_next = A_est_y{n} - ((J_n*B(n))/(L(n)*dims(n)))*G_n;%(((alpha0))/(iter^beta_Bras_accel))*G_n;%((J_n*B(n))/(L(n)*dims(n)*sqrt(iter)))*G_n;%  (((alpha0))/(iter^beta_Bras_accel))*G_n;
+    A_est_next = A_est_y{n} - ((J_n*B(n))/(L(n)*dims(n)*sqrt(iter)))*G_n;%(((alpha0))/(iter^beta_Bras_accel))*G_n;((J_n*B(n))/(L(n)*dims(n)))*G_n;%((J_n*B(n))/(L(n)*dims(n)*sqrt(iter)))*G_n;%  (((alpha0))/(iter^beta_Bras_accel))*G_n;
     
     beta = ((1-sqrt(Q(n)))/(1 + sqrt(Q(n))));
     A_est_y_next{n} = A_est_next + beta*(A_est_next - A_est{n});
@@ -120,8 +125,8 @@ while(1)
     iter = iter + 1;
 
 end
-file_name = ['i' '_' num2str(scale) '_' 'R' '_' num2str(R) 'stepAd'];
-saveas(fig1,[file_name '.pdf']);
+% file_name = ['i' '_' num2str(scale) '_' 'R' '_' num2str(R) 'stepAd'];
+% saveas(fig1,[file_name '.pdf']);
 err_Bras_accel = cpderr(A_true,A_est)
 err_Bras = cpderr(A_true,A_est_Bras)
 A_est_cpd = cpd(T,A_init);

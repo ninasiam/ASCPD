@@ -4,4 +4,9 @@ December
 
 Keyjun's paper is something as stochastic gradient (mini batch) as it does not pass the (1/T) in the MLS problem. As result we do not have a scaling in the hessian. Also, it refers to a sketched version of the initial one using a block size. Finally the gradient in terms of problems (first steo of randomization) is not an unbiased estimator of the full one. In the proofs he uses the Hessian as it is.
 
-I use an accelerated method of SGD to solve the problem but I scale the gradient (stepsize) with the blocksize It is similar to mini batch 
+I use an accelerated method of SGD to solve the problem but I scale the gradient (stepsize) with the blocksize It is similar to mini batch.
+
+-->10/12/2019<--
+
+For big ranks we notice that we may have bad results for acceleration, but if we change the stepsize we observe better performance for the first iterations
+But Bras may win at the end. 
