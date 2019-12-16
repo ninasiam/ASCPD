@@ -1,14 +1,14 @@
 %Bras CPD non-negative
 clear all, close all;
-addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
-%addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
+%addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
+addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
 %Initializations
 I = 150;
 J = 150;
 K = 150;
 dims = [I J K];
-R = 40;
-scale = 20;
+R = 10;
+scale = 100;
 B = scale*[10 10 10]; %can be smaller than rank
 order = 3;
 I_cal = {1:dims(1), 1:dims(2), 1:dims(3)};
@@ -19,6 +19,11 @@ for ii = 1:order
     A_true{ii} = rand(dims(ii),R);
 end
 
+%first in one factor
+A_corr = A_true{1};
+A_corr(:,2) = 0.9999999*A_corr(:,1);
+
+A_true{1} = A_corr;
 T = cpdgen(A_true);
 
 %create initial point
@@ -54,7 +59,7 @@ error = error_init;
 error_accel = error_init;
 error_wo_adapt = error_init;
 iter_per_epoch = floor(I*J/B(1));
-fig1 = figure('units','normalized','outerposition',[0 0 0.4 0.4]);
+% fig1 = figure('units','normalized','outerposition',[0 0 0.4 0.4]);
 while(1)
     %for the specific problem of updating a fa
     n = randi(order,1); %choose factor to update
@@ -117,8 +122,13 @@ while(1)
     
     G_n_accel = (1/B(n))*(A_est_y{n}*H_Bras_accel(F_n,:)'*H_Bras_accel(F_n,:) - T_s'*H_Bras_accel(F_n,:));
     Q(n) = (sigma(n))/(L(n));
-    alpha_accel = alpha0/(iter^beta);
-    A_est_next_accel = max(0,A_est_y{n} - ((J_n*B(n))/(L(n)*dims(n)))*G_n_accel); %max(0,A_est_y{n} - alpha_accel*G_n_accel);%
+%     step = alpha0/(iter^beta);
+%     step = ((J_n*B(n))/(L(n)*dims(n)));
+%     step = (R*size(F_n,2)/(L(n))); %relative small block size
+%     step = (R*J_n)/(L(n));
+    step = (scale*R*sqrt(iter))/(L(n));
+    step_alt = 0.1;
+    A_est_next_accel = max(0,A_est_y{n} - max(step,step_alt)*G_n_accel);  %for big blocksizes and rank min()
     
     beta_accel = ((1-sqrt(Q(n)))/(1 + sqrt(Q(n))));
     A_est_y_next{n} = A_est_next_accel + beta_accel*(A_est_next_accel - A_est_accel{n});
@@ -151,6 +161,6 @@ while(1)
     iter = iter + 1;
     
 end
-file_name = ['i' '_' num2str(scale) '_' 'R' '_' num2str(R) '_''stepAd' 'NN'];
-saveas(fig1,[file_name '.pdf']);
+% file_name = ['i' '_' num2str(scale) '_' 'R' '_' num2str(R) '_''stepAd' 'NN'];
+% saveas(fig1,[file_name '.pdf']);
 cpd(T,A_init);

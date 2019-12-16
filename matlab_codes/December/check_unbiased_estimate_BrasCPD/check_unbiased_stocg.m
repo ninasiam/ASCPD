@@ -4,12 +4,12 @@ clc, close all, clear all;
 addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
 
 %Initializations
-I = 150;
-J = 150;
-K = 150;
+I = 200;
+J = 200;
+K = 200;
 dims = [I J K];
-R = 80;
-scale = 20;
+R = 100;
+scale = 100;
 B = scale*[10 10 10]; %can be smaller than rank
 
 order = 3;
@@ -78,7 +78,14 @@ while(1)
     G_n = (1/B(n))*(A_est_y{n}*H(F_n,:)'*H(F_n,:) - T_s'*H(F_n,:)) - lambda(n)*(A_est_y{n} - A_est{n});
     Q(n) = (sigma(n) + lambda(n))/(L(n) + lambda(n));
     
-    A_est_next = A_est_y{n} - ((J_n*B(n))/(L(n)*dims(n)*sqrt(iter)))*G_n;%(((alpha0))/(iter^beta_Bras_accel))*G_n;((J_n*B(n))/(L(n)*dims(n)))*G_n;%((J_n*B(n))/(L(n)*dims(n)*sqrt(iter)))*G_n;%  (((alpha0))/(iter^beta_Bras_accel))*G_n;
+    step = (R*size(F_n,2)/(L(n))); %relative small block size
+%     step = (R*J_n/(L(n)*dims(n))); % seems to work for all ranks
+%     step = 1/(L(n)); % BAD
+%     step_alt = (((alpha0))/(iter^beta_Bras_accel)); % to show that
+%     acceleration works
+%     step_alt = ((J_n*B(n))/(L(n)*dims(n)*sqrt(iter))); % test for big ranks
+    step_alt = 0.5;
+    A_est_next = A_est_y{n} - min(step,step_alt)*G_n;
     
     beta = ((1-sqrt(Q(n)))/(1 + sqrt(Q(n))));
     A_est_y_next{n} = A_est_next + beta*(A_est_next - A_est{n});
