@@ -7,8 +7,8 @@
 clc, close all, clear all;
 
 % Path to Tensorlab
-%addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
-addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
+addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
+%addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
 
 
 % Tests with 3-order Tensor
@@ -107,7 +107,7 @@ while(1)
 %     acceleration works
 %     step_alt = ((J_n*B(n))/(L(n)*dims(n)*sqrt(iter)));% test for big 
 %ranks
-    step_alt = 0.5;                                                        % alternative step size
+    step_alt = 0.1;                                                        % alternative step size
     
     A_est_next = A_est_y{n} - min(step,step_alt)*G_n;                      % S.Gradient step at A_est_y
     
