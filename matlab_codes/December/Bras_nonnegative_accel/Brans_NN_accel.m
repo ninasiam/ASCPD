@@ -8,7 +8,7 @@ J = 150;
 K = 150;
 dims = [I J K];
 R = 10;
-scale = 100;
+scale = 50;
 B = scale*[10 10 10]; %can be smaller than rank
 order = 3;
 I_cal = {1:dims(1), 1:dims(2), 1:dims(3)};
@@ -123,13 +123,14 @@ while(1)
     G_n_accel = (1/B(n))*(A_est_y{n}*H_Bras_accel(F_n,:)'*H_Bras_accel(F_n,:) - T_s'*H_Bras_accel(F_n,:));
     Q(n) = (sigma(n))/(L(n));
 %     step = alpha0/(iter^beta);
-%     step = ((J_n*B(n))/(L(n)*dims(n)));
-%     step = (R*size(F_n,2)/(L(n))); %relative small block size
+    step = ((J_n*B(n))/(L(n)*dims(n)));
+%     step = (R*size(F_n,2)*sqrt(iter)/(L(n))); %relative small block size
 %     step = (R*J_n)/(L(n));
-    step = (scale*R*sqrt(iter))/(L(n));
-    step_alt = 0.1;
-    A_est_next_accel = max(0,A_est_y{n} - max(step,step_alt)*G_n_accel);  %for big blocksizes and rank min()
-    
+%     step = (scale*R)/(L(n));
+   step_alt = 0.1;
+
+    A_est_next_accel = max(0,A_est_y{n} - min(step,step_alt)*G_n_accel);  %for big blocksizes and rank min()
+%     A_est_next_accel = max(0,A_est_y{n} - step*G_n_accel);
     beta_accel = ((1-sqrt(Q(n)))/(1 + sqrt(Q(n))));
     A_est_y_next{n} = A_est_next_accel + beta_accel*(A_est_next_accel - A_est_accel{n});
 

@@ -10,3 +10,10 @@ I use an accelerated method of SGD to solve the problem but I scale the gradient
 
 For big ranks we notice that we may have bad results for acceleration, but if we change the stepsize we observe better performance for the first iterations
 But Bras may win at the end. 
+
+-->17/12/2019<--
+
+AdaGrad_accel for the non negative is implemented with random ranks and random
+ blocksizes, For different experiments it seems to work.
+
+
