@@ -100,8 +100,8 @@ while(1)
     H = kr(A_est{kr_idx(2)},A_est{kr_idx(1)});
     G_n = (1/B(n))*(A_est_y{n}*H(F_n,:)'*H(F_n,:) - T_s'*H(F_n,:));
         
-    step = (R*size(F_n,2)/(L(n)));                                         % relative small block size
-%     step = (R*J_n/(L(n)*dims(n))); % seems to work for all ranks
+%    step = (R*size(F_n,2)/(L(n)));                                         % relative small block size
+     step = (R*J_n/(L(n))); % seems to work for all ranks
 %     step = 1/(L(n)); % BAD
 %     step_alt = (((alpha0))/(iter^beta_Bras_accel)); % to show that
 %     acceleration works
