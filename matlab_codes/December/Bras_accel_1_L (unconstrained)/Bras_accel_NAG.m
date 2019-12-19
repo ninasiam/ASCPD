@@ -22,7 +22,7 @@ K = 100;
 
 dims = [I J K];
 
-R = randi([10 min(dims)],1,1)
+R = randi([50 min(dims)],1,1)
 scale = randi([10 min(dims)],1,1)                                          % parameter to control the blocksize
 B = scale*[10 10 10];                                                      % can be smaller than rank
 
@@ -35,6 +35,23 @@ MAX_OUTER_ITER = 10000;                                                    % Max
 for ii = 1:order
     A_true{ii} = randn(dims(ii),R);
 end
+
+%% Put bottlenecks
+
+%First Factor
+A_corr = A_true{1};
+A_corr(:,2) = A_corr(:,1);
+A_true{1} = A_corr;
+
+%Second Factor
+A_corr = A_true{2};
+A_corr(:,2) = A_corr(:,1);
+A_true{2} = A_corr;
+
+%Third Factor
+A_corr = A_true{3};
+A_corr(:,2) = A_corr(:,1);
+A_true{3} = A_corr;
 
 T = cpdgen(A_true);
 
@@ -91,30 +108,25 @@ while(1)
     % to optimize.                                                        %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-
-    
     H = kr(A_est{kr_idx(2)},A_est{kr_idx(1)});
     
-%     Hessian = svd((A_est{kr_idx(2)}'*A_est{kr_idx(2)}) ...                 % |
-%             .*(A_est{kr_idx(1)}'*A_est{kr_idx(1)}));                       % |
-    Hessian = svd(H(F_n,:)'*H(F_n,:));
+    Hessian = svd(H(F_n,:)'*H(F_n,:));                                     % |
     L(n) = max(Hessian);                                                   % | Hessian, smoothness and str. conv parameters
     sigma(n) = min(Hessian);                                               % |
     Q(n) = (sigma(n))/(L(n));                                              % inverse condition number
     
-    G_n = (1/B(n))*(A_est_y{n}*H(F_n,:)'*H(F_n,:) - T_s'*H(F_n,:));
-%    G_n = (A_est_y{n}*H(F_n,:)'*H(F_n,:) - T_s'*H(F_n,:));
-%    step = (R*size(F_n,2)/(L(n)));                                        % relative small block size
-    step = (R*J_n/(L(n))); % seems to work for all ranks
+
+    G_n = (A_est_y{n}*H(F_n,:)'*H(F_n,:) - T_s'*H(F_n,:));                 % relative small block size
+%     step = (R*J_n/(L(n))); % seems to work for all ranks
 %     step = 1/(L(n)); % BAD
 %     step_alt = (((alpha0))/(iter^beta_Bras_accel)); % to show that
 %     acceleration works
 %     step_alt = ((J_n*B(n))/(L(n)*dims(n)*sqrt(iter)));% test for big 
 %ranks
-%     step = 1/L(n);
-    step_alt = 0.1;                                                        % alternative step size
+    step = 1/L(n);
+    %step_alt = 0.1;                                                       % alternative step size
     
-    A_est_next = A_est_y{n} - min(step,step_alt)*G_n;                      % S.Gradient step at A_est_y
+    A_est_next = A_est_y{n} - step*G_n;                                    % S.Gradient step at A_est_y
     
     beta = ((1-sqrt(Q(n)))/(1 + sqrt(Q(n))));
     A_est_y_next{n} = A_est_next + beta*(A_est_next - A_est{n});           % NAG momentum

@@ -16,4 +16,6 @@ But Bras may win at the end.
 AdaGrad_accel for the non negative is implemented with random ranks and random
  blocksizes, For different experiments it seems to work.
 
+-->19/12/2019<--
 
+Compare it with NTF
