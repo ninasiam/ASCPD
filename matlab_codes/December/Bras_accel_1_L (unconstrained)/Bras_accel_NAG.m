@@ -7,8 +7,8 @@
 clc, close all, clear all;
 
 % Path to Tensorlab
-% addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
-addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
+addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
+% addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
 
 
 % Tests with 3-order Tensor
@@ -41,6 +41,7 @@ end
 %First Factor
 A_corr = A_true{1};
 A_corr(:,2) = A_corr(:,1);
+A_corr(:,3) = A_corr(:,1);
 A_true{1} = A_corr;
 
 %Second Factor
@@ -82,6 +83,7 @@ A_est_y_adap = A_init;                                                     % |
 eta = 0.1;                                                                 % | For Adaccel with Nesterov Momentum
 epsilon = 10^(-4);                                                         % | %it seems sensitive in changing epsilon
 error_Adaccel = error_init;                                                % |
+
 
 %beta_Bras_accel = 10^(-6);
 
@@ -171,15 +173,15 @@ while(1)
     
     if n == 1
         sum_G_n1_accel = sum_G_n1_accel + G_n_squared_accel;
-        eta_r1_accel = eta./ ((beta + sum_G_n1_accel).^(1/2 + epsilon));
+        eta_r1_accel = eta./ ((beta_Bras + sum_G_n1_accel).^(1/2 + epsilon));
         A_est_accel_next = A_est_y_adap{n} - ...      
-                               eta_r1_accel.*G_n_accel;                   % S.Gradient step at A_est_y
+                               eta_r1_accel.*G_n_accel;                    % S.Gradient step at A_est_y
         beta_accel = ((1-sqrt(Q(n)))/(1 + sqrt(Q(n)))); 
         A_est_y_next_adap = A_est_accel_next + beta_accel...
                           *(A_est_accel_next - A_est_Adaccel{n});          % NAG momentum
     elseif n == 2
         sum_G_n2_accel = sum_G_n2_accel + G_n_squared_accel;
-        eta_r2_accel = eta./ ((beta + sum_G_n2_accel).^(1/2 + epsilon));
+        eta_r2_accel = eta./ ((beta_Bras + sum_G_n2_accel).^(1/2 + epsilon));
         A_est_accel_next = A_est_y_adap{n} - ...
                                eta_r2_accel.*G_n_accel;
         beta_accel = ((1-sqrt(Q(n)))/(1 + sqrt(Q(n))));
@@ -187,7 +189,7 @@ while(1)
                           *(A_est_accel_next - A_est_Adaccel{n});
     elseif n == 3
         sum_G_n3_accel = sum_G_n3_accel + G_n_squared_accel;
-        eta_r3_accel = eta./ ((beta + sum_G_n3_accel).^(1/2 + epsilon));
+        eta_r3_accel = eta./ ((beta_Bras + sum_G_n3_accel).^(1/2 + epsilon));
         A_est_accel_next = A_est_y_adap{n} - ...
                                eta_r3_accel.*G_n_accel;
         beta_accel = ((1-sqrt(Q(n)))/(1 + sqrt(Q(n))));
