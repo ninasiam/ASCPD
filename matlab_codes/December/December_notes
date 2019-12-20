@@ -19,3 +19,14 @@ AdaGrad_accel for the non negative is implemented with random ranks and random
 -->19/12/2019<--
 
 Compare it with NTF
+
+-->20/12/2019<--
+
+-Extensive tests with noise 
+-big small ranks 
+-terminating conditions 
+-relative factor changes relative factor error. 
+-and bottlenecks possible parallelization!!! 
+-try to run in cyclical manner
+-Compare it with NTF
+

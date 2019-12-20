@@ -7,8 +7,8 @@
 clear all, close all;
 
 % Path to Tensorlab
-addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
-%addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
+%addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
+addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
 
 % Tests with 3-order Tensor
 % For higher order, we have to adapt 'AdaGrad' scheme
