@@ -3,7 +3,6 @@ function [A_est, MSE, error] = BrasCPD_vol2(T,options)
     %%Initialize parameters
     A_true      = options.A_true;
     A_init      = options.A_init;
-    constraints = options.constraints;
     MAX_ITER    = options.max_iter; 
     block_size  = options.bz;
     tol         = options.tol;
@@ -23,11 +22,12 @@ function [A_est, MSE, error] = BrasCPD_vol2(T,options)
     error_init = frob(T - cpdgen(A_init))/frob(T);                         % initial error
     iter_per_epoch = floor(dims(1)*dims(2)/block_size(1));                 % epochs
     
-    error = error_init;
-    MSE = (1/3)*(MSE_measure(A{1},A_gt{1})+MSE_measure(A{2},A_gt{2})+ ...
-        MSE_measure(A{3},A_gt{3}));
     A_est = A_init;
-    if strcmp('on',ops.acceleration)
+    error = error_init;
+    MSE = (1/3)*(MSE_measure(A_est{1},A_true{1})+MSE_measure(A_est{2},A_true{2})+ ...
+        MSE_measure(A_est{3},A_true{3}));
+    
+    if strcmp('on',options.acceleration)
          Y      = A_init;
          accel_var = 1;
     end
@@ -37,26 +37,27 @@ function [A_est, MSE, error] = BrasCPD_vol2(T,options)
         n = randi(order,1);                                                % choose factor to update
         kr_idx = find([1:order] - n);                                      % factors for Khatri-Rao 
         J_n = dims(kr_idx(1))*dims(kr_idx(2));                             % khatri rao dimension
-        idx = randperm(J_n,block_size(n));                                 % choose the sample 
+        idx = randperm(J_n,block_size);                                 % choose the sample 
         F_n = sort(idx);                                                   % sorted sample of row fibers
 
         T_s = T_mat{n};  
+        T_s = T_s(F_n,:);
         
         H = kr(A_est{kr_idx(2)},A_est{kr_idx(1)});                         % khatri rao product
         
         if accel_var == 1
             Hessian = H(F_n,:)'*H(F_n,:);
             [L, beta_accel] = NAG_parameters(Hessian);
-            A_next{n} = Y{n} - (1/L)*(Y{n}*Hessian-T_s'*H(F_n,:));
+            A_next{n} = Y{n} - (1/L).*(Y{n}*Hessian-T_s'*H(F_n,:));
             A_next{n} = proxr(A_next{n}, options, n);
 
-            Y{n} = A_next{n} + beta_accel*(A_next{n} - A{n});
+            Y{n} = A_next{n} + beta_accel*(A_next{n} - A_est{n});
             A_est{n} = A_next{n};
 
         else
-            alpha = alpha0/(n_mb*(iter)^(1e-6));        
+            alpha = alpha0/(block_size*(iter)^(1e-6));        
             A_next{n} = A_est{n} - alpha*(A_est{ n }*H(F_n,:)'*H(F_n,:)-T_s'*H(F_n,:));
-            A_next{n} = proxr(A_est{n}, options, n);
+            A_next{n} = proxr(A_next{n}, options, n);
             A_est{n} = A_next{n};
         end
         

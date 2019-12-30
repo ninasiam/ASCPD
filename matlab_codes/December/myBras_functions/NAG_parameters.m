@@ -5,6 +5,6 @@ function [L, beta] = NAG_parameters(Hessian)
     mu = min(Eigs);
     
     Q = mu/L;
-    beta = ((1-sqrt(Q(n)))/(1 + sqrt(Q(n))));
+    beta = ((1-sqrt(Q))/(1 + sqrt(Q)));
 end
 
