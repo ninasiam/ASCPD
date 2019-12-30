@@ -17,13 +17,13 @@ addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
 order = 3;
 I = 100;
 J = 100;
-K = 100;
+K = 00;
 
 dims = [I J K];
 
 R = randi([60 min(dims)],1,1)
-scale = randi([1 min(dims)],1,1);                                          % parameter to control the blocksize
-B = scale*[10 10 10]                                                       % can be smaller than rank
+scale = 1%randi([1 min(dims)],1,1);                                          % parameter to control the blocksize
+B = scale*[10 10 10];                                                      % can be smaller than rank
 
 % I_cal = {1:dims(1), 1:dims(2), 1:dims(3)};
 
