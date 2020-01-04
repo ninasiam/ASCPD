@@ -50,6 +50,7 @@ options.alpha0 = 0.1;
 options.dims = dims;
 options.acceleration = 'on';
 options.cyclical = 'off';
+
 [A_est, MSE, error] = BrasCPD_vol2(T,options);
 
 %BrasCPD 
@@ -66,13 +67,50 @@ options.alpha0 = 0.1;
 options.dims = dims;
 options.acceleration = 'off';
 options.cyclical = 'off';
+
 [A_est2, MSE2, error2] = BrasCPD_vol2(T,options);
+
+%BrasCPD cyclical
+options.A_true = A_true;
+options.A_init = A_init;
+options.constraint{1} = 'nonnegative';
+options.constraint{2} = 'nonnegative';
+options.constraint{3} = 'nonnegative';
+options.max_iter = floor(dims(1)*dims(2)/B(1))*MAX_OUTER_ITER; 
+options.bz = B(1);
+options.tol = eps^2;
+options.tol_rel = 10^(-5);
+options.alpha0 = 0.1;
+options.dims = dims;
+options.acceleration = 'off';
+options.cyclical = 'on';
+
+[A_est3, MSE3, error3] = BrasCPD_vol2(T,options);
+
+%BrasCPD accel cyclical
+options.A_true = A_true;
+options.A_init = A_init;
+options.constraint{1} = 'nonnegative';
+options.constraint{2} = 'nonnegative';
+options.constraint{3} = 'nonnegative';
+options.max_iter = floor(dims(1)*dims(2)/B(1))*MAX_OUTER_ITER; 
+options.bz = B(1);
+options.tol = eps^2;
+options.tol_rel = 10^(-5);
+options.alpha0 = 0.1;
+options.dims = dims;
+options.acceleration = 'on';
+options.cyclical = 'on';
+
+[A_est4, MSE4, error4] = BrasCPD_vol2(T,options);
 
 %% plot
 figure(1)
 semilogy([0:(size(MSE,2)-1)],MSE,'-sb','linewidth',1.5);hold on
-semilogy([0:(size(MSE2,2)-1)],MSE2,'->b','linewidth',1.5);
-legend('BrasCP accel','BrasCP');
+semilogy([0:(size(MSE2,2)-1)],MSE2,'->b','linewidth',1.5); hold on;
+semilogy([0:(size(MSE3,2)-1)],MSE3,'-sy','linewidth',1.5);hold on
+semilogy([0:(size(MSE4,2)-1)],MSE4,'->y','linewidth',1.5);
+legend('BrasCP accel','BrasCP', 'BrasCP (cyclical) ','BrasCP accel (cyclical)');
 xlabel('no. of MTTKRP computed')
 ylabel('MSE')
 set(gca,'fontsize',14)

@@ -9,9 +9,10 @@ function [A_est, MSE, error] = BrasCPD_vol2(T,options)
     tol_rel     = options.tol_rel;
     alpha0      = options.alpha0;
     dims        = options.dims;
+    cyclical    = options.cyclical;
     %Check if acceleration mode is on 
     accel_var = 0;
-
+    cyclical_vec = [1 2 3];
     %% Calculate required quantities (matricizations) 
 
     T_mat{1} = tens2mat(T,1,[2 3])';
@@ -36,7 +37,9 @@ function [A_est, MSE, error] = BrasCPD_vol2(T,options)
     
     for iter = 1:MAX_ITER 
         
-        n = randi(order,1);                                                % choose factor to update
+        n = select_factor(cyclical,iter,order,cyclical_vec);
+
+                                                                           % choose factor to update
         kr_idx = find([1:order] - n);                                      % factors for Khatri-Rao 
         J_n = dims(kr_idx(1))*dims(kr_idx(2));                             % khatri rao dimension
         idx = randperm(J_n,block_size);                                    % choose the sample 

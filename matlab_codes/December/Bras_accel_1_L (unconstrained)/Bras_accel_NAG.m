@@ -23,7 +23,7 @@ K = 100;
 dims = [I J K];
 
 R = randi([50 min(dims)],1,1)
-scale = randi([10 min(dims)],1,1)                                          % parameter to control the blocksize
+scale = randi([10 15],1,1)                                          % parameter to control the blocksize
 B = scale*[10 10 10];                                                      % can be smaller than rank
 
 
