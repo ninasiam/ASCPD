@@ -2,10 +2,15 @@ clear;
 clc;
 close all
 
-% add paths
-addpath('/home/nina/Documents/uni/codes/matlab/master/demo_vol1/functions')
-addpath('/home/nina/Documents/uni/nina_s/matlab_codes/December/myBras_functions');
-addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
+% add paths (home)
+% addpath('/home/nina/Documents/uni/codes/matlab/master/demo_vol1/functions')
+% addpath('/home/nina/Documents/uni/nina_s/matlab_codes/December/myBras_functions');
+% addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
+
+% add paths (local-dell)
+addpath('/home/telecom/Desktop/nina/matlab_codes/functions');
+addpath('/home/telecom/Desktop/nina/nina_s/matlab_codes/December/myBras_functions');
+addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
 
 %% Initializations
 order = 3;
@@ -50,6 +55,7 @@ options.alpha0 = 0.1;
 options.dims = dims;
 options.acceleration = 'on';
 options.cyclical = 'off';
+options.proximal = 'off';
 [A_est, MSE, error] = BrasCPD_vol2(T,options);
 
 %BrasCPD 
@@ -66,12 +72,13 @@ options.alpha0 = 0.1;
 options.dims = dims;
 options.acceleration = 'off';
 options.cyclical = 'off';
+options.proximal = 'off';
 [A_est2, MSE2, error2] = BrasCPD_vol2(T,options);
 
 %% plot
 figure(1)
 semilogy([0:(size(MSE,2)-1)],MSE,'-sb','linewidth',1.5);hold on
-semilogy([0:(size(MSE2,2)-1)],MSE2,'->b','linewidth',1.5);
+semilogy([0:(size(MSE2,2)-1)],MSE2,'->m','linewidth',1.5);
 legend('BrasCP accel','BrasCP');
 xlabel('no. of MTTKRP computed')
 ylabel('MSE')

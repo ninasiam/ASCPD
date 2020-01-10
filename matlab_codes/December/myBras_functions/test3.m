@@ -3,9 +3,14 @@ clc;
 close all
 
 % add paths
-addpath('/home/nina/Documents/uni/codes/matlab/master/demo_vol1/functions')
-addpath('/home/nina/Documents/uni/nina_s/matlab_codes/December/myBras_functions');
-addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
+% addpath('/home/nina/Documents/uni/codes/matlab/master/demo_vol1/functions')
+% addpath('/home/nina/Documents/uni/nina_s/matlab_codes/December/myBras_functions');
+% addpath('/home/nina/Documents/uni/Libraries/Tensor_lab');
+
+% add paths (local-dell)
+addpath('/home/telecom/Desktop/nina/matlab_codes/functions');
+addpath('/home/telecom/Desktop/nina/nina_s/matlab_codes/December/myBras_functions');
+addpath('/home/telecom/Documents/Libraries/tensorlab_2016-03-28');
 
 %% Initializations
 order = 3;
@@ -50,6 +55,7 @@ options.alpha0 = 0.1;
 options.dims = dims;
 options.acceleration = 'on';
 options.cyclical = 'off';
+options.proximal = 'off';
 
 [A_est, MSE, error] = BrasCPD_vol2(T,options);
 
@@ -67,6 +73,7 @@ options.alpha0 = 0.1;
 options.dims = dims;
 options.acceleration = 'off';
 options.cyclical = 'off';
+options.proximal = 'off';
 
 [A_est2, MSE2, error2] = BrasCPD_vol2(T,options);
 
@@ -84,6 +91,7 @@ options.alpha0 = 0.1;
 options.dims = dims;
 options.acceleration = 'off';
 options.cyclical = 'on';
+options.proximal = 'off';
 
 [A_est3, MSE3, error3] = BrasCPD_vol2(T,options);
 
@@ -101,6 +109,7 @@ options.alpha0 = 0.1;
 options.dims = dims;
 options.acceleration = 'on';
 options.cyclical = 'on';
+options.proximal = 'off';
 
 [A_est4, MSE4, error4] = BrasCPD_vol2(T,options);
 
