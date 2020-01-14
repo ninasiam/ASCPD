@@ -10,6 +10,7 @@ function [A_est, MSE, error] = BrasCPD_vol2(T,options)
     alpha0      = options.alpha0;
     dims        = options.dims;
     cyclical    = options.cyclical;
+    
     %Check if acceleration mode is on 
     accel_var = 0;
     cyclical_vec = [1 2 3];
@@ -36,8 +37,8 @@ function [A_est, MSE, error] = BrasCPD_vol2(T,options)
          accel_var = 1;
     end
     
-    if strcmp('on',options.proximal)
-        lambda_prox = 10^(1);
+    if strcmp('off',options.proximal)
+       
     end
     
     for iter = 1:MAX_ITER 
@@ -57,7 +58,7 @@ function [A_est, MSE, error] = BrasCPD_vol2(T,options)
         
         if accel_var == 1
             Hessian = H(F_n,:)'*H(F_n,:);
-            [L, beta_accel] = NAG_parameters(Hessian,lambda_prox);
+            [L, beta_accel, lambda_prox] = NAG_parameters_prox(Hessian,options);
             G = Y{n}*(Hessian + lambda_prox*eye(size(Hessian,1)))-(T_s'*H(F_n,:) + lambda_prox*A_est{n});
             A_next{n} = Y{n} - (1/(L + lambda_prox)).*(G);
             A_next{n} = proxr(A_next{n}, options, n);
