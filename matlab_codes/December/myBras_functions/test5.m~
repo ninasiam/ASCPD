@@ -21,7 +21,7 @@ K = 100;
 dims = [I J K];
 
 R = 50%randi([10 min(dims)-10],1,1)
-scale = 2;%randi([10 15],1,1);                                             % parameter to control the blocksize
+scale = 2;%randi([10 15],1,1);                                                % parameter to control the blocksize
 B = scale*[10 10 10]                                                       % can be smaller than rank
 
 % I_cal = {1:dims(1), 1:dims(2), 1:dims(3)};
@@ -128,7 +128,7 @@ options.alpha0 = 0.1;
 options.dims = dims;
 options.acceleration = 'on';
 options.cyclical = 'off';
-options.proximal = 'true';
+options.proximal = 'on';
 options.ratio_var = 100;
 
 [A_est_r100, MSE_r100, error_r100] = BrasCPD_vol2(T,options);
@@ -148,7 +148,7 @@ options.alpha0 = 0.1;
 options.dims = dims;
 options.acceleration = 'on';
 options.cyclical = 'off';
-options.proximal = 'true';
+options.proximal = 'on';
 options.ratio_var = 1000;
 
 [A_est_r1000, MSE_r1000, error_r1000] = BrasCPD_vol2(T,options);
@@ -168,7 +168,7 @@ options.alpha0 = 0.1;
 options.dims = dims;
 options.acceleration = 'on';
 options.cyclical = 'off';
-options.proximal = 'true';
+options.proximal = 'on';
 options.ratio_var = 10000;
 
 [A_est_r10000, MSE_r10000, error_r10000] = BrasCPD_vol2(T,options);
