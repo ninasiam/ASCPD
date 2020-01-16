@@ -27,15 +27,42 @@ B = scale*[10 10 10]                                                       % can
 
 % I_cal = {1:dims(1), 1:dims(2), 1:dims(3)};
 
-MAX_OUTER_ITER = 20;                                                       % Max number of iterations (epochs)
+MAX_OUTER_ITER = 30;                                                       % Max number of iterations (epochs)
 
-
+corr_var = 0.92;
 %% create true factors 
 for ii = 1:order
     A_true{ii} = rand(dims(ii),R);
 end
 
-T = cpdgen(A_true);
+A_bot1 = A_true{1};
+A_bot2 = A_true{2};
+A_bot3 = A_true{3};
+
+
+
+A_bot1(:,R) = sqrt(corr_var)*A_bot1(:,R-1) + sqrt(1 - corr_var)*randn(I,1);
+%A_bot1(:,R - 1) = sqrt(corr_var)*A_bot1(:,R-i) + sqrt(1 - corr_var)*randn(I{1},1);
+A_bot2(:,R) = sqrt(corr_var)*A_bot2(:,R-1) + sqrt(1 - corr_var)*randn(J,1);
+%A_bot2(:,R - 1) = sqrt(corr_var)*A_bot2(:,R-i) + sqrt(1 - corr_var)*randn(I{2},1);
+A_bot3(:,R) = sqrt(corr_var)*A_bot3(:,R-1) + sqrt(1 - corr_var)*randn(K,1);
+%A_bot3(:,R - 1) = sqrt(corr_var)*A_bot3(:,R-i) + sqrt(1 - corr_var)*randn(I{3},1);
+
+
+A_true{1} = A_bot1;
+A_true{2} = A_bot2;
+A_true{3} = A_bot3;
+
+X = cpdgen(A_true);                                                        % True tensor
+
+%% create noise
+for ii = 1:order
+    noise{ii} = 0.1*randn(dims(ii),R);
+end
+
+X_N = cpdgen(noise);
+
+T = X + X_N;
 
 %% create initial point
 for jj = 1:order
@@ -231,8 +258,8 @@ xlabel('no. of MTTKRP computed')
 ylabel('MSE')
 set(gca,'fontsize',14)
 grid on
-file_name = ['/home/telecom/Desktop/nina/matlab_codes/figures_15_1_2020_brasCPD_prox' '/' num2str(I) '_' num2str(R)];
-saveas(fig1,[file_name '.pdf']);
+% file_name = ['/home/telecom/Desktop/nina/matlab_codes/figures_15_1_2020_brasCPD_prox' '/' num2str(I) '_' num2str(R) '_with_1_5']
+% saveas(fig1,[file_name '.pdf']);
 
 fig2 = figure('units','normalized','outerposition',[0 0 0.4 0.4]);
 semilogy([0:(size(error,2)-1)],error,'->y','linewidth',1.5);hold on
@@ -248,5 +275,5 @@ xlabel('no. of MTTKRP computed')
 ylabel('error')
 set(gca,'fontsize',14)
 grid on
-file_name = ['/home/telecom/Desktop/nina/matlab_codes/figures_15_1_2020_brasCPD_prox' '/' num2str(I) '_' num2str(R) '_' 'error_wi'];
-saveas(fig2,[file_name '.pdf']);
+% file_name = ['/home/telecom/Desktop/nina/matlab_codes/figures_15_1_2020_brasCPD_prox' '/' num2str(I) '_' num2str(R) '_' 'error_with_1_5'];
+% saveas(fig2,[file_name '.pdf']);
