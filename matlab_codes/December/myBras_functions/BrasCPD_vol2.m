@@ -15,6 +15,7 @@ function [A_est, MSE, error] = BrasCPD_vol2(T,options)
     accel_var = 0;
     cyclical_vec = [1 2 3];
     lambda_prox = 0;
+    
     %% Calculate required quantities (matricizations) 
 
     T_mat{1} = tens2mat(T,1,[2 3])';
@@ -24,7 +25,9 @@ function [A_est, MSE, error] = BrasCPD_vol2(T,options)
     
     order = size(A_true,2);
     error_init = frob(T - cpdgen(A_init))/frob(T);                         % initial error
-    iter_per_epoch = floor(dims(1)*dims(2)/block_size(1));                 % epochs
+    %error_init = frob(T - cpdgen(A_init))^2;                              % initial error
+
+    iter_per_epoch = ceil(dims(1)*dims(2)/block_size(1));                 % epochs
     
     A_est = A_init;
     A_next = A_init;
@@ -40,6 +43,8 @@ function [A_est, MSE, error] = BrasCPD_vol2(T,options)
     if strcmp('off',options.proximal)
        
     end
+    
+    i = 1;
     
     for iter = 1:MAX_ITER 
         
@@ -76,18 +81,25 @@ function [A_est, MSE, error] = BrasCPD_vol2(T,options)
         RFC = rel_measure(A_next, A_est);
         A_est{n} = A_next{n};
         
-        if RFC < tol_rel 
-            break;
-        end
-        if(mod(iter,iter_per_epoch) == 0 && iter > 0)
-            i = iter/iter_per_epoch;
+%         if RFC < tol_rel 
+%             break;
+%         end
+%         
+        if(mod(iter,iter_per_epoch) == 0)
+            
             error(i+1) = frob(T - cpdgen(A_est))/frob(T);                      % error for accel scheme
+            %error(i+1) = frob(T - cpdgen(A_est))^2;
             MSE(i + 1) = (1/3)*(MSE_measure(A_est{1},A_true{1})+MSE_measure(A_est{2},A_true{2})...
                        +MSE_measure(A_est{3},A_true{3}));
                   
             if abs(error(i+1) )<= tol
                  break;
             end
+            disp(['BrasCPD accel at iteration ',num2str(i+1),' and the MSE is ',num2str(MSE(i+1))])
+            disp(['at iteration ',num2str(i+1),' and the NRE is ',num2str(error(i+1))])
+            disp('====')
+            i = i + 1;
+            
         end
     end
 end
