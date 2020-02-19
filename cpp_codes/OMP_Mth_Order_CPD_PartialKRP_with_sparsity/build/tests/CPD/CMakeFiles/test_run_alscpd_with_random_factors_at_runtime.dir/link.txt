@@ -1,0 +1,1 @@
+/usr/bin/c++   -fopenmp -Wall -Wextra -std=c++17  -Wno-ignored-attributes -Wno-deprecated-copy -fopenmp -mtune=native -march=native -O3 -w    CMakeFiles/test_run_alscpd_with_random_factors_at_runtime.dir/test_run_alscpd_with_random_factors_at_runtime.cpp.o  -o ../../../bin/test_run_alscpd_with_random_factors_at_runtime 
