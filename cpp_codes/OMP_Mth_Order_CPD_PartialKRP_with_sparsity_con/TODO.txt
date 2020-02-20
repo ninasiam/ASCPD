@@ -1,0 +1,34 @@
+--+ TODO list +--
+
+-- 11 / 11 / 2019 --
+
+* Reshape KhatriRao matrix: ( I(1) x ... x I(n-1) x I(n+1) x ... x I(N) ) x R  ===> R x ( I(1) x ... x I(n-1) x I(n+1) x ... x I(N) ) 
+[STATUS]: testet. Not satisfied.
+
+* Compute KhatriRo using kroneckerProduct() (Eigen) TEST IT!
+[STATUS:] NOT testet yet (16/11/19). Code checked... works like KhatriRao.
+
+-- 15 / 11 / 2019 --
+* Implement Nesterov on non-negative
+[STATUS:] Implemented. Working. Not hard-tested yet.
+
+-- 22 / 11 / 2019 --
+* Implement Method of Bro (N-Way) 0.9*H + 0.1*H'... Check update_factor.cpp (case: constraint == 1)
+[STATUS:] COMPLETED: IGNORE ALL PREVIOUS TASKS!
+
+* Apply Orthogonality constraints... Check update_factor.cpp + "Orthogonality Constrained PARAFAC" (Paris email)
+[STATUS:] COMPLETED: IGNORE ALL PREVIOUS TASKS!
+
+* Read Tensor Data from file. (neurocomm)
+[STATUS:] COMPLETED: Write and Read. Tensor recovery from matricized Tensor {X_(1)} (mode-1 matricization) completed. (05 / 12 / 2019)
+
+-- 06 / 12 / 2019 --
+* ADD CMAKE AND MAKE IT COMPATIBLE TO NCOM.
+[STATUS:] COMPLETED: .
+
+-- 17 / 12 / 2019 --
+* Add project in partensor's repository as follows
+include -> TUC/include/OpenMP 
+tests   -> TUC/test/OpenMP    
+
+* Merge <.hpp> files that share common operations.
