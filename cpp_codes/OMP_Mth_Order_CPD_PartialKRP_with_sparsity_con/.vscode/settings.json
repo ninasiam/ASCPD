@@ -52,6 +52,7 @@
         "random": "cpp",
         "string": "cpp",
         "bit": "cpp",
-        "optional": "cpp"
+        "optional": "cpp",
+        "cstdarg": "cpp"
     }
 }

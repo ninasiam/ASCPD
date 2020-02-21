@@ -1,4 +1,4 @@
-# Install script for directory: /home/telecom/Desktop/nina/codes/OMP_Mth_Order_CPD_PartialKRP_with_sparsity_con/tests/matrix_ADMM
+# Install script for directory: /home/telecom/Desktop/nina/nina_s/cpp_codes/OMP_Mth_Order_CPD_PartialKRP_with_sparsity_con/tests/matrix_ADMM
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

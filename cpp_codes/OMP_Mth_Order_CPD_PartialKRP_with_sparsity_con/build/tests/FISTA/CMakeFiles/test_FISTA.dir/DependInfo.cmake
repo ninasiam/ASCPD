@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/telecom/Desktop/nina/codes/OMP_Mth_Order_CPD_PartialKRP_with_sparsity_con/tests/FISTA/test_FISTA.cpp" "/home/telecom/Desktop/nina/codes/OMP_Mth_Order_CPD_PartialKRP_with_sparsity_con/build/tests/FISTA/CMakeFiles/test_FISTA.dir/test_FISTA.cpp.o"
+  "/home/telecom/Desktop/nina/nina_s/cpp_codes/OMP_Mth_Order_CPD_PartialKRP_with_sparsity_con/tests/FISTA/test_FISTA.cpp" "/home/telecom/Desktop/nina/nina_s/cpp_codes/OMP_Mth_Order_CPD_PartialKRP_with_sparsity_con/build/tests/FISTA/CMakeFiles/test_FISTA.dir/test_FISTA.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

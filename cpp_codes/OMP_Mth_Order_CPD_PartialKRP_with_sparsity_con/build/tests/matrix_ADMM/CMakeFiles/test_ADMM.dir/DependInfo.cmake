@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/telecom/Desktop/nina/codes/OMP_Mth_Order_CPD_PartialKRP_with_sparsity_con/tests/matrix_ADMM/test_ADMM.cpp" "/home/telecom/Desktop/nina/codes/OMP_Mth_Order_CPD_PartialKRP_with_sparsity_con/build/tests/matrix_ADMM/CMakeFiles/test_ADMM.dir/test_ADMM.cpp.o"
+  "/home/telecom/Desktop/nina/nina_s/cpp_codes/OMP_Mth_Order_CPD_PartialKRP_with_sparsity_con/tests/matrix_ADMM/test_ADMM.cpp" "/home/telecom/Desktop/nina/nina_s/cpp_codes/OMP_Mth_Order_CPD_PartialKRP_with_sparsity_con/build/tests/matrix_ADMM/CMakeFiles/test_ADMM.dir/test_ADMM.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

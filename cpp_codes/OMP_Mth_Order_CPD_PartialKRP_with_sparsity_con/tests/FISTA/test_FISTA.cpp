@@ -5,17 +5,16 @@
 
 int main(int argc, char **argv)
 {
-    int N = 100; 
-    int M = 100;
-    int R = 5;
+    int N = 10; 
+    int M = 10;
+    int R = 2;
 
     MatrixXd MTTKRP = MatrixXd::Random(N,R);
     MatrixXd V = MatrixXd::Random(R, R);
+    V = V.transpose()*V;
     MatrixXd Factor = MatrixXd::Random(N, R);
     
     double lambda = 0.5;
-    
-    double error = 1;
 
     std::cout << "Initial Factor = " << Factor << std::endl;
 

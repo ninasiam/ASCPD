@@ -19,4 +19,4 @@ make -j
 
 export OMP_PLACES=cores
 
-# cd ../bin
+cd ../bin

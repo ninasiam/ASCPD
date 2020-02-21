@@ -1,4 +1,4 @@
-# Install script for directory: /home/telecom/Desktop/nina/codes/OMP_Mth_Order_CPD_PartialKRP_with_sparsity_con
+# Install script for directory: /home/telecom/Desktop/nina/nina_s/cpp_codes/OMP_Mth_Order_CPD_PartialKRP_with_sparsity_con
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,8 +39,8 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/telecom/Desktop/nina/codes/OMP_Mth_Order_CPD_PartialKRP_with_sparsity_con/build/tests/matrix_ADMM/cmake_install.cmake")
-  include("/home/telecom/Desktop/nina/codes/OMP_Mth_Order_CPD_PartialKRP_with_sparsity_con/build/tests/FISTA/cmake_install.cmake")
+  include("/home/telecom/Desktop/nina/nina_s/cpp_codes/OMP_Mth_Order_CPD_PartialKRP_with_sparsity_con/build/tests/matrix_ADMM/cmake_install.cmake")
+  include("/home/telecom/Desktop/nina/nina_s/cpp_codes/OMP_Mth_Order_CPD_PartialKRP_with_sparsity_con/build/tests/FISTA/cmake_install.cmake")
 
 endif()
 
@@ -52,5 +52,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/telecom/Desktop/nina/codes/OMP_Mth_Order_CPD_PartialKRP_with_sparsity_con/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/telecom/Desktop/nina/nina_s/cpp_codes/OMP_Mth_Order_CPD_PartialKRP_with_sparsity_con/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
