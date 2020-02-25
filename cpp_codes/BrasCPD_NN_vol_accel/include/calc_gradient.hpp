@@ -31,21 +31,19 @@ inline void Compute_NAG_parameters(const MatrixXd &Hessian, double &L, double  &
     beta = (1 - sqrt(Q))/(1 + sqrt(Q));
 }
 
-inline void Calc_gradient(const int J_n, const VectorXi &Tns_dims, int Mode, const unsigned int thrds,  const MatrixXd &U_prev, const MatrixXd &Y, const MatrixXd &Hessian, const MatrixXd &X_sub, MatrixXd &Gradient)
+inline void Calc_gradient(const VectorXi &Tns_dims, int Mode, const unsigned int thrds,
+                          const double lambda,  const MatrixXd &U_prev, const MatrixXd &Y, 
+                          const MatrixXd &Hessian, const MatrixXd &H, const MatrixXd &X_sub, MatrixXd &Gradient)
 {   
 
     int R = Hessian.rows();
     int rows_mttkrp = X_sub.rows();
 
-    MatrixXd H(J_n,R);
-    MatrixXd MTTKRP(rows_mttkrp,J_n);
+    MatrixXd MTTKRP(rows_mttkrp,R);                            // I_n * R
 
-    Compute_NAG_parameters(Hessian, L, beta, lambda);
-    // H = KhatriRao_sub.transpose();                          //actual khatri rao H (we calculated H_T)
-    
 
     mttkrp( X_sub, H, Tns_dims, Mode, thrds, MTTKRP);
-    Gradient = Y*(Hessian + lambda*(MatrixXd::Ones(R,R)))- (MTTKRP + lambda*U_prev);
+    Gradient = Y*(Hessian + lambda*(MatrixXd::Identity(R,R)))-(MTTKRP + lambda*U_prev);
 
 }
 #endif

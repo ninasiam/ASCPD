@@ -31,6 +31,14 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 	MatrixXd W_B = B;                                       // | MTTKRP X_B*kr(C,A)
 	MatrixXd W_C = C;										// | MTTKRP X_C*kr(B,A) 
 
+	MatrixXd Y_A = A;										//| Y sequence for A
+	MatrixXd Y_B = B;										//|	Y sequence for B
+	MatrixXd Y_C = C;										//|	Y sequence for C
+
+	MatrixXd A_next = A;
+	MatrixXd B_next = B;
+	MatrixXd C_next = C;
+
 	MatrixXd X_A_sub(I, block_size(0));						// |
 	MatrixXd X_B_sub(J, block_size(1));						// | Tensor Matricization (sub)
 	MatrixXd X_C_sub(K, block_size(2));						// |
@@ -49,7 +57,7 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 	MatrixXd Zero_Matrix_B = MatrixXd::Zero(J, R);			//| For Projection
 	MatrixXd Zero_Matrix_C = MatrixXd::Zero(K, R);			//|
 
-	double L, beta_accel, lambda;									// NAG parameters
+	double L, beta_accel, lambda;							// NAG parameters
 
 	A_T_A.noalias() = A.transpose()*A;
 	B_T_B.noalias() = B.transpose()*B;
@@ -74,32 +82,33 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 		
 		if(factor == 0)										// Factor A
 		{	
-			v1::Sampling_Sub_Matrices(F_n, KhatriRao_CB, X_A, C, B, KhatriRao_CB_sub, X_A_sub);
-			J_n = KhatriRao_CB.rows();
-			Hessian = KhatriRao_CB.transpose()*KhatriRao_CB;
+			v1::Sampling_Sub_Matrices(F_n, X_A, C, B, KhatriRao_CB, KhatriRao_CB_sub, X_A_sub);
+			
+			Hessian = KhatriRao_CB_sub.transpose()*KhatriRao_CB_sub;
 			Compute_NAG_parameters(Hessian, L, beta_accel, lambda);
-			Calc_gradient(J_n, dims, factor, threads_num, A, KhatriRao_CB_sub, X_A_sub, Grad_A);	
-			
-			A.noalias() -= alpha*Grad_A;
-			A = A.cwiseMax(Zero_Matrix_A);
-			
-			A_T_A.noalias() = A.transpose()*A;
+			Calc_gradient(dims, factor, threads_num, lambda, A, Y_A, Hessian, KhatriRao_CB_sub, X_A_sub, Grad_A);	
+			A_next = Y_A - Grad_A / (L + lambda);
+			Y_A = A_next + beta_accel*(A_next - A); 
+	
+			A_T_A.noalias() = A_next.transpose()*A_next;
 			if( int(AO_iter % (J*K/block_size(factor))) == 0)
 			{
 				mttkrp(X_A, KhatriRao_CB, dims, factor, threads_num,  W_A);
-				Get_Objective_Value(A, W_A, A_T_A, B_T_B, C_T_C, frob_X, f_value);
+				Get_Objective_Value(A_next, W_A, A_T_A, B_T_B, C_T_C, frob_X, f_value);
 				cout << AO_iter << " -- " << f_value/sqrt(frob_X) << " -- " << f_value << " -- " << frob_X << " -- " <<  endl;
 			}
+			A = A_next;
 		}
 		if(factor == 1)										// Factor B
 		{				
-			v1::Sampling_Sub_Matrices(F_n, KhatriRao_CA, X_B, C, A, KhatriRao_CA_sub, X_B_sub);
-			J_n = KhatriRao_CA.rows();
-			Calc_gradient(J_n, dims, factor, threads_num, B, KhatriRao_CA_sub, X_B_sub, Grad_B);	
-			
-			B.noalias() -= alpha*Grad_B;
-			B = B.cwiseMax(Zero_Matrix_B);
-			
+			v1::Sampling_Sub_Matrices(F_n, X_B, C, A, KhatriRao_CA, KhatriRao_CA_sub, X_B_sub);
+
+			Hessian = KhatriRao_CA_sub.transpose()*KhatriRao_CA_sub;
+			Compute_NAG_parameters(Hessian, L, beta_accel, lambda);
+			Calc_gradient(dims, factor, threads_num, lambda, B, Y_B, Hessian, KhatriRao_CA_sub, X_B_sub, Grad_B);	
+			B_next = Y_B - Grad_B / (L + lambda);
+			Y_B = B_next + beta_accel * (B_next - B);
+
 			B_T_B.noalias() = B.transpose()*B;
 			if( int(AO_iter % (I*K/block_size(factor))) == 0)
 			{
@@ -107,16 +116,18 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 				Get_Objective_Value(B, W_B, A_T_A, B_T_B, C_T_C, frob_X, f_value);
 				cout << AO_iter << " -- " << f_value/sqrt(frob_X) << " -- " << f_value << " -- " << frob_X << " -- " <<  endl;
 			}
+
+			B = B_next;
 		}
 		if(factor == 2)										// Factor C
 		{
 			
-			v1::Sampling_Sub_Matrices(F_n, KhatriRao_BA, X_C, B, A, KhatriRao_BA_sub, X_C_sub);
-			J_n = KhatriRao_BA.rows();
-			Calc_gradient(J_n, dims, factor, threads_num, C, KhatriRao_BA_sub, X_C_sub, Grad_C);	
+			v1::Sampling_Sub_Matrices(F_n, X_C, B, A, KhatriRao_BA, KhatriRao_BA_sub, X_C_sub);
+			Compute_NAG_parameters(Hessian, L, beta_accel, lambda);
+			Calc_gradient( dims, factor, threads_num, lambda, C, Y_C, Hessian, KhatriRao_BA_sub, X_C_sub, Grad_C);	
 			
-			C.noalias() -= alpha*Grad_C;
-			C = C.cwiseMax(Zero_Matrix_C);
+			C_next = Y_C - Grad_C / (L + lambda);
+			Y_C = C_next + beta_accel * (C_next - C);
 			
 			C_T_C.noalias() = C.transpose()*C;
 			if( int(AO_iter % (I*J/block_size(factor))) == 0)
@@ -125,6 +136,8 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 				Get_Objective_Value(C, W_C, A_T_A, B_T_B, C_T_C, frob_X, f_value);
 				cout << AO_iter << " -- " << f_value/sqrt(frob_X) << " -- " << f_value << " -- " << frob_X << " -- " <<  endl;
 			}
+
+			C = C_next;
 		}
 
 		

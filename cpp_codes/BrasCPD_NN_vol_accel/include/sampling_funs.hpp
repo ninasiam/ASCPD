@@ -6,7 +6,8 @@
 
 namespace v1
 {
-        inline void Sampling_Operator(int order, VectorXi block_size, VectorXi dims, VectorXi &F_n, int &factor)
+        inline void Sampling_Operator(int order, VectorXi block_size, VectorXi dims,
+                                      VectorXi &F_n, int &factor)
     {
 
         // -----------------------> Choose Among Factors to optimize <-------------------
@@ -55,7 +56,8 @@ namespace v1
         // cout << F_n << endl;
     }
 
-    void Sampling_Sub_Matrices(const VectorXi &F_n, MatrixXd &KhatriRao, const MatrixXd &X, const MatrixXd &U1, const MatrixXd &U2,  MatrixXd &KhatriRao_sub, MatrixXd &X_sub)
+    void Sampling_Sub_Matrices(const VectorXi &F_n, const MatrixXd &X, const MatrixXd &U1, const MatrixXd &U2, 
+                               MatrixXd &KhatriRao, MatrixXd &KhatriRao_sub, MatrixXd &X_sub)
     {   
         int R = KhatriRao.cols();
         int J_n = KhatriRao.rows();
@@ -76,7 +78,7 @@ namespace v1
         {
             X_sub.col(col_X) = X.col(F_n(col_X));
         }
-        // cout << "Mpike 1" << endl;
+        
     }
 }
 
