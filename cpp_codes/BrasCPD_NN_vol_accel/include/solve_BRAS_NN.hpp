@@ -11,7 +11,7 @@
 
 inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, MatrixXd &X_B, MatrixXd &X_C, MatrixXd &KhatriRao_CB, MatrixXd &KhatriRao_CA, MatrixXd &KhatriRao_BA,
 						 const int I, const int J, const int K, const int R, VectorXi &block_size, const double AO_tol, const double MAX_ITERS, 
-						 const double alpha_init, const double beta , double &f_value, int &AO_iter)
+						 double &f_value, int &AO_iter)
 {
     double frob_X;				                		    // Frobenius norm of Tensor
     VectorXi F_n(block_size(0),1);							// | fibers to be selected
@@ -84,10 +84,11 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 		{	
 			v1::Sampling_Sub_Matrices(F_n, X_A, C, B, KhatriRao_CB, KhatriRao_CB_sub, X_A_sub);
 			
-			Hessian = KhatriRao_CB_sub.transpose()*KhatriRao_CB_sub;
+			Hessian = KhatriRao_CB_sub*KhatriRao_CB_sub.transpose();
 			Compute_NAG_parameters(Hessian, L, beta_accel, lambda);
-			Calc_gradient(dims, factor, threads_num, lambda, A, Y_A, Hessian, KhatriRao_CB_sub, X_A_sub, Grad_A);	
+			Calc_gradient(dims, factor, threads_num, lambda, A, Y_A, Hessian, KhatriRao_CB_sub.transpose(), X_A_sub, Grad_A);	
 			A_next = Y_A - Grad_A / (L + lambda);
+			A_next = A_next.cwiseMax(Zero_Matrix_A);
 			Y_A = A_next + beta_accel*(A_next - A); 
 	
 			A_T_A.noalias() = A_next.transpose()*A_next;
@@ -103,10 +104,11 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 		{				
 			v1::Sampling_Sub_Matrices(F_n, X_B, C, A, KhatriRao_CA, KhatriRao_CA_sub, X_B_sub);
 
-			Hessian = KhatriRao_CA_sub.transpose()*KhatriRao_CA_sub;
+			Hessian = KhatriRao_CA_sub*KhatriRao_CA_sub.transpose();
 			Compute_NAG_parameters(Hessian, L, beta_accel, lambda);
-			Calc_gradient(dims, factor, threads_num, lambda, B, Y_B, Hessian, KhatriRao_CA_sub, X_B_sub, Grad_B);	
+			Calc_gradient(dims, factor, threads_num, lambda, B, Y_B, Hessian, KhatriRao_CA_sub.transpose(), X_B_sub, Grad_B);	
 			B_next = Y_B - Grad_B / (L + lambda);
+			B_next = B_next.cwiseMax(Zero_Matrix_B);
 			Y_B = B_next + beta_accel * (B_next - B);
 
 			B_T_B.noalias() = B.transpose()*B;
@@ -123,10 +125,12 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 		{
 			
 			v1::Sampling_Sub_Matrices(F_n, X_C, B, A, KhatriRao_BA, KhatriRao_BA_sub, X_C_sub);
+			Hessian = KhatriRao_BA_sub*KhatriRao_BA_sub.transpose();
 			Compute_NAG_parameters(Hessian, L, beta_accel, lambda);
-			Calc_gradient( dims, factor, threads_num, lambda, C, Y_C, Hessian, KhatriRao_BA_sub, X_C_sub, Grad_C);	
+			Calc_gradient( dims, factor, threads_num, lambda, C, Y_C, Hessian, KhatriRao_BA_sub.transpose(), X_C_sub, Grad_C);	
 			
 			C_next = Y_C - Grad_C / (L + lambda);
+			C_next = C_next.cwiseMax(Zero_Matrix_C);
 			Y_C = C_next + beta_accel * (C_next - C);
 			
 			C_T_C.noalias() = C.transpose()*C;

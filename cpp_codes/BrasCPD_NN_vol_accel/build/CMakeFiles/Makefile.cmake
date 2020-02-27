@@ -15,8 +15,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "CMakeFiles/FindOpenMP/OpenMPCheckVersion.cpp"
   "CMakeFiles/FindOpenMP/OpenMPTryFlag.c"
   "CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp"
-  "../tests/FISTA/CMakeLists.txt"
-  "../tests/matrix_ADMM/CMakeLists.txt"
+  "../test/bras_CPDAccel_test/CMakeLists.txt"
   "/usr/share/cmake-3.16/Modules/CMakeCCompiler.cmake.in"
   "/usr/share/cmake-3.16/Modules/CMakeCCompilerABI.c"
   "/usr/share/cmake-3.16/Modules/CMakeCInformation.cmake"
@@ -121,12 +120,10 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/3.16.4/CMakeCCompiler.cmake"
   "CMakeFiles/3.16.4/CMakeCXXCompiler.cmake"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
-  "tests/matrix_ADMM/CMakeFiles/CMakeDirectoryInformation.cmake"
-  "tests/FISTA/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "test/bras_CPDAccel_test/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "tests/matrix_ADMM/CMakeFiles/test_ADMM.dir/DependInfo.cmake"
-  "tests/FISTA/CMakeFiles/test_FISTA.dir/DependInfo.cmake"
+  "test/bras_CPDAccel_test/CMakeFiles/brasCPD_Accel_NN.dir/DependInfo.cmake"
   )

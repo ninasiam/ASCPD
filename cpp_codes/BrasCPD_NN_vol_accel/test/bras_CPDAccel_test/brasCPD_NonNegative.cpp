@@ -1,5 +1,5 @@
-#include "../include/master_library.hpp"
-#include "../include/solve_BRAS_NN.hpp"
+#include "../../include/master_library.hpp"
+#include "../../include/solve_BRAS_NN.hpp"
 
 int main(int argc, char **argv){
 
@@ -17,9 +17,7 @@ int main(int argc, char **argv){
 
 	VectorXi block_size(3,1);								// |
 	block_size.setConstant(100);							// | Parameters for stochastic
-	const double alpha_init = 1.2;							// | gradient
-	const double beta = 1e-4;								// | 
-	double alpha;											// |
+															// |
 	VectorXi F_n(block_size(0),1);							// | fibers to be selected
 	int factor;												// |
 	// VectorXi kr_idx(2,1);								// |
@@ -65,5 +63,5 @@ int main(int argc, char **argv){
 	X_C = C * KhatriRao_BA.transpose();
 	//----------------------------> F_value Computation <------------------------------------------
 	
-	Solve_brasNN(A_init, B_init, C_init, X_A, X_B, X_C, KhatriRao_CB, KhatriRao_CA, KhatriRao_BA,  I, J, K, R, block_size, AO_tol, max_iter, alpha_init, beta, f_value, AO_iter);
+	Solve_brasNN(A_init, B_init, C_init, X_A, X_B, X_C, KhatriRao_CB, KhatriRao_CA, KhatriRao_BA,  I, J, K, R, block_size, AO_tol, max_iter, f_value, AO_iter);
 }

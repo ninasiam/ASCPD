@@ -1,0 +1,1 @@
+/usr/bin/c++   -fopenmp -Wall -Wextra -std=c++17  -Wno-ignored-attributes -Wno-deprecated-copy -fopenmp -mtune=native -march=native -O3 -w    CMakeFiles/brasCPD_Accel_NN.dir/brasCPD_NonNegative.cpp.o  -o ../../../bin/brasCPD_Accel_NN 

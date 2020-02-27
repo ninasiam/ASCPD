@@ -16,8 +16,8 @@
 #include <bits/stdc++.h> 
 #include <omp.h>
 
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Core>
+#include <Eigen/Dense>
 
 using namespace Eigen;
 using namespace std;
