@@ -112,7 +112,7 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 			B_next = B_next.cwiseMax(Zero_Matrix_B);
 			Y_B = B_next + beta_accel * (B_next - B);
 
-			B_T_B.noalias() = B.transpose()*B;
+			B_T_B.noalias() = B_next.transpose()*B_next;
 			if( int(AO_iter % (I*K/block_size(factor))) == 0)
 			{
 				mttkrp(X_B, KhatriRao_CA, dims, factor, threads_num,  W_B);
@@ -135,7 +135,7 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 			C_next = C_next.cwiseMax(Zero_Matrix_C);
 			Y_C = C_next + beta_accel * (C_next - C);
 			
-			C_T_C.noalias() = C.transpose()*C;
+			C_T_C.noalias() = C_next.transpose()*C_next;
 			if( int(AO_iter % (I*J/block_size(factor))) == 0)
 			{
 				mttkrp(X_C, KhatriRao_BA, dims, factor, threads_num,  W_C);

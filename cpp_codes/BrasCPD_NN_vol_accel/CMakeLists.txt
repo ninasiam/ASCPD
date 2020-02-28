@@ -7,8 +7,9 @@ PROJECT(BRAS_CPD_ACCEL)
 ###    SET VARIABLES
 ########################################################################################################################
 SET(CMAKE_MINIMUM_REQUIRED_VERSION                           "3.5")
-SET(CPP_LIBS                                                 "/SDKS/CPP_LIBS")
-SET(EIGEN_ROOT_DIR                                           ${CPP_LIBS}/eigen)
+#SET(CPP_LIBS                                                 "/SDKS/CPP_LIBS")
+#SET(EIGEN_ROOT_DIR                                           ${CPP_LIBS}/eigen)
+SET(EIGEN_ROOT_DIR                                           "/usr/include/eigen3")
 SET(INCLUDE_DIR                                              ${CMAKE_CURRENT_LIST_DIR}/include)
 SET(BIN_DIR                                                  ${CMAKE_CURRENT_LIST_DIR}/bin)
 
@@ -45,6 +46,7 @@ IF (APPLE)
     SET(OpenMP_libiomp5_LIBRARY ${OpenMP_CXX_LIB_NAMES})
   ENDIF()
 ELSE ()
+  MESSAGE( STATUS  "[ BRAS_CPD_ACCEL ] Hits the else." )
   ADD_DEFINITIONS(-fopenmp)
 ENDIF()
 
@@ -54,7 +56,7 @@ SET(CMAKE_CXX_STANDARD 17)
 SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 SET(CMAKE_CXX_EXTENSIONS OFF)
 
-SET(CMAKE_CXX_FLAGS              "${CMAKE_CXX_FLAGS} -fopenmp -Wall -Wextra -std=c++17")
+SET(CMAKE_CXX_FLAGS              "${CMAKE_CXX_FLAGS} -fopenmp -Wall -Wextra -std=c++17") 
 SET(CMAKE_CXX_FLAGS              "${CMAKE_CXX_FLAGS}  -Wno-ignored-attributes -Wno-deprecated-copy")
 SET(CMAKE_CXX_FLAGS_RELEASE      "-mtune=native -march=native -O3 -w")
 SET(CMAKE_CXX_FLAGS_DEBUG        "-g")
