@@ -67,11 +67,11 @@ namespace v1
 
         Khatri_Rao_Product(U1, U2, KhatriRao);                          // Compute the full Khatri-Rao Product
         // cout << KhatriRao << endl;
-        KhatriRao_T = KhatriRao.transpose();
+        // KhatriRao_T = KhatriRao.transpose();
 
-        for(int col_H = 0; col_H < bz; col_H++)
+        for(int row_H = 0; row_H < bz; row_H++)
         {
-            KhatriRao_sub.col(col_H) = KhatriRao_T.col(F_n(col_H));     //Create KhatriRao_sub (transpose)
+            KhatriRao_sub.row(row_H) = KhatriRao.row(F_n(row_H));     //Create KhatriRao_sub (transpose)
         }
         
         for(int col_X = 0; col_X < bz; col_X++)

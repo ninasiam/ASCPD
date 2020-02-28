@@ -44,9 +44,9 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 	MatrixXd X_C_sub(K, block_size(2));						// |
 	
 
-	MatrixXd KhatriRao_CB_sub(R, block_size(0));			// |
-	MatrixXd KhatriRao_CA_sub(R, block_size(1));			// | Khatri Rao products (sub)
-	MatrixXd KhatriRao_BA_sub(R, block_size(2));			// |
+	MatrixXd KhatriRao_CB_sub(block_size(0), R);			// |
+	MatrixXd KhatriRao_CA_sub(block_size(1), R);			// | Khatri Rao products (sub)
+	MatrixXd KhatriRao_BA_sub(block_size(2), R);			// |
 	MatrixXd Hessian(R,R);
 
     MatrixXd Grad_A(I,R);									//| 
@@ -69,6 +69,7 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 	// MatrixXd KhatriRao_BA(size_t(I * J),R);
     init_mode = 2; 
 	mttkrp(X_C, KhatriRao_BA, dims, init_mode, threads_num,  W_C);
+	
 
 	Get_Objective_Value(C, W_C, A_T_A, B_T_B, C_T_C, frob_X, f_value);
 
@@ -83,10 +84,10 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 		if(factor == 0)										// Factor A
 		{	
 			v1::Sampling_Sub_Matrices(F_n, X_A, C, B, KhatriRao_CB, KhatriRao_CB_sub, X_A_sub);
-			
-			Hessian = KhatriRao_CB_sub*KhatriRao_CB_sub.transpose();
+
+			Hessian = KhatriRao_CB_sub.transpose()*KhatriRao_CB_sub;
 			Compute_NAG_parameters(Hessian, L, beta_accel, lambda);
-			Calc_gradient(dims, factor, threads_num, lambda, A, Y_A, Hessian, KhatriRao_CB_sub.transpose(), X_A_sub, Grad_A);	
+			Calc_gradient(dims, factor, threads_num, lambda, A, Y_A, Hessian, KhatriRao_CB_sub, X_A_sub, Grad_A);	
 			A_next = Y_A - Grad_A / (L + lambda);
 			A_next = A_next.cwiseMax(Zero_Matrix_A);
 			Y_A = A_next + beta_accel*(A_next - A); 
@@ -104,9 +105,9 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 		{				
 			v1::Sampling_Sub_Matrices(F_n, X_B, C, A, KhatriRao_CA, KhatriRao_CA_sub, X_B_sub);
 
-			Hessian = KhatriRao_CA_sub*KhatriRao_CA_sub.transpose();
+			Hessian = KhatriRao_CA_sub.transpose()*KhatriRao_CA_sub;
 			Compute_NAG_parameters(Hessian, L, beta_accel, lambda);
-			Calc_gradient(dims, factor, threads_num, lambda, B, Y_B, Hessian, KhatriRao_CA_sub.transpose(), X_B_sub, Grad_B);	
+			Calc_gradient(dims, factor, threads_num, lambda, B, Y_B, Hessian, KhatriRao_CA_sub, X_B_sub, Grad_B);	
 			B_next = Y_B - Grad_B / (L + lambda);
 			B_next = B_next.cwiseMax(Zero_Matrix_B);
 			Y_B = B_next + beta_accel * (B_next - B);
@@ -115,7 +116,7 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 			if( int(AO_iter % (I*K/block_size(factor))) == 0)
 			{
 				mttkrp(X_B, KhatriRao_CA, dims, factor, threads_num,  W_B);
-				Get_Objective_Value(B, W_B, A_T_A, B_T_B, C_T_C, frob_X, f_value);
+				Get_Objective_Value(B_next, W_B, A_T_A, B_T_B, C_T_C, frob_X, f_value);
 				cout << AO_iter << " -- " << f_value/sqrt(frob_X) << " -- " << f_value << " -- " << frob_X << " -- " <<  endl;
 			}
 
@@ -125,9 +126,10 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 		{
 			
 			v1::Sampling_Sub_Matrices(F_n, X_C, B, A, KhatriRao_BA, KhatriRao_BA_sub, X_C_sub);
-			Hessian = KhatriRao_BA_sub*KhatriRao_BA_sub.transpose();
+
+			Hessian = KhatriRao_BA_sub.transpose()*KhatriRao_BA_sub;
 			Compute_NAG_parameters(Hessian, L, beta_accel, lambda);
-			Calc_gradient( dims, factor, threads_num, lambda, C, Y_C, Hessian, KhatriRao_BA_sub.transpose(), X_C_sub, Grad_C);	
+			Calc_gradient( dims, factor, threads_num, lambda, C, Y_C, Hessian, KhatriRao_BA_sub, X_C_sub, Grad_C);	
 			
 			C_next = Y_C - Grad_C / (L + lambda);
 			C_next = C_next.cwiseMax(Zero_Matrix_C);
@@ -137,7 +139,7 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 			if( int(AO_iter % (I*J/block_size(factor))) == 0)
 			{
 				mttkrp(X_C, KhatriRao_BA, dims, factor, threads_num,  W_C);
-				Get_Objective_Value(C, W_C, A_T_A, B_T_B, C_T_C, frob_X, f_value);
+				Get_Objective_Value(C_next, W_C, A_T_A, B_T_B, C_T_C, frob_X, f_value);
 				cout << AO_iter << " -- " << f_value/sqrt(frob_X) << " -- " << f_value << " -- " << frob_X << " -- " <<  endl;
 			}
 

@@ -43,6 +43,7 @@ inline void Calc_gradient(const VectorXi &Tns_dims, int Mode, const unsigned int
 
 
     mttkrp( X_sub, H, Tns_dims, Mode, thrds, MTTKRP);
+
     Gradient = Y*(Hessian + lambda*(MatrixXd::Identity(R,R)))-(MTTKRP + lambda*U_prev);
 
 }

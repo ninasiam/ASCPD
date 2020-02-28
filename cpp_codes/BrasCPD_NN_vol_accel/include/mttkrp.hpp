@@ -27,8 +27,8 @@ inline void mttkrp( const MatrixXd &X_mat, const MatrixXd &KR_p, const VectorXi 
 
     if( cols_X_mat < cols_X_mat_full)                //X_mat_sub
     {   
-        offset = cols_X_mat/10;                     //trial
-        rounds = 10;
+        offset = cols_X_mat/5;                      //trial
+        rounds = 5;
     }
     else
     {

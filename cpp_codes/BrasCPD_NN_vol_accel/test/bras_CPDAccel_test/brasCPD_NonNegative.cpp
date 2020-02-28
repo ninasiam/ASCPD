@@ -11,12 +11,12 @@ int main(int argc, char **argv){
 	// start_t = time(0);
 	srand(time(NULL));
 
-	const double AO_tol = 1e-3;							    // Tolerance for AO Algorithm
-	int max_iter = 5000;									// Maximum Number of iterations
+	const double AO_tol = 1e-4;							    // Tolerance for AO Algorithm
+	int max_iter = 2000;										// Maximum Number of iterations
 	int AO_iter  = 1;										// Iterations counter
 
 	VectorXi block_size(3,1);								// |
-	block_size.setConstant(100);							// | Parameters for stochastic
+	block_size.setConstant(50);								// | Parameters for stochastic
 															// |
 	VectorXi F_n(block_size(0),1);							// | fibers to be selected
 	int factor;												// |
@@ -28,7 +28,7 @@ int main(int argc, char **argv){
 
     // Set_Info(&R, &I, &J, &K, "Data_cpp/info.bin");			// Initialize tensor size and rank from file
 
-	R = 20, I = 500, J = 500, K = 100;
+	R = 10, I = 100, J = 100, K = 100;
     cout << "R=" << R << ", I=" << I << ", J=" << J << ", K=" << K << endl;
 	dims(0) = I, dims(1) = J, dims(2) = K;
 	//------------------------------> Matrix Initializations <-------------------------------------
