@@ -12,11 +12,11 @@ int main(int argc, char **argv){
 	srand(time(NULL));
 
 	const double AO_tol = 1e-4;							    // Tolerance for AO Algorithm
-	int max_iter = 2000;										// Maximum Number of iterations
+	int max_iter_mttkrp = 20;								// Maximum Number of iterations
 	int AO_iter  = 1;										// Iterations counter
 
 	VectorXi block_size(3,1);								// |
-	block_size.setConstant(50);								// | Parameters for stochastic
+	block_size.setConstant(20);								// | Parameters for stochastic
 															// |
 	VectorXi F_n(block_size(0),1);							// | fibers to be selected
 	int factor;												// |
@@ -30,6 +30,7 @@ int main(int argc, char **argv){
 
 	R = 10, I = 100, J = 100, K = 100;
     cout << "R=" << R << ", I=" << I << ", J=" << J << ", K=" << K << endl;
+	cout << "block size=" << block_size.transpose() << endl;
 	dims(0) = I, dims(1) = J, dims(2) = K;
 	//------------------------------> Matrix Initializations <-------------------------------------
 
@@ -63,5 +64,5 @@ int main(int argc, char **argv){
 	X_C = C * KhatriRao_BA.transpose();
 	//----------------------------> F_value Computation <------------------------------------------
 	
-	Solve_brasNN(A_init, B_init, C_init, X_A, X_B, X_C, KhatriRao_CB, KhatriRao_CA, KhatriRao_BA,  I, J, K, R, block_size, AO_tol, max_iter, f_value, AO_iter);
+	Solve_brasNN(A_init, B_init, C_init, X_A, X_B, X_C, KhatriRao_CB, KhatriRao_CA, KhatriRao_BA,  I, J, K, R, block_size, AO_tol, max_iter_mttkrp, f_value, AO_iter);
 }

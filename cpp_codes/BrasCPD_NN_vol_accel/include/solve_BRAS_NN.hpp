@@ -10,7 +10,7 @@
 #include "calc_gradient.hpp"
 
 inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, MatrixXd &X_B, MatrixXd &X_C, MatrixXd &KhatriRao_CB, MatrixXd &KhatriRao_CA, MatrixXd &KhatriRao_BA,
-						 const int I, const int J, const int K, const int R, VectorXi &block_size, const double AO_tol, const double MAX_ITERS, 
+						 const int I, const int J, const int K, const int R, VectorXi &block_size, const double AO_tol, const double MAX_MTTKRP, 
 						 double &f_value, int &AO_iter)
 {
     double frob_X;				                		    // Frobenius norm of Tensor
@@ -23,6 +23,7 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 
     double alpha;
     int order = 3;
+	int mttkrp_counter = 0;
     const unsigned int threads_num = get_num_threads();
 
 	//------------------------------> Matrix Initializations <-------------------------------------
@@ -98,6 +99,7 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 				mttkrp(X_A, KhatriRao_CB, dims, factor, threads_num,  W_A);
 				Get_Objective_Value(A_next, W_A, A_T_A, B_T_B, C_T_C, frob_X, f_value);
 				cout << AO_iter << " -- " << f_value/sqrt(frob_X) << " -- " << f_value << " -- " << frob_X << " -- " <<  endl;
+				mttkrp_counter++;
 			}
 			A = A_next;
 		}
@@ -118,6 +120,7 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 				mttkrp(X_B, KhatriRao_CA, dims, factor, threads_num,  W_B);
 				Get_Objective_Value(B_next, W_B, A_T_A, B_T_B, C_T_C, frob_X, f_value);
 				cout << AO_iter << " -- " << f_value/sqrt(frob_X) << " -- " << f_value << " -- " << frob_X << " -- " <<  endl;
+				mttkrp_counter++;
 			}
 
 			B = B_next;
@@ -141,6 +144,7 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 				mttkrp(X_C, KhatriRao_BA, dims, factor, threads_num,  W_C);
 				Get_Objective_Value(C_next, W_C, A_T_A, B_T_B, C_T_C, frob_X, f_value);
 				cout << AO_iter << " -- " << f_value/sqrt(frob_X) << " -- " << f_value << " -- " << frob_X << " -- " <<  endl;
+				mttkrp_counter++;
 			}
 
 			C = C_next;
@@ -148,7 +152,7 @@ inline void Solve_brasNN(MatrixXd &A, MatrixXd &B, MatrixXd &C, MatrixXd &X_A, M
 
 		
 
-		if(f_value/sqrt(frob_X)  < AO_tol || AO_iter >= MAX_ITERS)
+		if(f_value/sqrt(frob_X)  < AO_tol || mttkrp_counter >= MAX_MTTKRP)
 		{
 			cout << "Exit Algorithm" << endl;
 			break; 

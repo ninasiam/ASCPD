@@ -24,6 +24,7 @@ MESSAGE(STATUS " [ ${PROJECT_NAME_TOUPPER} ] EIGEN_ROOT ==> " ${EIGEN_ROOT_DIR})
 ########################################################################################################################
 ### OpenMP
 ########################################################################################################################
+MESSAGE(STATUS " [ ${PROJECT_NAME_TOUPPER} ] CONFIGURING OPENMP")
 find_package(OpenMP REQUIRED)
 if (OPENMP_FOUND)
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
