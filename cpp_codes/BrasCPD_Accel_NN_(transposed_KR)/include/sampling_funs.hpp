@@ -1,0 +1,128 @@
+#ifndef SAMPLING_FUNS_HPP
+#define SAMPLING_FUNS_HPP
+
+#include "master_library.hpp"
+#include "khatri_rao_prod.hpp"
+
+namespace v1
+{
+        inline void Sampling_Operator(int order, VectorXi block_size, VectorXi dims,
+                                      VectorXi &F_n, int &factor)
+    {
+
+        // -----------------------> Choose Among Factors to optimize <-------------------
+        int n;
+        int J_n;
+        int MAX_idx = order;
+
+                            
+        n  = rand() % MAX_idx;      
+
+        if(n == 0)                                              // Factor A
+        {   
+            J_n = dims(1)*dims(2);
+            // kr_idx(0) = 2;
+            // kr_idx(1) = 1;
+        }
+        if(n == 1)                                              // Factor B
+        {
+            J_n = dims(0)*dims(2);
+            // kr_idx(0) = 2;
+            // kr_idx(1) = 0;
+        }
+        if(n == 2)                                              // Factor C
+        {
+            J_n = dims(0)*dims(1);
+            // kr_idx(0) = 1;
+            // kr_idx(1) = 0;
+        }
+
+        factor = n;                                             // Selected factor
+        
+        //----------------------> Generate indices <------------------------------------
+        VectorXi indices(J_n,1);
+        for(int i=0; i < J_n; i++)
+        {
+            indices(i) = i; 
+        }
+        random_device rd;
+        mt19937 g(rd());
+    
+        shuffle(indices.data(), indices.data() + J_n, g);
+
+        F_n = indices.head(block_size(factor));
+        
+        sort(F_n.data(), F_n.data() + block_size(factor));      //sort F_n
+        // cout << F_n << endl;
+    }
+
+    void Sampling_Sub_Matrices(const VectorXi &F_n, const MatrixXd &X, const MatrixXd &U1, const MatrixXd &U2, 
+                               MatrixXd &KhatriRao, MatrixXd &KhatriRao_sub, MatrixXd &X_sub)
+    {   
+        int J_n = KhatriRao.rows();
+        int R = KhatriRao.cols();
+        int bz = F_n.size();
+        MatrixXd KhatriRao_T(R, J_n);
+
+        Khatri_Rao_Product(U1, U2, KhatriRao);                          // Compute the full Khatri-Rao Product
+        
+        KhatriRao_T = KhatriRao.transpose();
+
+        for(int col_H = 0; col_H < bz; col_H++)
+        {
+            KhatriRao_sub.col(col_H) = KhatriRao_T.col(F_n(col_H));     //Create KhatriRao_sub (transpose)
+        }
+        
+        for(int col_X = 0; col_X < bz; col_X++)
+        {
+            X_sub.col(col_X) = X.col(F_n(col_X));
+        }
+        
+    }
+}
+
+namespace v2
+{   
+    template <typename T>
+    void Sampling_fibers(const T &Tensor, int mode, VectorXi &tns_dims, VectorXi &block_size,
+                         MatrixXd idxs, MatrixXd factor_idxs, MatrixXd T_mode)
+    {
+        int order = block_size.size();
+
+        //Initialize true indices
+        MatrixXd true_indices(tns_dims(0), order);
+        VectorXi index_vec(tns_dims(0),1);
+
+        for(int index = 0; index < tns_dims(0); index ++)
+        {
+            index_vec(index) = index;
+        }
+        
+        //Shuffle true indices
+        for(int cols_t = 0 ; cols_t < order ; cols_t++)
+        {
+            random_device rd;
+            mt19937 g(rd());
+            true_indices.col(cols_t) = index_vec;
+            shuffle(true_indices.col(cols_t).data(), true_indices.col(cols_t).data() + tns_dims(cols_t), g);
+            idxs.col(cols_t) = true_indices.col().head(block_size(cols_t));
+        }
+        
+        //Create Matricization
+        if mode == 0 
+        for(int col_T = 0; col_T < block_size(mode); col_T++ )
+        {
+            for(int row_T =; row_T < tns_dims(mode); row_T++)
+            {
+                T_mode(row_T, col_T) = Tensor()
+            }
+            
+        }
+         
+
+        
+    }
+    
+}
+
+#endif
