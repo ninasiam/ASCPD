@@ -54,16 +54,19 @@ CMAKE_BINARY_DIR = "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN
 
 # The main recursive "all" target.
 all: test/bras_CPDAccel_test/all
+all: test/test_Sampling_Fibers/all
 
 .PHONY : all
 
 # The main recursive "preinstall" target.
 preinstall: test/bras_CPDAccel_test/preinstall
+preinstall: test/test_Sampling_Fibers/preinstall
 
 .PHONY : preinstall
 
 # The main recursive "clean" target.
 clean: test/bras_CPDAccel_test/clean
+clean: test/test_Sampling_Fibers/clean
 
 .PHONY : clean
 
@@ -84,6 +87,24 @@ test/bras_CPDAccel_test/preinstall:
 test/bras_CPDAccel_test/clean: test/bras_CPDAccel_test/CMakeFiles/brasCPD_Accel_NN.dir/clean
 
 .PHONY : test/bras_CPDAccel_test/clean
+
+#=============================================================================
+# Directory level rules for directory test/test_Sampling_Fibers
+
+# Recursive "all" directory target.
+test/test_Sampling_Fibers/all: test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/all
+
+.PHONY : test/test_Sampling_Fibers/all
+
+# Recursive "preinstall" directory target.
+test/test_Sampling_Fibers/preinstall:
+
+.PHONY : test/test_Sampling_Fibers/preinstall
+
+# Recursive "clean" directory target.
+test/test_Sampling_Fibers/clean: test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/clean
+
+.PHONY : test/test_Sampling_Fibers/clean
 
 #=============================================================================
 # Target rules for target test/bras_CPDAccel_test/CMakeFiles/brasCPD_Accel_NN.dir
@@ -111,6 +132,33 @@ brasCPD_Accel_NN: test/bras_CPDAccel_test/CMakeFiles/brasCPD_Accel_NN.dir/rule
 test/bras_CPDAccel_test/CMakeFiles/brasCPD_Accel_NN.dir/clean:
 	$(MAKE) -f test/bras_CPDAccel_test/CMakeFiles/brasCPD_Accel_NN.dir/build.make test/bras_CPDAccel_test/CMakeFiles/brasCPD_Accel_NN.dir/clean
 .PHONY : test/bras_CPDAccel_test/CMakeFiles/brasCPD_Accel_NN.dir/clean
+
+#=============================================================================
+# Target rules for target test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir
+
+# All Build rule for target.
+test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/all:
+	$(MAKE) -f test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/build.make test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/depend
+	$(MAKE) -f test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/build.make test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build/CMakeFiles" --progress-num=3,4 "Built target sampling_fibers"
+.PHONY : test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/all
+
+# Build rule for subdir invocation for target.
+test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build/CMakeFiles" 2
+	$(MAKE) -f CMakeFiles/Makefile2 test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build/CMakeFiles" 0
+.PHONY : test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/rule
+
+# Convenience name for target.
+sampling_fibers: test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/rule
+
+.PHONY : sampling_fibers
+
+# clean rule for target.
+test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/clean:
+	$(MAKE) -f test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/build.make test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/clean
+.PHONY : test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

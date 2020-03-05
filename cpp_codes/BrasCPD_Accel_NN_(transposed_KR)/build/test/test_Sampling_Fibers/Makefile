@@ -80,14 +80,14 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build/CMakeFiles" "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build/CMakeFiles/progress.marks"
-	$(MAKE) -f CMakeFiles/Makefile2 all
+	cd "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build" && $(CMAKE_COMMAND) -E cmake_progress_start "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build/CMakeFiles" "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build/test/test_Sampling_Fibers/CMakeFiles/progress.marks"
+	cd "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build" && $(MAKE) -f CMakeFiles/Makefile2 test/test_Sampling_Fibers/all
 	$(CMAKE_COMMAND) -E cmake_progress_start "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build/CMakeFiles" 0
 .PHONY : all
 
 # The main clean target
 clean:
-	$(MAKE) -f CMakeFiles/Makefile2 clean
+	cd "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build" && $(MAKE) -f CMakeFiles/Makefile2 test/test_Sampling_Fibers/clean
 .PHONY : clean
 
 # The main clean target
@@ -97,44 +97,60 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	$(MAKE) -f CMakeFiles/Makefile2 preinstall
+	cd "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build" && $(MAKE) -f CMakeFiles/Makefile2 test/test_Sampling_Fibers/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	$(MAKE) -f CMakeFiles/Makefile2 preinstall
+	cd "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build" && $(MAKE) -f CMakeFiles/Makefile2 test/test_Sampling_Fibers/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build" && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
-#=============================================================================
-# Target rules for targets named brasCPD_Accel_NN
+# Convenience name for target.
+test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/rule:
+	cd "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build" && $(MAKE) -f CMakeFiles/Makefile2 test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/rule
+.PHONY : test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/rule
 
-# Build rule for target.
-brasCPD_Accel_NN: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 brasCPD_Accel_NN
-.PHONY : brasCPD_Accel_NN
+# Convenience name for target.
+sampling_fibers: test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/rule
 
-# fast build rule for target.
-brasCPD_Accel_NN/fast:
-	$(MAKE) -f test/bras_CPDAccel_test/CMakeFiles/brasCPD_Accel_NN.dir/build.make test/bras_CPDAccel_test/CMakeFiles/brasCPD_Accel_NN.dir/build
-.PHONY : brasCPD_Accel_NN/fast
-
-#=============================================================================
-# Target rules for targets named sampling_fibers
-
-# Build rule for target.
-sampling_fibers: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 sampling_fibers
 .PHONY : sampling_fibers
 
 # fast build rule for target.
 sampling_fibers/fast:
-	$(MAKE) -f test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/build.make test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/build
+	cd "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build" && $(MAKE) -f test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/build.make test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/build
 .PHONY : sampling_fibers/fast
+
+sampling_fibers.o: sampling_fibers.cpp.o
+
+.PHONY : sampling_fibers.o
+
+# target to build an object file
+sampling_fibers.cpp.o:
+	cd "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build" && $(MAKE) -f test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/build.make test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/sampling_fibers.cpp.o
+.PHONY : sampling_fibers.cpp.o
+
+sampling_fibers.i: sampling_fibers.cpp.i
+
+.PHONY : sampling_fibers.i
+
+# target to preprocess a source file
+sampling_fibers.cpp.i:
+	cd "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build" && $(MAKE) -f test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/build.make test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/sampling_fibers.cpp.i
+.PHONY : sampling_fibers.cpp.i
+
+sampling_fibers.s: sampling_fibers.cpp.s
+
+.PHONY : sampling_fibers.s
+
+# target to generate assembly for a file
+sampling_fibers.cpp.s:
+	cd "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build" && $(MAKE) -f test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/build.make test/test_Sampling_Fibers/CMakeFiles/sampling_fibers.dir/sampling_fibers.cpp.s
+.PHONY : sampling_fibers.cpp.s
 
 # Help Target
 help:
@@ -143,9 +159,11 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... edit_cache"
-	@echo "... brasCPD_Accel_NN"
 	@echo "... sampling_fibers"
+	@echo "... edit_cache"
+	@echo "... sampling_fibers.o"
+	@echo "... sampling_fibers.i"
+	@echo "... sampling_fibers.s"
 .PHONY : help
 
 
@@ -157,6 +175,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build" && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

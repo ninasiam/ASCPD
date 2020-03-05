@@ -81,48 +81,74 @@ namespace v1
     }
 }
 
-namespace v2
-{   
-    template <typename T>
-    void Sampling_fibers(const T &Tensor, int mode, VectorXi &tns_dims, VectorXi &block_size,
-                         MatrixXd idxs, MatrixXd factor_idxs, MatrixXd T_mode)
-    {
-        int order = block_size.size();
+// namespace v2
+// {   
+//     template <typename T>
+//     void Sampling_fibers(const T &Tensor, int mode, VectorXi &tns_dims, VectorXi &block_size,
+//                          MatrixXd idxs, MatrixXd factor_idxs, MatrixXd T_mode)
+//     {
+//         int order = block_size.size();
 
-        //Initialize true indices
-        MatrixXd true_indices(tns_dims(0), order);
-        VectorXi index_vec(tns_dims(0),1);
+//         //Initialize true indices
+//         MatrixXd true_indices(tns_dims(0), order);
+//         VectorXi index_vec(tns_dims(0),1);
 
-        for(int index = 0; index < tns_dims(0); index ++)
-        {
-            index_vec(index) = index;
-        }
+//         for(int index = 0; index < tns_dims(0); index ++)
+//         {
+//             index_vec(index) = index;
+//         }
         
-        //Shuffle true indices
-        for(int cols_t = 0 ; cols_t < order ; cols_t++)
-        {
-            random_device rd;
-            mt19937 g(rd());
-            true_indices.col(cols_t) = index_vec;
-            shuffle(true_indices.col(cols_t).data(), true_indices.col(cols_t).data() + tns_dims(cols_t), g);
-            idxs.col(cols_t) = true_indices.col().head(block_size(cols_t));
-        }
+//         //Shuffle true indices
+//         for(int cols_t = 0 ; cols_t < order ; cols_t++)
+//         {
+//             random_device rd;
+//             mt19937 g(rd());
+//             true_indices.col(cols_t) = index_vec;
+//             shuffle(true_indices.col(cols_t).data(), true_indices.col(cols_t).data() + tns_dims(cols_t), g);
+//             idxs.col(cols_t) = true_indices.col().head(block_size(cols_t));
+//         }
         
-        //Create Matricization
-        if mode == 0 
-        for(int col_T = 0; col_T < block_size(mode); col_T++ )
-        {
-            for(int row_T =; row_T < tns_dims(mode); row_T++)
-            {
-                T_mode(row_T, col_T) = Tensor()
-            }
-            
-        }
+//         //Create Matricization
+//         if( mode == 0) 
+//         {
+//             for(int col_T = 0; col_T < block_size(mode); col_T++ )
+//             {
+//                 for(int row_T = 0; row_T < tns_dims(mode); row_T++)
+//                 {
+//                     T_mode(row_T, col_T) = Tensor(row_T, idxs(row_T, 1), idxs(row_T, 2));
+//                 }
+                
+//             }
+//         }
+//         if( mode == 1) 
+//         {
+//             for(int col_T = 0; col_T < block_size(mode); col_T++ )
+//             {
+//                 for(int row_T = 0; row_T < tns_dims(mode); row_T++)
+//                 {
+//                     T_mode(row_T, col_T) = Tensor( idxs(row_T, 0), row_T, idxs(row_T, 2));
+//                 }
+                
+//             }
+//         }
+//         if( mode == 2) 
+//         {
+//             for(int col_T = 0; col_T < block_size(mode); col_T++ )
+//             {
+//                 for(int row_T = 0; row_T < tns_dims(mode); row_T++)
+//                 {
+//                     T_mode(row_T, col_T) = Tensor(idxs(row_T, 0), idxs(row_T, 1), row_T);
+//                 }
+                
+//             }
+//         }
+
+
          
 
         
-    }
+//     }
     
-}
+// }
 
 #endif
