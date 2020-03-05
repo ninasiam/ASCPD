@@ -1,4 +1,4 @@
-# Install script for directory: /home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)
+# Install script for directory: /home/nina/Documents/uni/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,8 +39,8 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build/test/bras_CPDAccel_test/cmake_install.cmake")
-  include("/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build/test/test_Sampling_Fibers/cmake_install.cmake")
+  include("/home/nina/Documents/uni/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build/test/bras_CPDAccel_test/cmake_install.cmake")
+  include("/home/nina/Documents/uni/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build/test/test_Sampling_Fibers/cmake_install.cmake")
 
 endif()
 
@@ -52,5 +52,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/nina/Documents/uni/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

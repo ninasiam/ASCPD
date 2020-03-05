@@ -1,5 +1,5 @@
 #include "../../include/master_library.hpp"
-#include "../../include/solve_BRAS_NN.hpp"
+
 
 int main(int argc, char **argv){
 
@@ -74,6 +74,9 @@ int main(int argc, char **argv){
         fiber6(j) = Tensor_pointer[1*1 + 1*2 + j*(2*2)];
     }
     cout << "fiber6" <<fiber6 << endl;
+
+    
+
     return 0;
 
 }

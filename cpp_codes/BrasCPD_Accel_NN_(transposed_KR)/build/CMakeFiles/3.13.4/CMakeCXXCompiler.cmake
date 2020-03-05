@@ -14,7 +14,6 @@ set(CMAKE_CXX20_COMPILE_FEATURES "cxx_std_20")
 
 set(CMAKE_CXX_PLATFORM_ID "Linux")
 set(CMAKE_CXX_SIMULATE_ID "")
-set(CMAKE_CXX_COMPILER_FRONTEND_VARIANT "")
 set(CMAKE_CXX_SIMULATE_VERSION "")
 
 
@@ -24,7 +23,6 @@ set(CMAKE_CXX_COMPILER_AR "/usr/bin/gcc-ar-9")
 set(CMAKE_RANLIB "/usr/bin/ranlib")
 set(CMAKE_CXX_COMPILER_RANLIB "/usr/bin/gcc-ranlib-9")
 set(CMAKE_LINKER "/usr/bin/ld")
-set(CMAKE_MT "")
 set(CMAKE_COMPILER_IS_GNUCXX 1)
 set(CMAKE_CXX_COMPILER_LOADED 1)
 set(CMAKE_CXX_COMPILER_WORKS TRUE)
@@ -42,17 +40,8 @@ if(CMAKE_COMPILER_IS_MINGW)
   set(MINGW 1)
 endif()
 set(CMAKE_CXX_COMPILER_ID_RUN 1)
-set(CMAKE_CXX_SOURCE_FILE_EXTENSIONS C;M;c++;cc;cpp;cxx;m;mm;CPP)
 set(CMAKE_CXX_IGNORE_EXTENSIONS inl;h;hpp;HPP;H;o;O;obj;OBJ;def;DEF;rc;RC)
-
-foreach (lang C OBJC OBJCXX)
-  if (CMAKE_${lang}_COMPILER_ID_RUN)
-    foreach(extension IN LISTS CMAKE_${lang}_SOURCE_FILE_EXTENSIONS)
-      list(REMOVE_ITEM CMAKE_CXX_SOURCE_FILE_EXTENSIONS ${extension})
-    endforeach()
-  endif()
-endforeach()
-
+set(CMAKE_CXX_SOURCE_FILE_EXTENSIONS C;M;c++;cc;cpp;cxx;mm;CPP)
 set(CMAKE_CXX_LINKER_PREFERENCE 30)
 set(CMAKE_CXX_LINKER_PREFERENCE_PROPAGATES 1)
 
@@ -82,7 +71,6 @@ endif()
 
 
 
-set(CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES "/usr/include/c++/9;/usr/include/x86_64-linux-gnu/c++/9;/usr/include/c++/9/backward;/usr/lib/gcc/x86_64-linux-gnu/9/include;/usr/local/include;/usr/lib/gcc/x86_64-linux-gnu/9/include-fixed;/usr/include/x86_64-linux-gnu;/usr/include")
 set(CMAKE_CXX_IMPLICIT_LINK_LIBRARIES "stdc++;m;gcc_s;gcc;c;gcc_s;gcc")
 set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "/usr/lib/gcc/x86_64-linux-gnu/9;/usr/lib/x86_64-linux-gnu;/usr/lib;/lib/x86_64-linux-gnu;/lib")
 set(CMAKE_CXX_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "")

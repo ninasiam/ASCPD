@@ -1,4 +1,4 @@
-# Install script for directory: /home/telecom/Desktop/nina/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/test/bras_CPDAccel_test
+# Install script for directory: /home/nina/Documents/uni/nina_s/cpp_codes/BrasCPD_Accel_NN_(transposed_KR)/test/bras_CPDAccel_test
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
