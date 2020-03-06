@@ -79,7 +79,41 @@ namespace v1
         }
         
     }
-}
+} // end of namespace v1
+
+namespace v3 //for symmetric tensors
+{
+    inline void Sample_Fibers(const Eigen::Tensor<double, 3>  &Tensor, const VectorXi &tns_dims, const VectorXi &block_size, int mode,
+                       MatrixXi &idxs) //MatrixXd ,factor_idxs, MatrixXd T_mode) //sample symmetric tensors
+    {
+        int order = block_size.size();
+
+        //Initialize true indices
+        MatrixXi true_indices(tns_dims(0), order);
+        VectorXi index_vec(tns_dims(0),1);
+
+        for(int index = 0; index < tns_dims(0); index ++)
+        {
+            index_vec(index) = index;
+        }
+        
+        //Shuffle true indices
+        for(int cols_t = 0 ; cols_t < order ; cols_t++)
+        {
+            random_device rd;
+            mt19937 g(rd());
+            shuffle(index_vec.data(), index_vec.data() + tns_dims(cols_t), g);
+            true_indices.col(cols_t) = index_vec;
+        }
+
+        cout << "true_indices" << true_indices <<endl;
+
+        // idxs = true_indices.topRows(block_size(0));
+        // cout << "sampled idxs" << endl;
+
+    }
+} // end of namespace v3
+
 
 // namespace v2
 // {   
@@ -149,6 +183,6 @@ namespace v1
         
 //     }
     
-// }
+// } // end of namespace v2
 
-#endif
+#endif //end if

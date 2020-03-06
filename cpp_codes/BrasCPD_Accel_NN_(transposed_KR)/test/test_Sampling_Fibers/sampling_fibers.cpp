@@ -1,9 +1,9 @@
 #include "../../include/master_library.hpp"
-
+#include "../../include/sampling_funs.hpp"
 
 int main(int argc, char **argv){
 
-    Eigen::Tensor<double, 3> True_Tensor(2,2,2);
+    Eigen::Tensor<double, 3> True_Tensor(4,4,4);
     True_Tensor.setConstant(1.0f);
 
     True_Tensor = True_Tensor + True_Tensor.random();
@@ -75,7 +75,14 @@ int main(int argc, char **argv){
     }
     cout << "fiber6" <<fiber6 << endl;
 
-    
+    VectorXi tns_dims(3,1), block_size(3,1);
+    tns_dims.setConstant(4);
+    block_size.setConstant(2);
+    MatrixXi idxs(block_size(0),3);
+    int mode = 1;
+
+    v3::Sample_Fibers(True_Tensor,  tns_dims,  block_size,  mode,
+                      idxs);
 
     return 0;
 

@@ -19,8 +19,8 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 
-#include <unsupported/Eigen/MatrixFunctions>
-#include <unsupported/Eigen/CXX11/Tensor>
+#include <eigen3/unsupported/Eigen/MatrixFunctions>
+#include <eigen3/unsupported/Eigen/CXX11/Tensor>
 
 using namespace Eigen;
 using namespace std;
