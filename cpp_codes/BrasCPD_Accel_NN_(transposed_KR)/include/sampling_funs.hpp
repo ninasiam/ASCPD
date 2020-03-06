@@ -83,22 +83,26 @@ namespace v1
 
 namespace v3 //for symmetric tensors
 {
-    inline void Sample_Fibers(const Eigen::Tensor<double, 3>  &Tensor, const VectorXi &tns_dims, const VectorXi &block_size, int mode,
-                       MatrixXi &idxs) //MatrixXd ,factor_idxs, MatrixXd T_mode) //sample symmetric tensors
+    inline void Sample_Fibers(const Eigen::Tensor<double, 3>  &Tensor, const VectorXi &tns_dims, const VectorXi &block_size, int current_mode,
+                       MatrixXi &sampled_idxs, MatrixXi &factor_idxs)//, MatrixXd T_mode) //sample symmetric tensors
     {
-        int order = block_size.size();
+        size_t order = block_size.size();
+        size_t numCols_reduced = factor_idxs.cols(); // dimensions: block-size x order-1
+        size_t numRows_reduced;
 
         //Initialize true indices
         MatrixXi true_indices(tns_dims(0), order);
+        MatrixXi idxs(block_size(0),order);
         VectorXi index_vec(tns_dims(0),1);
 
-        for(int index = 0; index < tns_dims(0); index ++)
+
+        for(size_t index = 0; index < tns_dims(0); index ++)
         {
             index_vec(index) = index;
         }
         
         //Shuffle true indices
-        for(int cols_t = 0 ; cols_t < order ; cols_t++)
+        for(size_t cols_t = 0 ; cols_t < order ; cols_t++)
         {
             random_device rd;
             mt19937 g(rd());
@@ -106,11 +110,24 @@ namespace v3 //for symmetric tensors
             true_indices.col(cols_t) = index_vec;
         }
 
-        cout << "true_indices" << true_indices <<endl;
+        cout << "true_indices \n" << true_indices <<endl;
 
-        // idxs = true_indices.topRows(block_size(0));
-        // cout << "sampled idxs" << endl;
+        //sample blocksize indices for every mode (including current)
+        idxs = true_indices.topRows(block_size(0));
+        cout << "sampled idxs \n" << idxs << endl;
 
+        sampled_idxs = idxs;
+        //Remove the indices for the current mode
+
+        numRows_reduced = idxs.rows();
+        if( current_mode < numCols_reduced )
+            idxs.block(0, current_mode, numRows_reduced, numCols_reduced - current_mode) = idxs.rightCols(numCols_reduced - current_mode);
+
+       idxs.conservativeResize(numRows_reduced,numCols_reduced);
+       factor_idxs = idxs;
+       
+       cout << "factor idxs \n" << factor_idxs << endl;
+        
     }
 } // end of namespace v3
 

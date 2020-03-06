@@ -79,10 +79,11 @@ int main(int argc, char **argv){
     tns_dims.setConstant(4);
     block_size.setConstant(2);
     MatrixXi idxs(block_size(0),3);
+    MatrixXi factor_idxs(block_size(0),2);
     int mode = 1;
 
     v3::Sample_Fibers(True_Tensor,  tns_dims,  block_size,  mode,
-                      idxs);
+                      idxs, factor_idxs);
 
     return 0;
 
