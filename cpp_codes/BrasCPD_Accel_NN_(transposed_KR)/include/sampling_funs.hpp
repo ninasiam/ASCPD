@@ -81,22 +81,27 @@ namespace v1
     }
 } // end of namespace v1
 
-namespace v3 //for symmetric tensors
+namespace symmetric //for symmetric tensors
 {
-    inline void Sample_Fibers(const Eigen::Tensor<double, 3>  &Tensor, const VectorXi &tns_dims, const VectorXi &block_size, int current_mode,
-                       MatrixXi &sampled_idxs, MatrixXi &factor_idxs)//, MatrixXd T_mode) //sample symmetric tensors
+    inline void Sample_Fibers(double* Tensor_pointer, const VectorXi &tns_dims, const VectorXi &block_size, int current_mode,
+                       MatrixXi &sampled_idxs, MatrixXi &factor_idxs, MatrixXd &T_mode) //sample symmetric tensors
     {
         size_t order = block_size.size();
         size_t numCols_reduced = factor_idxs.cols(); // dimensions: block-size x order-1
         size_t numRows_reduced;
-
+        int offset_sum;
+       // double* Tensor_pointer = Tensor.data();
         //Initialize true indices
-        MatrixXi true_indices(tns_dims(0), order);
-        MatrixXi idxs(block_size(0),order);
-        VectorXi index_vec(tns_dims(0),1);
+        MatrixXi true_indices(tns_dims(current_mode), order);
+        MatrixXi idxs(block_size(current_mode),order);
+        VectorXi vector_offset(order,1);
+        VectorXi current_vector_offset(order,1);
+        VectorXi dims_offset(order - 1,1);
+        VectorXi offset(order - 1,1);
+        VectorXi index_vec(tns_dims(current_mode),1);
 
 
-        for(size_t index = 0; index < tns_dims(0); index ++)
+        for(size_t index = 0; index < tns_dims(current_mode); index ++)
         {
             index_vec(index) = index;
         }
@@ -113,7 +118,7 @@ namespace v3 //for symmetric tensors
         cout << "true_indices \n" << true_indices <<endl;
 
         //sample blocksize indices for every mode (including current)
-        idxs = true_indices.topRows(block_size(0));
+        idxs = true_indices.topRows(block_size(current_mode));
         cout << "sampled idxs \n" << idxs << endl;
 
         sampled_idxs = idxs;
@@ -127,9 +132,43 @@ namespace v3 //for symmetric tensors
        factor_idxs = idxs;
        
        cout << "factor idxs \n" << factor_idxs << endl;
-        
+
+       //create the offset vector for mode_1
+       vector_offset(0) = 1;
+       for(size_t dim_idx = 1; dim_idx < order; dim_idx++)
+       {
+           vector_offset(dim_idx) = vector_offset(dim_idx - 1)*tns_dims(dim_idx -1);
+       }
+
+       //create current vector offset (not the first mode)
+       if(current_mode != 0)
+       {
+            current_vector_offset = vector_offset;
+            current_vector_offset(0) = vector_offset(current_mode);
+            for(size_t dim_idx = 1; dim_idx < current_mode + 1; dim_idx++)
+            {
+                current_vector_offset(dim_idx) = vector_offset(dim_idx - 1);
+            }
+            vector_offset = current_vector_offset;
+       }
+       cout << "vector_offset \n" << vector_offset << endl;
+
+       //sample the fibers
+       dims_offset = vector_offset.tail(order - 1);   //offset for each mode (truncate the first element which correspond to the current mode)
+       for(size_t fiber = 0; fiber < block_size(current_mode); fiber++)
+       {
+           //create the offset for each fiber   
+           offset = dims_offset.cwiseProduct(factor_idxs.row(fiber).transpose());
+           offset_sum = offset.sum();
+
+           for (int el = 0; el < tns_dims(current_mode); el++)
+           {
+                T_mode(el,fiber) = Tensor_pointer[vector_offset(0)*el + offset_sum];  //fibers as columns of the matricization
+           }
+           
+       }
     }
-} // end of namespace v3
+} // end of namespace symmetric
 
 
 // namespace v2
