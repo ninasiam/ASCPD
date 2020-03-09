@@ -168,6 +168,32 @@ namespace symmetric //for symmetric tensors
            
        }
     }
+
+    template <std::size_t  TNS_ORDER>;
+    inline void Sample_KhatriRao(const int &current_mode, const size_t &R, const MaxtriXi &sampled_indices, std::array<MatrixXd, TNS_ORDER> &Factors, MatrixXd &KR_sampled)
+    {
+        size_t order = Factors.size();
+        size_t kr_s_rows = sampled_indices.rows();
+        MatrixXd KR_sampled.setOnes(kr_s_rows,R);                               //set the KR_sampled to ones (for the product down)
+
+        //For every row of Khatri-Rao (sampled)
+        for(size_t kr_s_row = 0; kr_s_row < kr_s_rows; kr_s_row++)              //for every row of the sampled kr
+        {
+            for(size_t factor = order; factor > -1; factor--)                   //for each factor (expept the current mode)
+            {
+                if( current_mode != factor)
+                {
+                    KR_sampled.row(kr_s_row) *= KR_sampled.row(kr_s_row).cwiseProduct(Factors[factor].row(sampled_indices(kr_s_row, factor));
+
+                }
+
+            }
+            
+        }
+
+        
+
+    }
 } // end of namespace symmetric
 
 

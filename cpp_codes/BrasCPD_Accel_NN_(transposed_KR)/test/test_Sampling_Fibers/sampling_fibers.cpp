@@ -83,14 +83,14 @@ int main(int argc, char **argv){
     
     MatrixXi idxs(block_size(0),4);
     MatrixXi factor_idxs(block_size(0),3);
-    int mode = 0;
+    int mode = 3;
     MatrixXd T_mode(tns_dims(mode), block_size(mode));
     
 
     symmetric::Sample_Fibers(Tensor_pointer,  tns_dims,  block_size,  mode,
                       idxs, factor_idxs, T_mode);
 
-    cout << "Matricization mode 0 = \n " << T_mode << endl;
+    cout << "Matricization mode 3 = \n " << T_mode << endl;
     return 0;
 
 }
