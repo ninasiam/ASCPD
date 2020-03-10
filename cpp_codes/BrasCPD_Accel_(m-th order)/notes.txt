@@ -1,0 +1,4 @@
+- test for order > 3 (KR)
+- implement solveBrasAccel_NN
+- include read tensor from file
+
