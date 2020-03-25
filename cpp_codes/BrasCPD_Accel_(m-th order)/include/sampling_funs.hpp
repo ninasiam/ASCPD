@@ -83,6 +83,12 @@ namespace v1
 
 namespace symmetric //for symmetric tensors
 {
+    inline void Sample_mode(int TNS_ORDER, int &current_mode)
+    {   
+        //Choose the factor to be updated
+        current_mode  = rand() % TNS_ORDER;  
+    }
+
     inline void Sample_Fibers(double* Tensor_pointer, const VectorXi &tns_dims, const VectorXi &block_size, int current_mode,
                        MatrixXi &sampled_idxs, MatrixXi &factor_idxs, MatrixXd &T_mode) //sample symmetric tensors
     {
@@ -115,11 +121,11 @@ namespace symmetric //for symmetric tensors
             true_indices.col(cols_t) = index_vec;
         }
 
-        cout << "true_indices \n" << true_indices <<endl;
+        // cout << "true_indices \n" << true_indices <<endl;
 
         //sample blocksize indices for every mode (including current)
         idxs = true_indices.topRows(block_size(current_mode));
-        cout << "sampled idxs \n" << idxs << endl;
+        // cout << "sampled idxs \n" << idxs << endl;
 
         sampled_idxs = idxs;
         //Remove the indices for the current mode
@@ -131,7 +137,7 @@ namespace symmetric //for symmetric tensors
        idxs.conservativeResize(numRows_reduced,numCols_reduced);
        factor_idxs = idxs;
        
-       cout << "factor idxs \n" << factor_idxs << endl;
+       //cout << "factor idxs \n" << factor_idxs << endl;
 
        //create the offset vector for mode_1
        vector_offset(0) = 1;
@@ -151,7 +157,7 @@ namespace symmetric //for symmetric tensors
             }
             vector_offset = current_vector_offset;
        }
-       cout << "vector_offset \n" << vector_offset << endl;
+       //cout << "vector_offset \n" << vector_offset << endl;
 
        //sample the fibers
        dims_offset = vector_offset.tail(order - 1);   //offset for each mode (truncate the first element which correspond to the current mode)
@@ -174,7 +180,7 @@ namespace symmetric //for symmetric tensors
     {
         size_t order = Factors.size();
         size_t kr_s_rows = sampled_indices.rows();
-                                                                             //set the KR_sampled to ones (for the product down)
+                                                                                  //set the KR_sampled to ones (for the product down)
         KR_sampled.setOnes(kr_s_rows,R);                                                       
 
         //For every row of Khatri-Rao (sampled)
@@ -184,7 +190,7 @@ namespace symmetric //for symmetric tensors
             {
                 if( factor != current_mode)
                 {   
-                    cout << "MPike" << factor << endl;
+                    
                     KR_sampled.row(kr_s_row) = KR_sampled.row(kr_s_row).cwiseProduct(Factors[factor].row(sampled_indices(kr_s_row, factor)));
                     //KR_sampled.row(kr_s_row) *= Factors[factor].row(sampled_indices(kr_s_row, factor));
                 }
