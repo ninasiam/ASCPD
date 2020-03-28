@@ -36,8 +36,10 @@ inline void Calc_gradient(const VectorXi &Tns_dims, int Mode, const unsigned int
                           const MatrixXd &Hessian, const MatrixXd &H, const MatrixXd &X_sub, MatrixXd &Gradient)
 {   
 
+
     int R = Hessian.rows();
     int rows_mttkrp = X_sub.rows();
+   
 
     MatrixXd MTTKRP(rows_mttkrp,R);                            // I_n * R
 

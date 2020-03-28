@@ -18,22 +18,29 @@ namespace symmetric
         MatrixXi factor_idxs;
         MatrixXd T_s;
         MatrixXd KR_s; 
-        MatrixXd MTTKRP;
         MatrixXd Grad;
         MatrixXd Zero_Matrix;	 
 
-        struct_mode(int m, int n, int p, int k, int r)     //m bs(mode), n order, p prod(dim), k dim, r rank
+        void struct_mode_init(int m, int n, int k, int r)     //m bs(mode), n order, p prod(dim), k dim, r rank
         {
-            MatrixXi idxs = MatrixXi::Zero(m, n); 
-            MatrixXi factor_idxs = MatrixXi::Zero(m, n - 1);
-            MatrixXd T_s = MatrixXd::Zero(k, r);
-            MatrixXd KR_s = MatrixXd::Zero(p r);
-            MatrixXd MTTKRP = MatrixXd::Zero(k, r);
-            MatrixXd Grad = MatrixXd::Zero(k, r);
-            MatrixXd Zero_Matrix = MatrixXd::Zero(k, r);
+             idxs = MatrixXi::Zero(m, n); 
+             factor_idxs = MatrixXi::Zero(m, n - 1);
+             T_s = MatrixXd::Zero(k, m);
+             KR_s = MatrixXd::Zero(m, r);     
+             Grad = MatrixXd::Zero(k, r);
+             Zero_Matrix = MatrixXd::Zero(k, r);
         }
 
+        void destruct_struct_mode()
+        {
+             idxs.resize(0,0); 
+             factor_idxs.resize(0,0);
+             T_s.resize(0,0);
+             KR_s.resize(0,0);  
+             Grad.resize(0,0);
+             Zero_Matrix.resize(0,0);
 
+        }
 
     };
 
@@ -65,10 +72,10 @@ namespace symmetric
         {   
             //Select the current mode
             symmetric::Sample_mode(tns_order, current_mode);
-
+            
             //struct for current mode. contains the matrices for each mode
-            struct_mode current_mode_struct;
-            current_mode_struct.struct_mode(block_size(current_mode), tns_order, tns_dims.prod()/tns_dims(current_mode), tns_dims(current_mode), R);
+            symmetric::struct_mode current_mode_struct;
+            current_mode_struct.struct_mode_init(block_size(current_mode), tns_order,  tns_dims(current_mode), R);
 
             //Sample the fibers and take the sampled matricization and the idxs used for the sampling of khatri-rao
             symmetric::Sample_Fibers( Tensor_pointer,  tns_dims,  block_size,  current_mode,
@@ -76,19 +83,21 @@ namespace symmetric
 
             //Compute the sampled Khatri Rao
             symmetric::Sample_KhatriRao( current_mode, R, current_mode_struct.idxs, Factors, current_mode_struct.KR_s);
-
+            
             //Compute Hessian
             Hessian = current_mode_struct.KR_s*current_mode_struct.KR_s.transpose();
-
+            
             //Compute Nesterov Parameters
             Compute_NAG_parameters(Hessian, L, beta_accel, lambda);
+            
 
             //Calculate Gradient
             Calc_gradient( tns_dims, current_mode, threads_num, lambda, Factors_prev[current_mode], Y_Factors[current_mode], Hessian, current_mode_struct.KR_s, current_mode_struct.T_s, current_mode_struct.Grad);
             
+           
             //Update factor
             Factors[current_mode] = Y_Factors[current_mode] - current_mode_struct.Grad / (L + lambda);
-            Factors[current_mode] = Factors[current_mode].cwiseMax(Zero_Matrix);
+            Factors[current_mode] = Factors[current_mode].cwiseMax(current_mode_struct.Zero_Matrix);
 
             if( int(AO_iter % (tns_dims.prod()/block_size(current_mode))) == 0)
             {   
@@ -104,7 +113,8 @@ namespace symmetric
 
             Factors[current_mode] = Factors_prev[current_mode];
             AO_iter++;
-            delete current_mode_struct;
+            //delete current_mode_struct;
+            current_mode_struct.destruct_struct_mode();
         }
 
         high_resolution_clock::time_point t2 = high_resolution_clock::now();
@@ -112,12 +122,11 @@ namespace symmetric
 	    duration<double> stop_t = duration_cast<duration<double>>(t2-t1);
 	    cout << " CPU time = " << stop_t.count() << endl; 
 	    cout << " AO_iter = " << AO_iter << endl;
-	
 	    cout << " number of threads = " << threads_num << endl << endl;
 
     }
 
     
-}
+} //end namespace symmetric
 
 #endif //end if
