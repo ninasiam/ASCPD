@@ -85,7 +85,7 @@ namespace symmetric
             symmetric::Sample_KhatriRao( current_mode, R, current_mode_struct.idxs, Factors, current_mode_struct.KR_s);
             
             //Compute Hessian
-            Hessian = current_mode_struct.KR_s*current_mode_struct.KR_s.transpose();
+            Hessian = current_mode_struct.KR_s.transpose()*current_mode_struct.KR_s;
             
             //Compute Nesterov Parameters
             Compute_NAG_parameters(Hessian, L, beta_accel, lambda);
