@@ -90,7 +90,7 @@ namespace symmetric
             //Compute Nesterov Parameters
             Compute_NAG_parameters(Hessian, L, beta_accel, lambda);
             
-
+            std::cout << "MPIKE" << endl; 
             //Calculate Gradient
             Calc_gradient( tns_dims, current_mode, threads_num, lambda, Factors_prev[current_mode], Y_Factors[current_mode], Hessian, current_mode_struct.KR_s, current_mode_struct.T_s, current_mode_struct.Grad);
             

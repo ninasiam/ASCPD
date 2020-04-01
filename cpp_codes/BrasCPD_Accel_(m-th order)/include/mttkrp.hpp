@@ -19,7 +19,7 @@ inline void mttkrp( const MatrixXd &X_mat, const MatrixXd &KR_p, const VectorXi 
     rest_dims(Mode) = 1;
     int max_dim = rest_dims.maxCoeff();
     int rounds;
-    VectorXi offset;
+    VectorXi offset(n_thrds);
 
     int cols_X_mat_full = rest_dims.prod();          // for the full
 
@@ -28,19 +28,25 @@ inline void mttkrp( const MatrixXd &X_mat, const MatrixXd &KR_p, const VectorXi 
     if( cols_X_mat < cols_X_mat_full)                //if X_mat_sub has fewer columns (e.g bs(mode))
     {   
         rounds = n_thrds;                               // Number of blocks 
-        rounds_sz = cols_X_mat / n_thrds;               // Quot
-        residual = cols_X_mat % n_thrds;                // Residual, in case the cols of X / n_thrds leaves a residual 
+        std::cout << rounds << std::endl;
+
+        int rounds_sz = cols_X_mat / n_thrds;               // Quot
+        std::cout << rounds_sz << std::endl;
+        int residual = cols_X_mat % n_thrds;                // Residual, in case the cols of X / n_thrds leaves a residual 
+        std::cout << residual << std::endl;
         if( residual != 0)                              // in case we have a residual
         {
             VectorXi offset_tmp(rounds,1);
             offset_tmp.setConstant(rounds_sz);          // create offset vector with rounds_sz offset for each block
+            
             offset_tmp(rounds - 1) = rounds_sz + residual; //in the last one add the residual
             offset = offset_tmp;
+            std::cout << offset << std::endl;
         }
         else
         {
             offset.setConstant(rounds_sz);                      
-            
+            std::cout << offset << std::endl;
         }
         
 
