@@ -17,7 +17,7 @@ namespace v1
 
                             
         n  = rand() % MAX_idx;      
-
+       
         if(n == 0)                                              // Factor A
         {   
             J_n = dims(1)*dims(2);

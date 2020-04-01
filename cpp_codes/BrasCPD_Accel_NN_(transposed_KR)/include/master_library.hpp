@@ -22,6 +22,8 @@
 #include <eigen3/unsupported/Eigen/MatrixFunctions>
 #include <eigen3/unsupported/Eigen/CXX11/Tensor>
 
+#define EIGEN_DONT_PARALLELIZE
+
 using namespace Eigen;
 using namespace std;
 using namespace std::chrono;
