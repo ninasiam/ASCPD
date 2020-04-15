@@ -14,39 +14,52 @@ inline void mttkrp( const MatrixXd &X_mat, const MatrixXd &KR_p, const VectorXi 
 
     int rows_X_mat = X_mat.rows();
     int cols_X_mat = X_mat.cols();
-   
+    std:: cout << "cols_X_mat " << cols_X_mat << endl;
     VectorXi rest_dims = Tns_dims;
     rest_dims(Mode) = 1;
     int max_dim = rest_dims.maxCoeff();
     int rounds;
-    VectorXi offset(n_thrds);
+    int rounds_sz;
+    VectorXi offset;
 
-    int cols_X_mat_full = rest_dims.prod();          // for the full
+    int cols_X_mat_full = rest_dims.prod();                         // for the full
 
     Mttkrp.setZero();
 
-    if( cols_X_mat < cols_X_mat_full)                //if X_mat_sub has fewer columns (e.g bs(mode))
+    if( cols_X_mat < cols_X_mat_full)                               // if X_mat_sub has fewer columns (e.g bs(mode))
     {   
-        rounds = n_thrds;                               // Number of blocks 
-        std::cout << rounds << std::endl;
+        if( cols_X_mat > n_thrds)
+            {
+                rounds = n_thrds;                                   // Number of blocks 
+                rounds_sz = cols_X_mat / n_thrds;               // Quot
+                std:: cout << "rounds_sz " << rounds_sz << endl;
 
-        int rounds_sz = cols_X_mat / n_thrds;               // Quot
-        std::cout << rounds_sz << std::endl;
-        int residual = cols_X_mat % n_thrds;                // Residual, in case the cols of X / n_thrds leaves a residual 
-        std::cout << residual << std::endl;
-        if( residual != 0)                              // in case we have a residual
-        {
-            VectorXi offset_tmp(rounds,1);
-            offset_tmp.setConstant(rounds_sz);          // create offset vector with rounds_sz offset for each block
-            
-            offset_tmp(rounds - 1) = rounds_sz + residual; //in the last one add the residual
-            offset = offset_tmp;
-            std::cout << offset << std::endl;
+                int residual = cols_X_mat % n_thrds;                // Residual, in case the cols of X / n_thrds leaves a residual 
+                std:: cout << "residual " << residual << endl;
+
+                if( residual != 0)                                  // in case we have a residual
+                {
+                    VectorXi offset_tmp(rounds,1);
+                    offset_tmp.setConstant(rounds_sz);              // create offset vector with rounds_sz offset for each block
+                    offset_tmp(rounds - 1) += residual;             //in the last one add the residual
+                    offset = offset_tmp;
+                    std:: cout << "offset " << offset << endl;
+
+                }
+                else
+                {
+                    VectorXi offset_tmp(rounds,1);
+                    offset_tmp.setConstant(rounds_sz);              // create offset vector with rounds_sz offset for each block
+                    offset = offset_tmp;                    
+                }
         }
         else
         {
-            offset.setConstant(rounds_sz);                      
-            std::cout << offset << std::endl;
+                rounds = 1;      
+                rounds_sz = cols_X_mat;                                    // Number of blocks in case the bs is equal to n_threads
+                VectorXi offset_tmp(rounds,1);
+                offset_tmp.setConstant(rounds_sz);
+                offset = offset_tmp;
         }
         
 
@@ -54,16 +67,17 @@ inline void mttkrp( const MatrixXd &X_mat, const MatrixXd &KR_p, const VectorXi 
     else //for the full case
     {   
         rounds = max_dim;
+        rounds_sz = cols_X_mat_full/max_dim;
         VectorXi offset_tmp(rounds,1);
-        offset_tmp.setConstant(cols_X_mat_full/max_dim);
-        offset = offset_tmp;          //It would never enter when we have blocksize, for the full case
+        offset_tmp.setConstant(rounds_sz);
+        offset = offset_tmp;         
         
     }
     
     #pragma omp parallel for reduction(sum: Mttkrp) default(shared) num_threads(n_thrds)
     for(int block = 0; block < rounds; block++ )
     {
-        Mttkrp.noalias() += X_mat.block(0, block * offset(block), Mttkrp.rows(), offset(block)) * KR_p.block(block * offset(block), 0, offset(block), Mttkrp.cols());
+        Mttkrp.noalias() += X_mat.block(0, block * rounds_sz, Mttkrp.rows(), offset(block)) * KR_p.block(block * rounds_sz, 0, offset(block), Mttkrp.cols());
     }
 }
 

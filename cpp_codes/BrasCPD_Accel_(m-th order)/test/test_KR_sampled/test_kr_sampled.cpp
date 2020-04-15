@@ -14,13 +14,13 @@ int main(int argc, char **argv){
     std::array<MatrixXd, TNS_ORDER> Init_Factors;
 
      //Initialize the tensor
-    tns_dims.setConstant(4); 
+    tns_dims.setConstant(100); 
     True_Tensor.resize(tns_dims);
     True_Tensor.setConstant(1.0f);
     True_Tensor = True_Tensor + True_Tensor.random();
     
                                         
-    block_size.setConstant(2);
+    block_size.setConstant(100);
 
     cout << "Tensor of order: " << TNS_ORDER << "\t ~Dimensions: " << tns_dims.transpose() << "\t ~Rank: "<< R << endl;
     cout << "Sampling of each mode with blocksize: " << block_size.transpose() << endl;
