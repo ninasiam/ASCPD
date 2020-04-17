@@ -114,10 +114,14 @@ namespace symmetric //for symmetric tensors
         
         //Shuffle true indices
         for(size_t cols_t = 0 ; cols_t < order ; cols_t++)
-        {
-            random_device rd;
-            mt19937 g(rd());
-            shuffle(index_vec.data(), index_vec.data() + tns_dims(cols_t), g);
+        {   
+            // #if INITIALIZED_SEED
+            //     random_device rd;
+            //     mt19937 g(rd());
+            //     shuffle(index_vec.data(), index_vec.data() + tns_dims(cols_t), g);
+            // #endif
+
+            random_shuffle(index_vec.data(), index_vec.data() + tns_dims(cols_t));
             true_indices.col(cols_t) = index_vec;
         }
 
@@ -134,21 +138,21 @@ namespace symmetric //for symmetric tensors
         if( current_mode < numCols_reduced )
             idxs.block(0, current_mode, numRows_reduced, numCols_reduced - current_mode) = idxs.rightCols(numCols_reduced - current_mode);
 
-       idxs.conservativeResize(numRows_reduced,numCols_reduced);
-       factor_idxs = idxs;
+        idxs.conservativeResize(numRows_reduced,numCols_reduced);
+        factor_idxs = idxs;
        
-       //cout << "factor idxs \n" << factor_idxs << endl;
+        //cout << "factor idxs \n" << factor_idxs << endl;
 
-       //create the offset vector for mode_1
-       vector_offset(0) = 1;
-       for(size_t dim_idx = 1; dim_idx < order; dim_idx++)
-       {
+        //create the offset vector for mode_1
+        vector_offset(0) = 1;
+        for(size_t dim_idx = 1; dim_idx < order; dim_idx++)
+        {
            vector_offset(dim_idx) = vector_offset(dim_idx - 1)*tns_dims(dim_idx -1);
-       }
+        }
 
-       //create current vector offset (not the first mode)
-       if(current_mode != 0)
-       {
+        //create current vector offset (not the first mode)
+        if(current_mode != 0)
+        {
             current_vector_offset = vector_offset;
             current_vector_offset(0) = vector_offset(current_mode);
             for(size_t dim_idx = 1; dim_idx < current_mode + 1; dim_idx++)
@@ -156,23 +160,23 @@ namespace symmetric //for symmetric tensors
                 current_vector_offset(dim_idx) = vector_offset(dim_idx - 1);
             }
             vector_offset = current_vector_offset;
-       }
-       //cout << "vector_offset \n" << vector_offset << endl;
+        }
+        //cout << "vector_offset \n" << vector_offset << endl;
 
-       //sample the fibers
-       dims_offset = vector_offset.tail(order - 1);   //offset for each mode (truncate the first element which correspond to the current mode)
-       for(size_t fiber = 0; fiber < block_size(current_mode); fiber++)
-       {
-           //create the offset for each fiber   
-           offset = dims_offset.cwiseProduct(factor_idxs.row(fiber).transpose());
-           offset_sum = offset.sum();
+        //sample the fibers
+        dims_offset = vector_offset.tail(order - 1);   //offset for each mode (truncate the first element which correspond to the current mode)
+        for(size_t fiber = 0; fiber < block_size(current_mode); fiber++)
+        {
+            //create the offset for each fiber   
+            offset = dims_offset.cwiseProduct(factor_idxs.row(fiber).transpose());
+            offset_sum = offset.sum();
 
-           for (int el = 0; el < tns_dims(current_mode); el++)
-           {
-                T_mode(el,fiber) = Tensor_pointer[vector_offset(0)*el + offset_sum];  //fibers as columns of the matricization
-           }
+            for (int el = 0; el < tns_dims(current_mode); el++)
+            {
+                 T_mode(el,fiber) = Tensor_pointer[vector_offset(0)*el + offset_sum];  //fibers as columns of the matricization
+            }
            
-       }
+        }
     }
 
     template <std::size_t  TNS_ORDER>

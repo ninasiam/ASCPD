@@ -1,68 +1,51 @@
 #include "../../include/master_library.hpp"
-#include "../../include/solve_BRAS_NN.hpp"
+#include "../../include/sampling_funs.hpp"
+#include "../../include/solve_BrasCPaccel.hpp"
+
+#define INITIALIZED_SEED 0                                        // if initialized seed is on the data will be different for every run (including the random fibers)
 
 int main(int argc, char **argv){
 
-	VectorXi dims(3,1);
-	int order = 3;											// Tensor Order
-	int I, J, K;										    // Tensor Dimensions
-	int R;												    // Rank of factorization
-	// time_t start_t, stop_t;							    // Timer
-	// start_t = time(0);
-	srand(time(NULL));
+    #if INITIALIZED_SEED                                          // Initialize the seed for different data
+        srand((unsigned) time(NULL)+std::rand());                 
+    #endif
 
-	const double AO_tol = 1e-4;							    // Tolerance for AO Algorithm
-	int max_iter_mttkrp = 20;								// Maximum Number of iterations
-	int AO_iter  = 1;										// Iterations counter
+    const int TNS_ORDER = 3;                                      // Declarations
+    const int R = 10;
+    
+    VectorXi tns_dims(TNS_ORDER);
+    VectorXi block_size(TNS_ORDER);
 
-	VectorXi block_size(3,1);								// |
-	block_size.setConstant(20);								// | Parameters for stochastic
-															// |
-	VectorXi F_n(block_size(0),1);							// | fibers to be selected
-	int factor;												// |
-	// VectorXi kr_idx(2,1);								// |
+    Eigen::Tensor< double, TNS_ORDER > True_Tensor;
+    std::array<MatrixXd, TNS_ORDER> Init_Factors;
+
+    // Assign values
+    tns_dims.setConstant(100); 
+    block_size.setConstant(20);
+
+    //Initialize the tensor
+    True_Tensor.resize(tns_dims);
+    True_Tensor.setRandom<Eigen::internal::UniformRandomGenerator<double>>();           // Tensor using UniformRandomGenerator
+    
+    cout << "Tensor of order: " << TNS_ORDER << "\t ~Dimensions: " << tns_dims.transpose() << "\t ~Rank: "<< R << endl;
+    cout << "Sampling of each mode with blocksize: " << block_size.transpose() << endl;
+
+    // Frobenius norm of Tensor
+    Eigen::Tensor< double, 0 > frob_X  = True_Tensor.square().sum().sqrt();  
+    cout << "Frob_X:"  << frob_X << endl; 
+
+    double* Tensor_pointer = True_Tensor.data();
+
+    // Create Init Factors
+    for(size_t factor = 0; factor < TNS_ORDER; factor++ )
+    {
+        Init_Factors[factor] = MatrixXd::Random(tns_dims(factor), R);
+    }
 
 
-	double frob_X;				                		    // Frobenius norm of Tensor
-	double f_value;										    // Objective Value
-
-    // Set_Info(&R, &I, &J, &K, "Data_cpp/info.bin");			// Initialize tensor size and rank from file
-
-	R = 10, I = 100, J = 100, K = 100;
-    cout << "R=" << R << ", I=" << I << ", J=" << J << ", K=" << K << endl;
-	cout << "block size=" << block_size.transpose() << endl;
-	dims(0) = I, dims(1) = J, dims(2) = K;
-	//------------------------------> Matrix Initializations <-------------------------------------
-
-	MatrixXd A(I,R), B(J,R), C(K,R);						// Factors A,B,C
-	MatrixXd A_init(I,R), B_init(J,R), C_init(K,R);
-	MatrixXd A_T_A(R,R), B_T_B(R,R), C_T_C(R,R); 
-
-	MatrixXd X_A(I, size_t(K * J));							// |
-	MatrixXd X_B(J, size_t(K * I));							// | Tensor Matricization 
-	MatrixXd X_C(K, size_t(I * J));							// |
-
-	MatrixXd KhatriRao_CB(size_t(J * K), R);				// |
-	MatrixXd KhatriRao_CA(size_t(I * K), R);				// | Khatri Rao products
-	MatrixXd KhatriRao_BA(size_t(I * J), R);				// |
-
-	// Read_Data(A, B, C, X_A, X_B, X_C, I, J, K, R);		// Read Factors and matricization from file
-	A = (MatrixXd::Random(I, R) + MatrixXd::Ones(I ,R))/2;	
-	B = (MatrixXd::Random(J, R) + MatrixXd::Ones(J ,R))/2;	
-	C = (MatrixXd::Random(K, R) + MatrixXd::Ones(K ,R))/2;	
-
-	A_init = (MatrixXd::Random(I, R) + MatrixXd::Ones(I ,R))/2;	
-	B_init = (MatrixXd::Random(J, R) + MatrixXd::Ones(J ,R))/2;	
-	C_init = (MatrixXd::Random(K, R) + MatrixXd::Ones(K ,R))/2;	
-
-	Khatri_Rao_Product(C, B, KhatriRao_CB);
-	Khatri_Rao_Product(C, A, KhatriRao_CA);
-	Khatri_Rao_Product(B, A, KhatriRao_BA);
-
-	X_A = A * KhatriRao_CB.transpose();
-	X_B = B * KhatriRao_CA.transpose();
-	X_C = C * KhatriRao_BA.transpose();
-	//----------------------------> F_value Computation <------------------------------------------
-	
-	Solve_brasNN(A_init, B_init, C_init, X_A, X_B, X_C, KhatriRao_CB, KhatriRao_CA, KhatriRao_BA,  I, J, K, R, block_size, AO_tol, max_iter_mttkrp, f_value, AO_iter);
+    double AO_tol = 0.001;
+    int MAX_MTTKRP = 10;
+    
+    symmetric::solve_BrasCPaccel(AO_tol, MAX_MTTKRP, R, frob_X, tns_dims, block_size, Init_Factors, Tensor_pointer);
+    return 0;
 }
