@@ -19,8 +19,9 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 
-#include <eigen3/unsupported/Eigen/MatrixFunctions>
-#include <eigen3/unsupported/Eigen/CXX11/Tensor>
+#include <unsupported/Eigen/MatrixFunctions>
+#include <unsupported/Eigen/CXX11/Tensor>
+
 
 #define EIGEN_DONT_PARALLELIZE
 

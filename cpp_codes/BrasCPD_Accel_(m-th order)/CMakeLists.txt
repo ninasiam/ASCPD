@@ -7,9 +7,9 @@ PROJECT(BRAS_CPD_ACCEL)
 ###    SET VARIABLES
 ########################################################################################################################
 SET(CMAKE_MINIMUM_REQUIRED_VERSION                           "3.5")
-#SET(CPP_LIBS                                                 "/SDKS/CPP_LIBS")
-#SET(EIGEN_ROOT_DIR                                           ${CPP_LIBS}/eigen)
-SET(EIGEN_ROOT_DIR                                           "/usr/include/eigen3")
+SET(CPP_LIBS                                                 "/SDKS/CPP_LIBS")
+SET(EIGEN_ROOT_DIR                                           ${CPP_LIBS}/eigen)
+#SET(EIGEN_ROOT_DIR                                           "/usr/include/eigen3")
 SET(INCLUDE_DIR                                              ${CMAKE_CURRENT_LIST_DIR}/include)
 SET(BIN_DIR                                                  ${CMAKE_CURRENT_LIST_DIR}/bin)
 
