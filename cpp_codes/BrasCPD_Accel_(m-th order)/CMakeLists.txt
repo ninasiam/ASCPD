@@ -108,6 +108,7 @@ ADD_SUBDIRECTORY(test/bras_CPDAccel_test)
 ADD_SUBDIRECTORY(test/test_Sampling_Fibers)
 ADD_SUBDIRECTORY(test/test_KR_sampled)
 ADD_SUBDIRECTORY(test/test_random)
+ADD_SUBDIRECTORY(test/test_cpdgen)
 
 MESSAGE(STATUS "[ BRAS_CPD_ACCEL ] C++ Compiler:     {vendor=\"${compiler.vendor}\", version=\"${compiler.version}\", target.architecture=\"${compiler.target.architecture}\"}")
 MESSAGE(STATUS "[ BRAS_CPD_ACCEL ] Build Platform:   {hostname=\"${platform.hostname}\", os.name=\"${platform.os.name}\", processor.description=\"${platform.processor.description}\", processor.cores=\"${platform.processor.cores}\", memory.size=\"${platform.memory.size}MB\"}")

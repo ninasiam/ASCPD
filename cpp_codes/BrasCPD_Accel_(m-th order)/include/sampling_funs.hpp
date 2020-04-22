@@ -95,7 +95,7 @@ namespace symmetric //for symmetric tensors
         size_t order = block_size.size();
         size_t numCols_reduced = factor_idxs.cols(); // dimensions: block-size x order-1
         size_t numRows_reduced;
-        int offset_sum;
+        size_t offset_sum;
        // double* Tensor_pointer = Tensor.data();
         //Initialize true indices
         MatrixXi true_indices(tns_dims(current_mode), order);
@@ -171,7 +171,7 @@ namespace symmetric //for symmetric tensors
             offset = dims_offset.cwiseProduct(factor_idxs.row(fiber).transpose());
             offset_sum = offset.sum();
 
-            for (int el = 0; el < tns_dims(current_mode); el++)
+            for (size_t el = 0; el < tns_dims(current_mode); el++)
             {
                  T_mode(el,fiber) = Tensor_pointer[vector_offset(0)*el + offset_sum];  //fibers as columns of the matricization
             }
@@ -188,9 +188,9 @@ namespace symmetric //for symmetric tensors
         KR_sampled.setOnes(kr_s_rows,R);                                                       
 
         //For every row of Khatri-Rao (sampled)
-        for(int kr_s_row = 0; kr_s_row < kr_s_rows; kr_s_row++)                  //for every row of the sampled kr (NOT size_int because current_mode is of type int)
+        for(size_t kr_s_row = 0; kr_s_row < kr_s_rows; kr_s_row++)                  //for every row of the sampled kr (NOT size_int because current_mode is of type int)
         {
-            for(int factor = order - 1; factor > -1; factor--)                   //for each factor (expept the current mode)
+            for(size_t factor = order - 1; factor > -1; factor--)                   //for each factor (expept the current mode)
             {
                 if( factor != current_mode)
                 {   
