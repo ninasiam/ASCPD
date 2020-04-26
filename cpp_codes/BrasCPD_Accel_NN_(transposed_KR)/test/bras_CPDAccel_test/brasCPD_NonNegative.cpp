@@ -22,14 +22,14 @@ int main(int argc, char **argv){
 	int R;												    // Rank of factorization
 	// time_t start_t, stop_t;							    // Timer
 	// start_t = time(0);
-	srand(time(NULL));
+	// srand(time(NULL));
 
 	const double AO_tol = 1e-4;							    // Tolerance for AO Algorithm
 	int max_iter_mttkrp = 20;								// Maximum Number of iterations
 	int AO_iter  = 1;										// Iterations counter
 
 	VectorXi block_size(3,1);								// |
-	block_size.setConstant(40);								// | Parameters for stochastic
+	block_size.setConstant(30);								// | Parameters for stochastic
 															// |
 	VectorXi F_n(block_size(0),1);							// | fibers to be selected
 	int factor;												// |
@@ -41,7 +41,7 @@ int main(int argc, char **argv){
 
     // Set_Info(&R, &I, &J, &K, "Data_cpp/info.bin");			// Initialize tensor size and rank from file
 
-	R = 20, I = 200, J = 200, K = 200;
+	R = 10, I = 100, J = 100, K = 100;
     cout << "R=" << R << ", I=" << I << ", J=" << J << ", K=" << K << endl;
 	cout << "block size=" << block_size.transpose() << endl;
 	dims(0) = I, dims(1) = J, dims(2) = K;
