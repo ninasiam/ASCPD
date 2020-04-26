@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 {   
 
     #if INITIALIZED_SEED                                          // Initialize the seed for different data
-        srand((unsigned) time(NULL)+std::rand());                 
+        srand((unsigned) time(NULL));                 
     #endif
 
     const int TNS_ORDER = 3;                                      //Declarations

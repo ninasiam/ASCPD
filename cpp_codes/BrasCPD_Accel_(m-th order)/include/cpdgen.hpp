@@ -53,7 +53,7 @@ void CpdGen( VectorXi tns_dims, std::array<MatrixXd, TNS_ORDER> Factors, int con
     for(typename Factor_array::reverse_iterator it = Factors.rbegin(); it != Factors.rend(); ++it )
     {   
         tmp_tensor_mat = Matrix_to_Tensor((*it), tns_dims(dim_idx) , R);
-        cout << tmp_tensor_mat << endl;
+        // cout << tmp_tensor_mat << endl;
         prod_dims = { Eigen::IndexPair<int>(w,i) };
         Tmp_Tensor = tmp_tensor_mat.contract(Est_Tensor, prod_dims);
         Est_Tensor = Tmp_Tensor;

@@ -96,7 +96,7 @@ namespace symmetric //for symmetric tensors
         size_t numCols_reduced = factor_idxs.cols(); // dimensions: block-size x order-1
         size_t numRows_reduced;
         size_t offset_sum;
-       // double* Tensor_pointer = Tensor.data();
+
         //Initialize true indices
         MatrixXi true_indices(tns_dims(current_mode), order);
         MatrixXi idxs(block_size(current_mode),order);
@@ -125,15 +125,13 @@ namespace symmetric //for symmetric tensors
             true_indices.col(cols_t) = index_vec;
         }
 
-        // cout << "true_indices \n" << true_indices <<endl;
 
         //sample blocksize indices for every mode (including current)
         idxs = true_indices.topRows(block_size(current_mode));
-        // cout << "sampled idxs \n" << idxs << endl;
 
         sampled_idxs = idxs;
-        //Remove the indices for the current mode
 
+        //Remove the indices for the current mode
         numRows_reduced = idxs.rows();
         if( current_mode < numCols_reduced )
             idxs.block(0, current_mode, numRows_reduced, numCols_reduced - current_mode) = idxs.rightCols(numCols_reduced - current_mode);
@@ -141,8 +139,6 @@ namespace symmetric //for symmetric tensors
         idxs.conservativeResize(numRows_reduced,numCols_reduced);
         factor_idxs = idxs;
        
-        //cout << "factor idxs \n" << factor_idxs << endl;
-
         //create the offset vector for mode_1
         vector_offset(0) = 1;
         for(size_t dim_idx = 1; dim_idx < order; dim_idx++)
@@ -161,7 +157,6 @@ namespace symmetric //for symmetric tensors
             }
             vector_offset = current_vector_offset;
         }
-        //cout << "vector_offset \n" << vector_offset << endl;
 
         //sample the fibers
         dims_offset = vector_offset.tail(order - 1);   //offset for each mode (truncate the first element which correspond to the current mode)
@@ -180,17 +175,17 @@ namespace symmetric //for symmetric tensors
     }
 
     template <std::size_t  TNS_ORDER>
-    inline void Sample_KhatriRao(const int &current_mode, const size_t &R, const MatrixXi &sampled_indices, std::array<MatrixXd, TNS_ORDER> &Factors, MatrixXd &KR_sampled)
+    inline void Sample_KhatriRao(const int &current_mode, const int &R, const MatrixXi &sampled_indices, const std::array<MatrixXd, TNS_ORDER> &Factors, MatrixXd &KR_sampled)
     {
-        size_t order = Factors.size();
-        size_t kr_s_rows = sampled_indices.rows();
-                                                                                  //set the KR_sampled to ones (for the product down)
+        int order = Factors.size();
+        int kr_s_rows = sampled_indices.rows();
+      
         KR_sampled.setOnes(kr_s_rows,R);                                                       
 
         //For every row of Khatri-Rao (sampled)
-        for(size_t kr_s_row = 0; kr_s_row < kr_s_rows; kr_s_row++)                  //for every row of the sampled kr (NOT size_int because current_mode is of type int)
+        for(int kr_s_row = 0; kr_s_row < kr_s_rows; kr_s_row++)                  //for every row of the sampled kr (NOT size_int because current_mode is of type int)
         {
-            for(size_t factor = order - 1; factor > -1; factor--)                   //for each factor (expept the current mode)
+            for(int factor = order - 1; factor > -1; factor--)                   //for each factor (expept the current mode)
             {
                 if( factor != current_mode)
                 {   

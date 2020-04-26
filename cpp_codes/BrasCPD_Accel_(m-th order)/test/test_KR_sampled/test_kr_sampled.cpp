@@ -7,7 +7,7 @@
 int main(int argc, char **argv){
 
     #if INITIALIZED_SEED                                          // Initialize the seed for different data
-        srand((unsigned) time(NULL)+std::rand());                 
+        srand((unsigned) time(NULL));                 
     #endif
 
     const int TNS_ORDER = 3;                                      // Declarations
@@ -18,14 +18,28 @@ int main(int argc, char **argv){
 
     Eigen::Tensor< double, TNS_ORDER > True_Tensor;
     std::array<MatrixXd, TNS_ORDER> Init_Factors;
+    std::array<MatrixXd, TNS_ORDER> True_Factors;
+
 
     // Assign values
-    tns_dims.setConstant(10); 
-    block_size.setConstant(5);
+    tns_dims.setConstant(4); 
+    block_size.setConstant(3);
 
-    //Initialize the tensor
-    True_Tensor.resize(tns_dims);
-    True_Tensor.setRandom<Eigen::internal::UniformRandomGenerator<double>>();           // Tensor using UniformRandomGenerator
+    ////////////////////////////////////////////////////////////////////////////////////////
+
+    // Initialize the tensor using tensor module
+    // True_Tensor.resize(tns_dims);
+    // True_Tensor.setRandom<Eigen::internal::UniformRandomGenerator<double>>();           // Tensor using UniformRandomGenerator
+    
+
+    // Using true factors
+    for(size_t factor = 0; factor < TNS_ORDER; factor++ )
+    {
+        True_Factors[factor] = (MatrixXd::Random(tns_dims(factor), R) + MatrixXd::Ones(tns_dims(factor), R))/2;
+
+    }
+    CpdGen( tns_dims, True_Factors, R, True_Tensor);
+    ////////////////////////////////////////////////////////////////////////////////////////
     
     cout << "Tensor of order: " << TNS_ORDER << "\t ~Dimensions: " << tns_dims.transpose() << "\t ~Rank: "<< R << endl;
     cout << "Sampling of each mode with blocksize: " << block_size.transpose() << endl;
@@ -34,18 +48,16 @@ int main(int argc, char **argv){
     Eigen::Tensor< double, 0 > frob_X  = True_Tensor.square().sum().sqrt();  
     cout << "Frob_X:"  << frob_X << endl; 
 
-    cout << "True Tensor: \n" <<True_Tensor << endl;
-
     double* Tensor_pointer = True_Tensor.data();
 
     // Create Init Factors
     for(size_t factor = 0; factor < TNS_ORDER; factor++ )
     {
         Init_Factors[factor] = MatrixXd::Random(tns_dims(factor), R);
-        cout << "Init_factor: " << Init_Factors[factor] << endl;
+        // cout << "Init_factor: " << Init_Factors[factor] << endl;
     }
 
-    int mode = 0;
+    int mode = 2;
     MatrixXi idxs(block_size(mode),TNS_ORDER);
     MatrixXi factor_idxs(block_size(mode),TNS_ORDER-1);
     MatrixXd T_mode(tns_dims(mode), block_size(mode));            // Matricization Sampled
@@ -56,17 +68,14 @@ int main(int argc, char **argv){
 
     // Form the sampled Khatri-Rao
     MatrixXd KR_sampled(block_size(mode), R);                     // Khatri-Rao Sampled
-    MatrixXd KR_full(tns_dims(2)*tns_dims(1), R);                 // Khatri-Rao full (for testing purposes) !!! Change if the mode is different !!!
+    MatrixXd KR_full(tns_dims(1)*tns_dims(0), R);                 // Khatri-Rao full (for testing purposes) !!! Change if the mode is different !!!
+    cout << idxs << endl;
     symmetric::Sample_KhatriRao( mode, R, idxs, Init_Factors, KR_sampled);
 
     cout << "KR_sampled   " << " = \n " << KR_sampled << endl;
 
-    Khatri_Rao_Product( Init_Factors[2], Init_Factors[1], KR_full);
+    Khatri_Rao_Product( Init_Factors[1], Init_Factors[0], KR_full);
     cout << "KR_full   " << " = \n " << KR_full << endl;
 
-    // double AO_tol = 0.001;
-    // int MAX_MTTKRP = 10;
-    
-    // symmetric::solve_BrasCPaccel(AO_tol, MAX_MTTKRP, R, frob_X, tns_dims, block_size, Init_Factors, Tensor_pointer);
     return 0;
 }

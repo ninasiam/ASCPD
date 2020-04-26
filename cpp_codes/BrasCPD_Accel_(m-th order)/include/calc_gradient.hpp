@@ -17,10 +17,9 @@ inline void Compute_NAG_parameters(const MatrixXd &Hessian, double &L, double  &
     Compute_SVD(L, mu, Hessian);
 
     cond = L/(mu + 1e-6);
-
-    if(cond> 1e5)
+    if(cond> 1e2)
     {
-        lambda = L/1000;
+        lambda = L/10000;
     }
     else
     {
@@ -40,11 +39,11 @@ inline void Calc_gradient(const VectorXi &Tns_dims, int Mode, const unsigned int
     int R = Hessian.rows();
     int rows_mttkrp = X_sub.rows();
    
-
     MatrixXd MTTKRP(rows_mttkrp,R);                            // I_n * R
-
-    std::cout << "MPIKE2" << endl; 
-    mttkrp( X_sub, H, Tns_dims, Mode, thrds, MTTKRP);
+ 
+    // MTTKRP = X_sub*H;
+    v1::mttkrp( X_sub, H, Tns_dims, Mode, thrds, MTTKRP);
+  
 
     Gradient = Y*(Hessian + lambda*(MatrixXd::Identity(R,R)))-(MTTKRP + lambda*U_prev);
 
