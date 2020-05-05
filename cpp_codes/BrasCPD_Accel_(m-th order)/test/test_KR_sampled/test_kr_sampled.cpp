@@ -23,7 +23,8 @@ int main(int argc, char **argv){
 
     // Assign values
     tns_dims.setConstant(4); 
-    block_size.setConstant(3);
+    tns_dims(1) = 3;
+    block_size.setConstant(5);
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -47,7 +48,7 @@ int main(int argc, char **argv){
     // Frobenius norm of Tensor
     Eigen::Tensor< double, 0 > frob_X  = True_Tensor.square().sum().sqrt();  
     cout << "Frob_X:"  << frob_X << endl; 
-
+    cout << "True Tensor" << True_Tensor << endl;
     double* Tensor_pointer = True_Tensor.data();
 
     // Create Init Factors
@@ -57,7 +58,7 @@ int main(int argc, char **argv){
         // cout << "Init_factor: " << Init_Factors[factor] << endl;
     }
 
-    int mode = 2;
+    int mode = 0;
     MatrixXi idxs(block_size(mode),TNS_ORDER);
     MatrixXi factor_idxs(block_size(mode),TNS_ORDER-1);
     MatrixXd T_mode(tns_dims(mode), block_size(mode));            // Matricization Sampled
@@ -65,16 +66,20 @@ int main(int argc, char **argv){
     // Select the fibres and form the matricization
     symmetric::Sample_Fibers(Tensor_pointer,  tns_dims,  block_size,  mode,
                              idxs, factor_idxs, T_mode);
+    cout << "idxs" << idxs << endl;
+    cout << "factor_idxs" << factor_idxs << endl;
+
+    cout << "T_mode" << T_mode << endl;
+
 
     // Form the sampled Khatri-Rao
     MatrixXd KR_sampled(block_size(mode), R);                     // Khatri-Rao Sampled
-    MatrixXd KR_full(tns_dims(1)*tns_dims(0), R);                 // Khatri-Rao full (for testing purposes) !!! Change if the mode is different !!!
-    cout << idxs << endl;
+    MatrixXd KR_full(tns_dims(2)*tns_dims(1), R);                 // Khatri-Rao full (for testing purposes) !!! Change if the mode is different !!!
     symmetric::Sample_KhatriRao( mode, R, idxs, Init_Factors, KR_sampled);
 
     cout << "KR_sampled   " << " = \n " << KR_sampled << endl;
 
-    Khatri_Rao_Product( Init_Factors[1], Init_Factors[0], KR_full);
+    Khatri_Rao_Product( Init_Factors[2], Init_Factors[1], KR_full);
     cout << "KR_full   " << " = \n " << KR_full << endl;
 
     return 0;

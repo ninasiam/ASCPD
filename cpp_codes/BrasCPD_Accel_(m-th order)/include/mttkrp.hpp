@@ -15,7 +15,11 @@ namespace v1
         Eigen :: setNbThreads(1);
 
         int rows_X_mat = X_mat.rows();
+        // cout << "rows" << rows_X_mat << endl;
         int cols_X_mat = X_mat.cols();
+        // cout << "cols" << cols_X_mat << endl;
+
+        // cout << "Kr_rows" << KR_p.rows() << endl;
         VectorXi rest_dims = Tns_dims;
         rest_dims(Mode) = 1;
         int max_dim = rest_dims.maxCoeff();
@@ -48,7 +52,8 @@ namespace v1
                     {
                         VectorXi offset_tmp(rounds,1);
                         offset_tmp.setConstant(rounds_sz);              // create offset vector with rounds_sz offset for each block
-                        offset = offset_tmp;                    
+                        offset = offset_tmp;    
+                        // cout << "offset" << offset << endl;                
                     }
             }
             else

@@ -74,7 +74,7 @@ namespace symmetric
         {   
             //Select the current mode
             symmetric::Sample_mode(tns_order, current_mode);
-
+            // cout << "current_mode" << current_mode << endl;
             //struct for current mode. contains the matrices for each mode
             symmetric::struct_mode current_mode_struct;
             current_mode_struct.struct_mode_init(block_size(current_mode), tns_order,  tns_dims(current_mode), R);
@@ -82,7 +82,7 @@ namespace symmetric
             //Sample the fibers and take the sampled matricization and the idxs used for the sampling of khatri-rao
             symmetric::Sample_Fibers( Tensor_pointer,  tns_dims,  block_size,  current_mode,
                              current_mode_struct.idxs, current_mode_struct.factor_idxs, current_mode_struct.T_s);
-
+            // cout << "current_mode_struct.idxs" << current_mode_struct.idxs << endl;
             //Compute the sampled Khatri Rao
             symmetric::Sample_KhatriRao( current_mode, R, current_mode_struct.idxs, Factors_prev, current_mode_struct.KR_s);
 

@@ -105,32 +105,43 @@ namespace symmetric //for symmetric tensors
         VectorXi dims_offset(order - 1,1);
         VectorXi offset(order - 1,1);
         VectorXi index_vec(tns_dims(current_mode),1);
+        VectorXi idxs_full = tns_dims;
 
-
-        for(size_t index = 0; index < tns_dims(current_mode); index ++)
-        {
-            index_vec(index) = index;
-        }
         
-        //Shuffle true indices
-        for(size_t cols_t = 0 ; cols_t < order ; cols_t++)
-        {   
-            // #if INITIALIZED_SEED
-            //     random_device rd;
-            //     mt19937 g(rd());
-            //     shuffle(index_vec.data(), index_vec.data() + tns_dims(cols_t), g);
-            // #endif
+        // for(size_t index = 0; index < tns_dims(current_mode); index ++)
+        // {
+        //     index_vec(index) = index;
+        // }
+        // index_vec.replicate(tns_dims(current_mode),1);
+        // cout << "index_vec" << index_vec << endl;
+        // //Shuffle true indices
+        // for(size_t cols_t = 0 ; cols_t < order ; cols_t++)
+        // {   
+        //     // #if INITIALIZED_SEED
+        //     //     random_device rd;
+        //     //     mt19937 g(rd());
+        //     //     shuffle(index_vec.data(), index_vec.data() + tns_dims(cols_t), g);
+        //     // #endif
 
-            random_shuffle(index_vec.data(), index_vec.data() + tns_dims(cols_t));
-            true_indices.col(cols_t) = index_vec;
-        }
-
-
+        //     random_shuffle(index_vec.data(), index_vec.data() + tns_dims(cols_t));
+        //     true_indices.col(cols_t) = index_vec;
+        // }
+        // cout << "true_idxs" << true_indices << endl;
+        
+        
         //sample blocksize indices for every mode (including current)
-        idxs = true_indices.topRows(block_size(current_mode));
+        for(int tuple = 0; tuple < block_size(current_mode); tuple++)
+        {
+            for(int col = 0; col < order; col++)
+            {
+                idxs(tuple, col) = rand() % tns_dims(col);
+            }
+
+        }
+        // idxs = true_indices.topRows(block_size(current_mode));
 
         sampled_idxs = idxs;
-
+        // cout << "sampled_idxs" << sampled_idxs << endl;
         //Remove the indices for the current mode
         numRows_reduced = idxs.rows();
         if( current_mode < numCols_reduced )
