@@ -21,7 +21,7 @@ int main(int argc, char **argv){
         srand((unsigned) time(NULL)                 
     #endif
 
-    const int TNS_ORDER = 4;                                      // Declarations
+    const int TNS_ORDER = 3;                                      // Declarations
     const int R = 20;
     
     VectorXi tns_dims(TNS_ORDER);
@@ -34,9 +34,9 @@ int main(int argc, char **argv){
     std::array<MatrixXd, TNS_ORDER> True_Factors;
 
     // Assign values
-    tns_dims.setConstant(100); 
-    tns_dims(3) = 50;
-    block_size.setConstant(280);
+    tns_dims.setConstant(300); 
+    // tns_dims(3) = 50;
+    block_size.setConstant(20);
 
     //Initialize the tensor
     for(size_t factor = 0; factor < TNS_ORDER; factor++ )
@@ -44,7 +44,14 @@ int main(int argc, char **argv){
         True_Factors[factor] = (MatrixXd::Random(tns_dims(factor), R) + MatrixXd::Ones(tns_dims(factor), R))/2;
 
     }
+    
+    nanoseconds stop_t_tns_cr = 0s;
+    auto start_tns_cr = high_resolution_clock::now();
+    // Create True Tensor
     CpdGen( tns_dims, True_Factors, R, True_Tensor);
+
+    auto end_tns_cr = high_resolution_clock::now();
+    stop_t_tns_cr = duration_cast<std::chrono::nanoseconds>(end_tns_cr - start_tns_cr);
 
     //////////////////////////////////////////////////////////////
 
@@ -58,6 +65,7 @@ int main(int argc, char **argv){
     ///////////////////////////////////////////////////////////////
 
     cout << "Tensor of order: " << TNS_ORDER << "\t ~Dimensions: " << tns_dims.transpose() << "\t ~Rank: "<< R << endl;
+    cout << "Time Create True Tensor (CPDGEN): " << stop_t_tns_cr.count() * (1e-9) << "s" << endl;  
     cout << "Sampling of each mode with blocksize: " << block_size.transpose() << endl;
     // cout << True_Tensor << endl;
 
@@ -88,7 +96,7 @@ int main(int argc, char **argv){
     Init_Tensor.resize(zero_vector);
 
     double AO_tol = 0.001;
-    int MAX_MTTKRP = 40;
+    int MAX_MTTKRP = 10;
     
     symmetric::solve_BrasCPaccel(AO_tol, MAX_MTTKRP, R, frob_X, f_value, tns_dims, block_size, Init_Factors, Tensor_pointer, True_Tensor);
     return 0;

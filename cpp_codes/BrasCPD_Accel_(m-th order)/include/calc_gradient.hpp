@@ -32,7 +32,7 @@ inline void Compute_NAG_parameters(const MatrixXd &Hessian, double &L, double  &
 
 inline void Calc_gradient(const VectorXi &Tns_dims, int Mode, const unsigned int thrds,
                           const double lambda,  const MatrixXd &U_prev, const MatrixXd &Y, 
-                          const MatrixXd &Hessian, const MatrixXd &H, const MatrixXd &X_sub, MatrixXd &Gradient)
+                          const MatrixXd &Hessian, const MatrixXd &H, const MatrixXd &X_sub, MatrixXd &Gradient, nanoseconds &time_MTTKRP)
 {   
 
 
@@ -42,8 +42,12 @@ inline void Calc_gradient(const VectorXi &Tns_dims, int Mode, const unsigned int
     MatrixXd MTTKRP(rows_mttkrp,R);                            // I_n * R
  
     // MTTKRP = X_sub*H;
+    // Begin timer MTTKRP
+    auto t1_MTTKRP = high_resolution_clock::now();
     v1::mttkrp( X_sub, H, Tns_dims, Mode, thrds, MTTKRP);
-  
+    // End timer MTTKRP
+    auto t2_MTTKRP = high_resolution_clock::now();
+    time_MTTKRP += duration_cast<nanoseconds>(t2_MTTKRP - t1_MTTKRP);
 
     Gradient = Y*(Hessian + lambda*(MatrixXd::Identity(R,R)))-(MTTKRP + lambda*U_prev);
 

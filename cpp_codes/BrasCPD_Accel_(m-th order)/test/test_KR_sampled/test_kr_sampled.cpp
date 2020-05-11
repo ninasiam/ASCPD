@@ -58,7 +58,7 @@ int main(int argc, char **argv){
         // cout << "Init_factor: " << Init_Factors[factor] << endl;
     }
 
-    int mode = 0;
+    int mode = 1;
     MatrixXi idxs(block_size(mode),TNS_ORDER);
     MatrixXi factor_idxs(block_size(mode),TNS_ORDER-1);
     MatrixXd T_mode(tns_dims(mode), block_size(mode));            // Matricization Sampled
@@ -74,12 +74,12 @@ int main(int argc, char **argv){
 
     // Form the sampled Khatri-Rao
     MatrixXd KR_sampled(block_size(mode), R);                     // Khatri-Rao Sampled
-    MatrixXd KR_full(tns_dims(2)*tns_dims(1), R);                 // Khatri-Rao full (for testing purposes) !!! Change if the mode is different !!!
+    MatrixXd KR_full(tns_dims(2)*tns_dims(0), R);                 // Khatri-Rao full (for testing purposes) !!! Change if the mode is different !!!
     symmetric::Sample_KhatriRao( mode, R, idxs, Init_Factors, KR_sampled);
 
     cout << "KR_sampled   " << " = \n " << KR_sampled << endl;
 
-    Khatri_Rao_Product( Init_Factors[2], Init_Factors[1], KR_full);
+    Khatri_Rao_Product( Init_Factors[2], Init_Factors[0], KR_full);
     cout << "KR_full   " << " = \n " << KR_full << endl;
 
     return 0;

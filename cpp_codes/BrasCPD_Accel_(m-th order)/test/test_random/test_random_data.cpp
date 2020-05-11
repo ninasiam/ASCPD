@@ -19,10 +19,11 @@ int main(int argc, char **argv)
     VectorXi block_size(TNS_ORDER);
     Eigen::Tensor< double, TNS_ORDER > True_Tensor;
     std::array<MatrixXd, TNS_ORDER> Init_Factors;
+    std::array<MatrixXd, TNS_ORDER> True_Factors;
 
     // Assign values
-    tns_dims.setConstant(10);
-    block_size.setConstant(5);
+    tns_dims.setConstant(5);
+    block_size.setConstant(3);
 
     // Initialize the tensor
     True_Tensor.resize(tns_dims);
@@ -38,6 +39,13 @@ int main(int argc, char **argv)
     cout << "True Tensor: \n" <<True_Tensor << endl;
 
     double* Tensor_pointer = True_Tensor.data();
+
+    // Create True Factors
+    for(size_t factor = 0; factor < TNS_ORDER; factor++ )
+    {
+        True_Factors[factor] = MatrixXd::Random(tns_dims(factor), R);
+        cout << "True_factor: " << True_Factors[factor] << endl;
+    }
 
     // Create Init Factors
     for(size_t factor = 0; factor < TNS_ORDER; factor++ )
