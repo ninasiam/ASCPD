@@ -4,17 +4,44 @@
 #include "master_library.hpp"
 #include "mttkrp.hpp"
 
-inline void Compute_SVD(double &L, double &mu, const MatrixXd &Z)
+
+namespace svd
 {
-    JacobiSVD<MatrixXd> svd(Z, ComputeThinU | ComputeThinV);
-    L = svd.singularValues().maxCoeff();
-    mu = svd.singularValues().minCoeff();
+    inline void Compute_mu_L(double &L, double &mu, const MatrixXd &Z)
+    {   
+        int R = Z.cols();
+        if(R <= 16)
+        {
+            JacobiSVD<MatrixXd> svd(Z, ComputeThinU | ComputeThinV);
+            L = svd.singularValues().maxCoeff();
+            mu = svd.singularValues().minCoeff();
+        }
+        else
+        {
+            BDCSVD<MatrixXd> svd(Z);
+            L = svd.singularValues().maxCoeff();
+            mu = svd.singularValues().minCoeff();
+        }    
+    }
+        
 }
+
+namespace eig
+{   
+    inline void Compute_mu_L(double &L, double &mu, const MatrixXd &Z)
+    {
+        EigenSolver<MatrixXd> es(Z, false);
+        L = (es.eigenvalues().real()).maxCoeff();
+        mu = (es.eigenvalues().real()).minCoeff();
+    }
+}
+
+
 
 inline void Compute_NAG_parameters(const MatrixXd &Hessian, double &L, double  &beta, double &lambda)
 {   
     double mu, cond, Q;
-    Compute_SVD(L, mu, Hessian);
+    eig::Compute_mu_L(L, mu, Hessian);
 
     cond = L/(mu + 1e-6);
     if(cond> 1e2)
