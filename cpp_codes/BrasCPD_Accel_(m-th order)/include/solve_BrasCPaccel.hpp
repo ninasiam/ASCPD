@@ -66,6 +66,8 @@ namespace symmetric
         nanoseconds stop_t_KRs = 0ns;
         nanoseconds stop_t_fval = 0ns;
         nanoseconds stop_t_cal_grad = 0ns;
+        nanoseconds stop_t_struct = 0ns;
+        nanoseconds stop_t_NAG = 0ns;
 
         Eigen::Tensor< double, static_cast<int>(TNS_ORDER) >  Est_Tensor_from_factors;                // with no dims, to calculate cost fun
 
@@ -87,8 +89,12 @@ namespace symmetric
             symmetric::Sample_mode(tns_order, current_mode);
 
             //struct for current mode. contains the matrices for each mode
+            auto t1_struct  = high_resolution_clock::now();
             symmetric::struct_mode current_mode_struct;
             current_mode_struct.struct_mode_init(block_size(current_mode), tns_order,  tns_dims(current_mode), R);
+            auto t2_struct = high_resolution_clock::now();
+            stop_t_struct += duration_cast<nanoseconds>(t2_struct - t1_struct);
+
 
             //Sample the fibers and take the sampled matricization and the idxs used for the sampling of khatri-rao
             auto t1_Ts = high_resolution_clock::now();
@@ -105,9 +111,12 @@ namespace symmetric
 
             //Compute Hessian
             Hessian.noalias() = current_mode_struct.KR_s.transpose()*current_mode_struct.KR_s;
-            
+
             //Compute Nesterov Parameters
+            auto t1_NAG = high_resolution_clock::now();
             Compute_NAG_parameters(Hessian, L, beta_accel, lambda);
+            auto t2_NAG = high_resolution_clock::now();
+            stop_t_NAG += duration_cast<nanoseconds>(t2_NAG - t1_NAG);
 
             //Calculate Gradient
             auto t1_cal_grad = high_resolution_clock::now();
@@ -124,6 +133,7 @@ namespace symmetric
 
             Factors_prev[current_mode] = Factors[current_mode];
 
+
             if( int(AO_iter % (((tns_dims.prod()/tns_dims(current_mode)/block_size(current_mode))))) == 0)
             {   
                 //Here we calculate the measure of performance, either CPD_GEN or calculate the norm of a tensor using the factors
@@ -135,8 +145,8 @@ namespace symmetric
                 // f_value computation
                 auto t1_fval = high_resolution_clock::now();
                 f_value = (True_Tensor - Est_Tensor_from_factors).square().sum().sqrt();  
-                auto t2_vfal = high_resolution_clock::now();
-                stop_t_fval += duration_cast<nanoseconds>(t2_vfal - t1_fval);
+                auto t2_fval = high_resolution_clock::now();
+                stop_t_fval += duration_cast<nanoseconds>(t2_fval - t1_fval);
 
                 cout << AO_iter<< "  " << " --- " << f_value/frob_X << "   " << " --- " << f_value << "   " << " --- " << frob_X << endl;
                 
@@ -152,7 +162,11 @@ namespace symmetric
 
             AO_iter++;
             //delete current_mode_struct;
+            auto t1_struct_d  = high_resolution_clock::now();
             current_mode_struct.destruct_struct_mode();
+            auto t2_struct_d  = high_resolution_clock::now();
+            stop_t_struct += duration_cast<nanoseconds>(t2_struct_d - t1_struct_d);
+
 
         }
 
@@ -168,6 +182,8 @@ namespace symmetric
         cout << "Time sample KR = " << stop_t_KRs.count() * (1e-9) << "s" << endl;
         cout << "Time f_value   = " << stop_t_fval.count() * (1e-9) << "s" << endl;
         cout << "Time grad      = " << (stop_t_cal_grad.count() - stop_t_MTTKRP.count()) * (1e-9) << "s" << endl;
+        cout << "Time NAG par   = " << stop_t_NAG.count() * (1e-9) << "s" << endl;
+        cout << "Time struct    = " << stop_t_struct.count() * (1e-9) << "s" << endl;
 	    cout << "AO_iter        = " << AO_iter << endl;
 	    cout << "num of threads = " << threads_num << endl << endl;
 
