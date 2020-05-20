@@ -7,6 +7,7 @@
 #include "omp_lib.hpp"
 #include "calc_gradient.hpp"
 #include "cpdgen.hpp"
+#include "compute_fval.hpp"
 
 using namespace std::chrono_literals;
 
@@ -68,15 +69,24 @@ namespace symmetric
         nanoseconds stop_t_cal_grad = 0ns;
         nanoseconds stop_t_struct = 0ns;
         nanoseconds stop_t_NAG = 0ns;
-
+        
         Eigen::Tensor< double, static_cast<int>(TNS_ORDER) >  Est_Tensor_from_factors;                // with no dims, to calculate cost fun
-
         std::array<MatrixXd, TNS_ORDER> Factors_prev = Factors;                                       //Previous values of factors
         std::array<MatrixXd, TNS_ORDER> Y_Factors    = Factors;                                       //Factors Y
+
+        #if USE_COST_FUN
+            Eigen::Tensor< double, 2>::Dimensions two_dim (tns_dims(0), tns_dims.prod()/tns_dims(0));
+            Eigen::Tensor< double, 2 > Mat_Tensor = True_Tensor.reshape(two_dim);                         // Does not modify true tensor
+            MatrixXd X_mat_0(tns_dims(0), tns_dims.prod()/tns_dims(0));
+            X_mat_0 = Eigen::Map<Eigen::MatrixXd>(Mat_Tensor.data(), tns_dims(0), tns_dims.prod()/tns_dims(0));
+            MatrixXd MTTKRP_0(tns_dims(0), R);
+            MatrixXd gram_cwise_prod(R, R);
+        #endif
         //-------------------------------------- Matrix Initializations ---------------------------------------------
-
         MatrixXd Hessian(R,R);
-
+        
+        // Eigen::Tensor< double, 0 > frob_X_sq = frob_X.square();
+        double frob_X_sq_d = frob_X(0);
         //--------------------------> Begin Algorithm <-----------------------------------------------
         cout << "--------------------------- BEGIN ALGORITHM --------------------------- " << endl;
         cout << AO_iter << "   " << " --- " << f_value/frob_X << "   " << " --- " << f_value << "   " << " --- " << frob_X <<  endl;
@@ -135,18 +145,28 @@ namespace symmetric
 
 
             if( int(AO_iter % (((tns_dims.prod()/tns_dims(current_mode)/block_size(current_mode))))) == 0)
-            {   
-                //Here we calculate the measure of performance, either CPD_GEN or calculate the norm of a tensor using the factors
-                auto t1_cpdgen = high_resolution_clock::now();
-                CpdGen( tns_dims, Factors_prev, R, Est_Tensor_from_factors);
-                auto t2_cpdgen = high_resolution_clock::now();
-                stop_t_cpdgen += duration_cast<nanoseconds>(t2_cpdgen-t1_cpdgen);
+            {                   
+                #if USE_COST_FUN
+                    auto t1_fval = high_resolution_clock::now();
+                    partial::mttpartialkrp<TNS_ORDER>(tns_order, tns_dims, R, 0, Factors_prev, X_mat_0, MTTKRP_0, threads_num);
+                    gram_cwise_prod.setOnes();
+                    compute_gram_cwise_prod(Factors_prev, gram_cwise_prod);
+                    compute_fval(frob_X_sq_d, MTTKRP_0, gram_cwise_prod, Factors_prev[0], f_value(0));
+                    auto t2_fval = high_resolution_clock::now();
+                    stop_t_fval += duration_cast<nanoseconds>(t2_fval - t1_fval);
+                #else
+                    // Here we calculate the measure of performance, either CPD_GEN or calculate the norm of a tensor using the factors
+                    auto t1_cpdgen = high_resolution_clock::now();
+                    CpdGen( tns_dims, Factors_prev, R, Est_Tensor_from_factors);
+                    auto t2_cpdgen = high_resolution_clock::now();
+                    stop_t_cpdgen += duration_cast<nanoseconds>(t2_cpdgen-t1_cpdgen);
 
-                // f_value computation
-                auto t1_fval = high_resolution_clock::now();
-                f_value = (True_Tensor - Est_Tensor_from_factors).square().sum().sqrt();  
-                auto t2_fval = high_resolution_clock::now();
-                stop_t_fval += duration_cast<nanoseconds>(t2_fval - t1_fval);
+                    // f_value computation
+                    auto t1_fval = high_resolution_clock::now();
+                    f_value = (True_Tensor - Est_Tensor_from_factors).square().sum();  
+                    auto t2_fval = high_resolution_clock::now();
+                    stop_t_fval += duration_cast<nanoseconds>(t2_fval - t1_fval);
+                #endif
 
                 cout << AO_iter<< "  " << " --- " << f_value/frob_X << "   " << " --- " << f_value << "   " << " --- " << frob_X << endl;
                 

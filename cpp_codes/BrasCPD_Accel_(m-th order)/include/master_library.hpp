@@ -23,7 +23,7 @@
 #include <unsupported/Eigen/CXX11/Tensor>
 
 
-#define EIGEN_DONT_PARALLELIZE
+//#define EIGEN_DONT_PARALLELIZE
 
 using namespace Eigen;
 using namespace std;

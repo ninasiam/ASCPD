@@ -10,6 +10,16 @@ auto Matrix_to_Tensor( Eigen::MatrixXd matrix, int dim, int R)
     return Eigen::TensorMap<Eigen::Tensor<const double, 2>>(matrix.data(), {dim, R} );
 }
 
+
+// template<typename T>
+// using  MatrixType = Eigen::Matrix<T,Eigen::Dynamic, Eigen::Dynamic>;
+
+// template<typename Scalar, std::size_t TNS_ORDER, typename sizeType>
+// auto Tensor_to_Matrix(const Eigen::Tensor<Scalar, static_cast<int>(TNS_ORDER)> &tensor,const sizeType rows,const sizeType cols)
+// {
+//     return Eigen::Map<const MatrixType<Scalar>> (tensor.data(), rows,cols);
+// }
+
 template <std::size_t  TNS_ORDER>
 void CpdGen( VectorXi tns_dims, std::array<MatrixXd, TNS_ORDER> Factors, int const R, Eigen::Tensor< double, static_cast<int>(TNS_ORDER) > &Est_Tensor)
 {

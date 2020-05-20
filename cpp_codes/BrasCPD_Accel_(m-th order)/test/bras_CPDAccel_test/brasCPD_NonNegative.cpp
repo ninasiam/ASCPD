@@ -1,3 +1,6 @@
+#define EIGEN_DONT_PARALLELIZE
+#define USE_COST_FUN 1
+
 #include "../../include/master_library.hpp"
 #include "../../include/sampling_funs.hpp"
 #include "../../include/solve_BrasCPaccel.hpp"
@@ -22,7 +25,7 @@ int main(int argc, char **argv){
     #endif
 
     const int TNS_ORDER = 3;                                      // Declarations
-    const int R = 20;
+    const int R = 5;
     
     VectorXi tns_dims(TNS_ORDER);
     VectorXi block_size(TNS_ORDER);
@@ -34,7 +37,7 @@ int main(int argc, char **argv){
     std::array<MatrixXd, TNS_ORDER> True_Factors;
 
     // Assign values
-    tns_dims.setConstant(300); 
+    tns_dims.setConstant(50); 
     // tns_dims(3) = 50;
     block_size.setConstant(20);
 
@@ -70,7 +73,7 @@ int main(int argc, char **argv){
     // cout << True_Tensor << endl;
 
     // Frobenius norm of Tensor
-    Eigen::Tensor< double, 0 > frob_X  = True_Tensor.square().sum().sqrt();  
+    Eigen::Tensor< double, 0 > frob_X  = True_Tensor.square().sum();  
     cout << "Frob_X:"  << frob_X << endl; 
 
     double* Tensor_pointer = True_Tensor.data();
@@ -89,7 +92,7 @@ int main(int argc, char **argv){
         Write_to_File(tns_dims(factor), R, Factor_to_write, file_name1.c_str());
     }
     CpdGen( tns_dims, Init_Factors, R, Init_Tensor);
-    f_value = (True_Tensor - Init_Tensor).square().sum().sqrt(); 
+    f_value = (True_Tensor - Init_Tensor).square().sum(); 
 
     VectorXi zero_vector(TNS_ORDER);
     zero_vector.setZero();
