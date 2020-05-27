@@ -41,7 +41,7 @@ int main(int argc, char **argv){
     cout << "Sampling of each mode with blocksize: " << block_size.transpose() << endl;
     cout << "True Tensor: " << "\n" << True_Tensor << endl;
 
-    int mode = 2;
+    int mode = 0;
     MatrixXi idxs(block_size(mode),TNS_ORDER);
     MatrixXi factor_idxs(block_size(mode),TNS_ORDER-1);
     
@@ -52,7 +52,7 @@ int main(int argc, char **argv){
                       idxs, factor_idxs, T_mode);
 
     cout << "idxs: " << "\n" << idxs << endl;
-    cout << "Matricization mode 2 = \n " << T_mode << endl;
+    cout << "Matricization mode 0 = \n " << T_mode << endl;
 
     return 0;
 

@@ -196,7 +196,7 @@ namespace symmetric //for symmetric tensors
         //For every row of Khatri-Rao (sampled)
         for(int kr_s_row = 0; kr_s_row < kr_s_rows; kr_s_row++)                  //for every row of the sampled kr (NOT size_int because current_mode is of type int)
         {
-            for(int factor = order - 1; factor > -1; factor--)                   //for each factor (expept the current mode)
+            for(int factor = order - 1; factor > -1; factor--)                   //for each factor (except the current mode)
             {
                 if( factor != current_mode)
                 {   

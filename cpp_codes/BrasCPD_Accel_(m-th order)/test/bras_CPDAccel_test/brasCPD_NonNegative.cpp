@@ -1,5 +1,5 @@
 #define EIGEN_DONT_PARALLELIZE
-#define USE_COST_FUN 1
+#define USE_COST_FUN 0
 
 #include "../../include/master_library.hpp"
 #include "../../include/sampling_funs.hpp"
@@ -25,7 +25,7 @@ int main(int argc, char **argv){
     #endif
 
     const int TNS_ORDER = 3;                                      // Declarations
-    const int R = 5;
+    const int R = 50;
     
     VectorXi tns_dims(TNS_ORDER);
     VectorXi block_size(TNS_ORDER);
@@ -37,9 +37,9 @@ int main(int argc, char **argv){
     std::array<MatrixXd, TNS_ORDER> True_Factors;
 
     // Assign values
-    tns_dims.setConstant(50); 
+    tns_dims.setConstant(500); 
     // tns_dims(3) = 50;
-    block_size.setConstant(20);
+    block_size.setConstant(200);
 
     //Initialize the tensor
     for(size_t factor = 0; factor < TNS_ORDER; factor++ )
