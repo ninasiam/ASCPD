@@ -2,8 +2,8 @@
 #include "../../include/sampling_funs.hpp"
 #include "../../include/cpdgen.hpp"
 
-#define INITIALIZED_SEED 0                                        // if initialized seed is on the data will be different for every run (including the random fibers)
-
+#define INITIALIZED_SEED 0                                        // if initialized seed is on, the data will be different for every run (including the random fibers)
+                                                                    
 int main(int argc, char **argv){
 
     #if INITIALIZED_SEED                                          // Initialize the seed for different data
@@ -47,12 +47,21 @@ int main(int argc, char **argv){
     
     MatrixXd T_mode(tns_dims(mode), block_size(mode));
     
-
+    cout << "Test 1: " << endl; 
     symmetric::Sample_Fibers(Tensor_pointer,  tns_dims,  block_size,  mode,
                       idxs, factor_idxs, T_mode);
 
     cout << "idxs: " << "\n" << idxs << endl;
     cout << "Matricization mode 0 = \n " << T_mode << endl;
+
+    mode = 1;
+    cout << "Test 2: " << endl;
+    symmetric::Sample_Fibers(Tensor_pointer,  tns_dims,  block_size,  mode,
+                      idxs, factor_idxs, T_mode);
+
+    cout << "idxs: " << "\n" << idxs << endl;
+    cout << "Matricization mode 1 = \n " << T_mode << endl;
+
 
     return 0;
 
