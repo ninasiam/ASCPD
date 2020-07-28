@@ -144,7 +144,7 @@ namespace symmetric
             Factors_prev[current_mode] = Factors[current_mode];
 
 
-            if( int(AO_iter % (((tns_dims.prod()/tns_dims(current_mode)/block_size(current_mode))))) == 0)
+            if( int(AO_iter % ((TNS_ORDER + 1)*(((tns_dims.prod()/tns_dims(current_mode))/block_size(current_mode))))) == 0)
             {                   
                 #if USE_COST_FUN
                     auto t1_fval = high_resolution_clock::now();
@@ -152,8 +152,10 @@ namespace symmetric
                     gram_cwise_prod.setOnes();
                     compute_gram_cwise_prod(Factors_prev, gram_cwise_prod);
                     compute_fval(frob_X_sq_d, MTTKRP_0, gram_cwise_prod, Factors_prev[0], f_value(0));
+                    f_value(0) = f_value(0) / frob_X_sq_d;
                     auto t2_fval = high_resolution_clock::now();
                     stop_t_fval += duration_cast<nanoseconds>(t2_fval - t1_fval);
+                    cout << AO_iter<< "  " << " --- " << f_value << "   " << " --- " << frob_X << endl;
                 #else
                     // Here we calculate the measure of performance, either CPD_GEN or calculate the norm of a tensor using the factors
                     auto t1_cpdgen = high_resolution_clock::now();
@@ -166,11 +168,10 @@ namespace symmetric
                     f_value = (True_Tensor - Est_Tensor_from_factors).square().sum();  
                     auto t2_fval = high_resolution_clock::now();
                     stop_t_fval += duration_cast<nanoseconds>(t2_fval - t1_fval);
+                    cout << AO_iter<< "  " << " --- " << f_value/frob_X << "   " << " --- " << f_value << "   " << " --- " << frob_X << endl;
                 #endif
 
-                cout << AO_iter<< "  " << " --- " << f_value/frob_X << "   " << " --- " << f_value << "   " << " --- " << frob_X << endl;
-                
-                mttkrp_counter++;
+                mttkrp_counter += (TNS_ORDER + 1); // Increase counter according to printing (after TNS_ORDER + 1 (Accel. step)).
             }
 
             if(mttkrp_counter >= MAX_MTTKRP)
