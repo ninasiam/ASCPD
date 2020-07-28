@@ -1,12 +1,12 @@
 #define EIGEN_DONT_PARALLELIZE
-#define USE_COST_FUN 0
+#define USE_COST_FUN 1
 
 #include "../../include/master_library.hpp"
 #include "../../include/sampling_funs.hpp"
 #include "../../include/solve_BrasCPaccel.hpp"
 #include "../../include/cpdgen.hpp"
 
-#define INITIALIZED_SEED 0                                        // if initialized seed is on the data will be different for every run (including the random fibers)
+#define INITIALIZED_SEED 1                                        // if initialized seed is on the data will be different for every run (including the random fibers)
 
 void Write_to_File(int nrows, int ncols, Ref<MatrixXd> Mat, const char *file_name){
 	ofstream my_file(file_name, ios::out | ios::binary | ios::trunc);
@@ -20,12 +20,8 @@ void Write_to_File(int nrows, int ncols, Ref<MatrixXd> Mat, const char *file_nam
 
 int main(int argc, char **argv){
 
-    #if INITIALIZED_SEED                                          // Initialize the seed for different data
-        srand((unsigned) time(NULL)                 
-    #endif
-
     const int TNS_ORDER = 3;                                      // Declarations
-    const int R = 50;
+    const int R = 10;
     
     VectorXi tns_dims(TNS_ORDER);
     VectorXi block_size(TNS_ORDER);
@@ -39,7 +35,7 @@ int main(int argc, char **argv){
     // Assign values
     tns_dims.setConstant(500); 
     // tns_dims(3) = 50;
-    block_size.setConstant(200);
+    block_size.setConstant(100);
 
     //Initialize the tensor
     for(size_t factor = 0; factor < TNS_ORDER; factor++ )
@@ -47,7 +43,7 @@ int main(int argc, char **argv){
         True_Factors[factor] = (MatrixXd::Random(tns_dims(factor), R) + MatrixXd::Ones(tns_dims(factor), R))/2;
 
     }
-    
+   
     nanoseconds stop_t_tns_cr = 0s;
     auto start_tns_cr = high_resolution_clock::now();
     // Create True Tensor
@@ -99,8 +95,12 @@ int main(int argc, char **argv){
     Init_Tensor.resize(zero_vector);
 
     double AO_tol = 0.001;
-    int MAX_MTTKRP = 10;
+    int MAX_MTTKRP = 40;
     
+    #if INITIALIZED_SEED                                          // Initialize the seed for different data
+        srand((unsigned) time(NULL));            
+    #endif
+
     symmetric::solve_BrasCPaccel(AO_tol, MAX_MTTKRP, R, frob_X, f_value, tns_dims, block_size, Init_Factors, Tensor_pointer, True_Tensor);
     return 0;
 }
