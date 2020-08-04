@@ -1,5 +1,5 @@
 #define EIGEN_DONT_PARALLELIZE
-#define USE_COST_FUN 1
+#define USE_COST_FUN 0
 
 #include "../../include/master_library.hpp"
 #include "../../include/sampling_funs.hpp"
@@ -7,7 +7,7 @@
 #include "../../include/cpdgen.hpp"
 
 #define INITIALIZED_SEED 1                                        // if initialized seed is on the data will be different for every run (including the random fibers)
-
+                                                                  // EDIT: now only the fibers will change due to seeder, which is initialized after init and true factors are created
 void Write_to_File(int nrows, int ncols, Ref<MatrixXd> Mat, const char *file_name){
 	ofstream my_file(file_name, ios::out | ios::binary | ios::trunc);
 	if (my_file.is_open()){
@@ -41,6 +41,13 @@ int main(int argc, char **argv){
     for(size_t factor = 0; factor < TNS_ORDER; factor++ )
     {
         True_Factors[factor] = (MatrixXd::Random(tns_dims(factor), R) + MatrixXd::Ones(tns_dims(factor), R))/2;
+        std::string file_name = "../Data_cpp/true_factor_";
+        std::string file_subfix = std::to_string(factor);
+        std::string file_extension = ".bin";
+        file_name1 = file_name + file_subfix + file_extension;
+
+        MatrixXd Factor_to_write = True_Factors[factor].transpose();
+        Write_to_File(tns_dims(factor), R, Factor_to_write, file_name.c_str());
 
     }
    
@@ -98,7 +105,7 @@ int main(int argc, char **argv){
     int MAX_MTTKRP = 40;
     
     #if INITIALIZED_SEED                                          // Initialize the seed for different data
-        srand((unsigned) time(NULL));            
+        srand((unsigned) time(NULL));                             // n case different before true and init factors
     #endif
 
     symmetric::solve_BrasCPaccel(AO_tol, MAX_MTTKRP, R, frob_X, f_value, tns_dims, block_size, Init_Factors, Tensor_pointer, True_Tensor);
