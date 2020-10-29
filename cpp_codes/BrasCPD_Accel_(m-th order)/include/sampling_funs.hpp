@@ -212,77 +212,116 @@ namespace symmetric //for symmetric tensors
         
 
     }
-} // end of namespace symmetric
+} 
 
+namespace sorted // sorted
+{   
+    template <std::size_t  TNS_ORDER> 
+    bool sortBasedCols(const array<int, TNS_ORDER - 1 > &arr1, const array<int, TNS_ORDER - 1 > &arr2)
+    {
+        return (arr1[TNS_ORDER - 2] < arr1[TNS_ORDER - 2]) || ((arr1[TNS_ORDER - 2] == arr1[TNS_ORDER - 2]) && (arr1[TNS_ORDER - 3] == arr1[TNS_ORDER - 3]));
 
-// namespace v2
-// {   
-//     template <typename T>
-//     void Sampling_fibers(const T &Tensor, int mode, VectorXi &tns_dims, VectorXi &block_size,
-//                          MatrixXd idxs, MatrixXd factor_idxs, MatrixXd T_mode)
-//     {
-//         int order = block_size.size();
+    }
 
-//         //Initialize true indices
-//         MatrixXd true_indices(tns_dims(0), order);
-//         VectorXi index_vec(tns_dims(0),1);
+    inline void Sample_mode(int TNS_ORDER, int &current_mode)
+    {   
+        //Choose the factor to be updated
+        current_mode  = rand() % TNS_ORDER;  
+    }
 
-//         for(int index = 0; index < tns_dims(0); index ++)
-//         {
-//             index_vec(index) = index;
-//         }
+    inline void Sample_fibers(double* Tensor_pointer, const VectorXi &tns_dims, const VectorXi &block_size, int current_mode,
+                       MatrixXi &sampled_idxs, MatrixXi &factor_idxs, MatrixXd &T_mode)
+    {
+        size_t order = block_size.size();
+        size_t numCols_reduced = factor_idxs.cols(); // dimensions: block-size x order-1
+        size_t numRows_reduced;
+        size_t offset_sum;
+        int idx_val;
+        //Initialize true indices
+        MatrixXi true_indices(tns_dims(current_mode), order);
+        MatrixXi idxs(block_size(current_mode),order);
+        std::vector<array<int, order - 1>> fiber_idxs;
+        std::array<int, order -1> tuple_arr;
+        VectorXi vector_offset(order,1);
+        VectorXi current_vector_offset(order,1);
+        VectorXi dims_offset(order - 1,1);
+        VectorXi offset(order - 1,1);
+        VectorXi index_vec(tns_dims(current_mode),1);
+        VectorXi idxs_full = tns_dims;
         
-//         //Shuffle true indices
-//         for(int cols_t = 0 ; cols_t < order ; cols_t++)
-//         {
-//             random_device rd;
-//             mt19937 g(rd());
-//             true_indices.col(cols_t) = index_vec;
-//             shuffle(true_indices.col(cols_t).data(), true_indices.col(cols_t).data() + tns_dims(cols_t), g);
-//             idxs.col(cols_t) = true_indices.col().head(block_size(cols_t));
-//         }
         
-//         //Create Matricization
-//         if( mode == 0) 
-//         {
-//             for(int col_T = 0; col_T < block_size(mode); col_T++ )
-//             {
-//                 for(int row_T = 0; row_T < tns_dims(mode); row_T++)
-//                 {
-//                     T_mode(row_T, col_T) = Tensor(row_T, idxs(row_T, 1), idxs(row_T, 2));
-//                 }
-                
-//             }
-//         }
-//         if( mode == 1) 
-//         {
-//             for(int col_T = 0; col_T < block_size(mode); col_T++ )
-//             {
-//                 for(int row_T = 0; row_T < tns_dims(mode); row_T++)
-//                 {
-//                     T_mode(row_T, col_T) = Tensor( idxs(row_T, 0), row_T, idxs(row_T, 2));
-//                 }
-                
-//             }
-//         }
-//         if( mode == 2) 
-//         {
-//             for(int col_T = 0; col_T < block_size(mode); col_T++ )
-//             {
-//                 for(int row_T = 0; row_T < tns_dims(mode); row_T++)
-//                 {
-//                     T_mode(row_T, col_T) = Tensor(idxs(row_T, 0), idxs(row_T, 1), row_T);
-//                 }
-                
-//             }
-//         }
+        //sample blocksize indices for every mode (including current)
+        for(int tuple = 0; tuple < block_size(current_mode); tuple++)
+        {
+            for(int col = 0, int inner_col = 0; col < order; col++)
+            {   
+                idx_val = rand() % tns_dims(col);
+                idxs(tuple, col) = idx_val;
 
+                if(current_mode == col)
+                {   
+                    inner_col = 1;
+                    continue;
+                }
+                else
+                {   
+                    if(inner_col == 1)
+                    {
+                        tuple_arr[tuple][col - 1] = idx_val;
+                    }
+                    else
+                    {
+                        tuple_arr[tuple][col] = idx_val;
+                    }
 
-         
+                }
+            }
+            fiber_idxs.push_back(tuple_arr); // oush back to a vector oo arrays a tuple of fiber indices
+        }
 
+        numRows_reduced = idxs.rows();
+        if( current_mode < numCols_reduced )
+            idxs.block(0, current_mode, numRows_reduced, numCols_reduced - current_mode) = idxs.rightCols(numCols_reduced - current_mode);
+
+        idxs.conservativeResize(numRows_reduced,numCols_reduced);
+        factor_idxs = idxs;
+
+        // Sort the fiber_idxs
+        sort(fiber_idxs.begin(), fiber_idxs.end(), sortBasedCols);
+
+        vector_offset(0) = 1;
+        for(size_t dim_idx = 1; dim_idx < order; dim_idx++)
+        {
+           vector_offset(dim_idx) = vector_offset(dim_idx - 1)*tns_dims(dim_idx -1);
+        }
+
+        //create current vector offset (not the first mode)
+        if(current_mode != 0)
+        {
+            current_vector_offset = vector_offset;
+            current_vector_offset(0) = vector_offset(current_mode);
+            for(size_t dim_idx = 1; dim_idx < current_mode + 1; dim_idx++)
+            {
+                current_vector_offset(dim_idx) = vector_offset(dim_idx - 1);
+            }
+            vector_offset = current_vector_offset;
+        }
+
+        //sample the fibers
+        dims_offset = vector_offset.tail(order - 1);   //offset for each mode (truncate the first element which correspond to the current mode)
+        for(size_t fiber = 0; fiber < block_size(current_mode); fiber++)
+        {
+            //create the offset for each fiber   
+            offset = dims_offset.cwiseProduct(factor_idxs.row(fiber).transpose());
+            offset_sum = offset.sum();
+
+            for (size_t el = 0; el < tns_dims(current_mode); el++)
+            {
+                 T_mode(el,fiber) = Tensor_pointer[vector_offset(0)*el + offset_sum];  //fibers as columns of the matricization
+            }
+           
+        }      
         
-//     }
-    
-// } // end of namespace v2
-
+    }
+}
 #endif //end if
