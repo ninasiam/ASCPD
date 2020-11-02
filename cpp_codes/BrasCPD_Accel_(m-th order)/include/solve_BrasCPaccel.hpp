@@ -54,6 +54,7 @@ namespace symmetric
                                    const Eigen::Tensor< double, static_cast<int>(TNS_ORDER) > &True_Tensor)
     {   
         int AO_iter = 1;
+        int print_iter = 1;
         int mttkrp_counter = 0;
         int tns_order = Factors.size();                          //TNS_ORDER
         int current_mode;
@@ -146,6 +147,7 @@ namespace symmetric
 
             if( int(AO_iter % ((TNS_ORDER + 1)*(((tns_dims.prod()/tns_dims(current_mode))/block_size(current_mode))))) == 0)
             {                   
+                print_iter++;
                 #if USE_COST_FUN
                     auto t1_fval = high_resolution_clock::now();
                     partial::mttpartialkrp<TNS_ORDER>(tns_order, tns_dims, R, 0, Factors_prev, X_mat_0, MTTKRP_0, threads_num);
@@ -168,7 +170,7 @@ namespace symmetric
                     f_value = (True_Tensor - Est_Tensor_from_factors).square().sum();  
                     auto t2_fval = high_resolution_clock::now();
                     stop_t_fval += duration_cast<nanoseconds>(t2_fval - t1_fval);
-                    cout << AO_iter<< "  " << " --- " << f_value/frob_X << "   " << " --- " << f_value << "   " << " --- " << frob_X << endl;
+                    cout << print_iter<< "  " << " --- " << f_value/frob_X << "   " << " --- " << f_value << "   " << " --- " << frob_X << endl;
                 #endif
 
                 mttkrp_counter += (TNS_ORDER + 1); // Increase counter according to printing (after TNS_ORDER + 1 (Accel. step)).
