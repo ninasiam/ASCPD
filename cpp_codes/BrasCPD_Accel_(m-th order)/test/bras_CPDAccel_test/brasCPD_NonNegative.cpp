@@ -44,7 +44,7 @@ int main(int argc, char **argv){
         std::string file_name = "../Data_cpp/true_factor_";
         std::string file_subfix = std::to_string(factor);
         std::string file_extension = ".bin";
-        file_name1 = file_name + file_subfix + file_extension;
+        std::string file_name1 = file_name + file_subfix + file_extension;
 
         MatrixXd Factor_to_write = True_Factors[factor].transpose();
         Write_to_File(tns_dims(factor), R, Factor_to_write, file_name.c_str());
