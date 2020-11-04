@@ -257,9 +257,13 @@ namespace sorted // sorted
     {   
         int idx_val;
         int order = block_size.size();
+        
+        std::vector<int> vector_offset;
+        std::vector<int> current_vector_offset;
         std::vector<std::vector<int> > fiber_idxs;                                  // vector of vectors, 2D vector
         fiber_idxs.resize(block_size(current_mode), std::vector<int>(order - 1));   // resize it, in order to index it
-
+        vector_offset.resize(order,1);
+        current_vector_offset.resize(order,1);
         // idxs: sample blocksize tuple of indices for every mode (including current)
         // fiber_idxs: same structure as factor_idxs but it is now a vector of vectors
         for(int tuple = 0; tuple < block_size(current_mode); tuple++)
@@ -289,8 +293,7 @@ namespace sorted // sorted
             }
         }
 
-        fiber_idxs[0][1] = 1;
-        fiber_idxs[0][2] = 7;
+
         // Number of rows; 
         int m = fiber_idxs.size();  
         int n = fiber_idxs[0].size(); 
@@ -311,6 +314,53 @@ namespace sorted // sorted
                 cout << fiber_idxs[i][j] << " "; 
             cout << endl; 
         }
+
+        //create the offset vector for mode_1
+        vector_offset[0] = 1;
+        for(size_t dim_idx = 1; dim_idx < order; dim_idx++)
+        {
+           vector_offset[dim_idx] = vector_offset[dim_idx - 1]*tns_dims[dim_idx -1];
+        }
+
+        //create current vector offset (not the first mode)
+        if(current_mode != 0)
+        {
+            current_vector_offset = vector_offset;
+            current_vector_offset[0] = vector_offset[current_mode];
+            for(size_t dim_idx = 1; dim_idx < current_mode + 1; dim_idx++)
+            {
+                current_vector_offset[dim_idx] = vector_offset[dim_idx - 1];
+            }
+            vector_offset = current_vector_offset;
+        }
+
+        std::cout << "The vector offset: " << std::endl;  
+        for (int i=0; i<order; i++) 
+        { 
+            cout << vector_offset[i] << " "; 
+            cout << endl; 
+        }
+
+        size_t offset = 0;
+        if(current_mode == 0 || current_mode  == 1) // Only for mode 0 and 1
+        {
+            for(size_t fiber = 0; fiber < block_size(current_mode); fiber++)
+            {   
+                //create the offset for each fiber
+                for (int i=1; i<order; i++)  // it counts from one since vector_offset corresponds to the offset of fiber that will added later
+                { 
+                    offset += vector_offset[i]*fiber_idxs[fiber][i - 1];  
+                }
+                std::cout << "offset = :" << offset << std::endl;
+                for (size_t el = 0; el < tns_dims(current_mode); el++)
+                {
+                    T_mode(el,fiber) = Tensor_pointer[vector_offset[0]*el + offset];  //fibers as columns of the matricization
+                }
+                offset = 0;
+           
+            }
+        }
+
 
     }
 
