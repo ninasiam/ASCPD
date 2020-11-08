@@ -105,6 +105,7 @@ INCLUDE_DIRECTORIES(${EIGEN_ROOT_DIR})
 ###    TUC
 
 ADD_SUBDIRECTORY(test/bras_CPDAccel_test)
+ADD_SUBDIRECTORY(test/bras_CPDAccel_test_sorted)
 ADD_SUBDIRECTORY(test/test_Sampling_Fibers)
 ADD_SUBDIRECTORY(test/test_sampling_sorted)
 ADD_SUBDIRECTORY(test/test_KR_sampled)
