@@ -1,12 +1,15 @@
-#define EIGEN_DONT_PARALLELIZE
+#define EIGEN_DONT_PARALLELIZE 
 #define USE_COST_FUN 0
 
-#include "../../include/master_library.hpp"
-#include "../../include/sampling_funs.hpp"
-#include "../../include/solve_BrasCPaccel.hpp"
-#include "../../include/cpdgen.hpp"
+// #include "../../include/master_library.hpp"
+// #include "../../include/sampling_funs.hpp"
+// #include "../../include/solve_BrasCPaccel.hpp"
+// #include "../../include/cpdgen.hpp"
 
-#define INITIALIZED_SEED 1                                        // if initialized seed is on the data will be different for every run (including the random fibers)
+#include "master_library.hpp"
+
+
+#define INITIALIZED_SEED 0                                        // if initialized seed is on the data will be different for every run (including the random fibers)
                                                                   // EDIT: now only the fibers will change due to seeder, which is initialized after init and true factors are created
 void Write_to_File(int nrows, int ncols, Ref<MatrixXd> Mat, const char *file_name){
 	ofstream my_file(file_name, ios::out | ios::binary | ios::trunc);

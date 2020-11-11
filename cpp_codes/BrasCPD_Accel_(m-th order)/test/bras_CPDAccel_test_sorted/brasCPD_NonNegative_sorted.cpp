@@ -2,9 +2,7 @@
 #define USE_COST_FUN 0
 
 #include "master_library.hpp"
-#include "sampling_funs.hpp"
-#include "solve_BrasCPaccel.hpp"
-#include "cpdgen.hpp"
+
 
 #define INITIALIZED_SEED 0                                        // if initialized seed is on the data will be different for every run (including the random fibers)
                                                                   // EDIT: now only the fibers will change due to seeder, which is initialized after init and true factors are created

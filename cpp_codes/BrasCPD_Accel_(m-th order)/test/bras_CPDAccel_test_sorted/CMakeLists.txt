@@ -13,6 +13,10 @@ MESSAGE(STATUS " [ ${PROJECT_NAME_TOUPPER} ] SOURCE DIR ==> ${CMAKE_CURRENT_LIST
 SET(TEST_SRC_FILE_NAMES    brasCPD_NonNegative_sorted.cpp})
 SET(TEST_HEADER_FILES     ${INCLUDE_DIR})
 
+SET(TEST_HEADER_FILES     ${INCLUDE_DIR})
+
+#SET(TEST_HEADER_FILE       ${CMAKE_CURRENT_LIST_DIR}/Test${PROJECT_NAME}.hpp)   
+INCLUDE_DIRECTORIES(${TEST_HEADER_FILES})
 #SET(TEST_HEADER_FILE       ${CMAKE_CURRENT_LIST_DIR}/Test${PROJECT_NAME}.hpp)   
 ########################################################################################################################
 
@@ -41,7 +45,7 @@ SET(LIBRARIES_TO_LINK       OpenMP::OpenMP_CXX)
 
 MESSAGE(STATUS " [ ${PROJECT_NAME_TOUPPER} ] Creating executable brasCPD_NonNegative.cpp")
 
-ADD_EXECUTABLE(brasCPD_Accel_NN_sorted brasCPD_NonNegative_sorted.cpp)
+ADD_EXECUTABLE(brasCPD_Accel_NN_sorted brasCPD_NonNegative_sorted.cpp ${TEST_HEADER_FILES})
 
 #TARGET_INCLUDE_DIRECTORIES(${TEST} PUBLIC ${INCLUDE_DIR_NCOM})
 TARGET_LINK_LIBRARIES(brasCPD_Accel_NN_sorted ${LIBRARIES_TO_LINK})
