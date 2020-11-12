@@ -299,23 +299,7 @@ namespace sorted // sorted
         // Number of rows; 
         int m = fiber_idxs.size();  
         int n = fiber_idxs[0].size(); 
-        // Displaying the 2D vector before sorting 
-        // std::cout << "The Matrix before sorting is: " << std::endl;  
-        // for (int i=0; i<m; i++) 
-        // { 
-        //     for (int j=0; j<n ;j++) 
-        //         cout << fiber_idxs[i][j] << " "; 
-        //     cout << endl; 
-        // }
-       
-        // std::sort(fiber_idxs.begin(), fiber_idxs.end(), sorted::sortBasedCols<TNS_ORDER>);
-        // std::cout << "The Matrix after sorting is: " << std::endl;  
-        // for (int i=0; i<m; i++) 
-        // { 
-        //     for (int j=0; j<n ;j++) 
-        //         cout << fiber_idxs[i][j] << " "; 
-        //     cout << endl; 
-        // }
+
 
         //create the offset vector for mode_1
         vector_offset[0] = 1;

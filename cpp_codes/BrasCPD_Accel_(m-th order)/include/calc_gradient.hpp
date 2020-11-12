@@ -46,7 +46,7 @@ inline void Compute_NAG_parameters(const MatrixXd &Hessian, double &L, double  &
     cond = L/(mu + 1e-6);
     if(cond> 1e2)
     {
-        lambda = L/10000;
+        lambda = L/100;
     }
     else
     {
@@ -68,10 +68,11 @@ inline void Calc_gradient(const VectorXi &Tns_dims, int Mode, const unsigned int
    
     MatrixXd MTTKRP(rows_mttkrp,R);                            // I_n * R
  
-    // MTTKRP = X_sub*H;
+    
     // Begin timer MTTKRP
     auto t1_MTTKRP = high_resolution_clock::now();
-    v1::mttkrp( X_sub, H, Tns_dims, Mode, thrds, MTTKRP);
+    MTTKRP = X_sub*H;
+    // v1::mttkrp( X_sub, H, Tns_dims, Mode, thrds, MTTKRP);
     // End timer MTTKRP
     auto t2_MTTKRP = high_resolution_clock::now();
     time_MTTKRP += duration_cast<nanoseconds>(t2_MTTKRP - t1_MTTKRP);

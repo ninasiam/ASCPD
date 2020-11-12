@@ -29,4 +29,15 @@ using namespace Eigen;
 using namespace std;
 using namespace std::chrono;
 
+#include "omp_lib.hpp"
+#include "calc_gradient.hpp"
+#include "sampling_funs.hpp"
+#include "solve_BrasCPaccel.hpp"
+#include "cpdgen.hpp"
+#include "khatri_rao_prod.hpp"
+#include "sampling_funs.hpp"
+#include "mttkrp.hpp"
+#include "compute_fval.hpp"
+
+
 #endif  
