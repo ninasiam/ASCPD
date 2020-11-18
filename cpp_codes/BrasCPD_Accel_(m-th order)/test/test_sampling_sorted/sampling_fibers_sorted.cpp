@@ -17,8 +17,8 @@ int main(int argc, char **argv){
     std::array<MatrixXd, TNS_ORDER> True_Factors;
 
     // Assign values
-    tns_dims.setConstant(10); 
-    block_size.setConstant(10);
+    tns_dims.setConstant(20); 
+    block_size.setConstant(20);
     ////////////////////////////////////////////////////////////////////////////////////////
 
     // Initialize the tensor using tensor module
@@ -39,16 +39,16 @@ int main(int argc, char **argv){
 
     cout << "Tensor of order: " << TNS_ORDER << "\t ~Dimensions: " << tns_dims.transpose() << "\t ~Rank: "<< R << endl;
     cout << "Sampling of each mode with blocksize: " << block_size.transpose() << endl;
-    // cout << "True Tensor: " << "\n" << True_Tensor << endl;
+    cout << "True Tensor: " << "\n" << True_Tensor << endl;
 
-    int mode = 1;
+    int mode = 0;
     MatrixXi idxs(block_size(mode),TNS_ORDER);
     MatrixXi factor_idxs(block_size(mode),TNS_ORDER-1);
     MatrixXd T_mode(tns_dims(mode), block_size(mode));
     
-    cout << "Test 1: " << endl; 
+    cout << "Test 0: " << endl; 
     sorted::Sample_fibers<TNS_ORDER>(Tensor_pointer,  tns_dims,  block_size,  mode,
-                      idxs, factor_idxs, T_mode);
+                      idxs, T_mode);
 
     cout << "idxs: " << "\n" << idxs << endl;
     cout << "factor_idxs: " << "\n" << factor_idxs << endl;
