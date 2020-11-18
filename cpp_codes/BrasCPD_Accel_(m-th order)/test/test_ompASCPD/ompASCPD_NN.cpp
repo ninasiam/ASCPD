@@ -1,5 +1,5 @@
 #define EIGEN_DONT_PARALLELIZE 
-#define USE_COST_FUN 0
+#define USE_COST_FUN 1
 #define WRITE_DATA 0
 
 #include "master_library.hpp"
@@ -20,8 +20,8 @@ void Write_to_File(int nrows, int ncols, Ref<MatrixXd> Mat, const char *file_nam
 int main(int argc, char **argv){
 
     const int TNS_ORDER = 3;                                      // Declarations
-    const int R = 10;
-    const int p = 100;
+    const int R = 50;
+    const int p = 1000;
 
     VectorXi tns_dims(TNS_ORDER);
     VectorXi block_size(TNS_ORDER);
@@ -33,8 +33,8 @@ int main(int argc, char **argv){
     std::array<MatrixXd, TNS_ORDER> True_Factors;
 
     // Assign values
-    tns_dims.setConstant(500); 
-    block_size.setConstant(200);
+    tns_dims.setConstant(800); 
+    block_size.setConstant(334);
 
     //Initialize the tensor
     for(size_t factor = 0; factor < TNS_ORDER; factor++ )
@@ -100,6 +100,8 @@ int main(int argc, char **argv){
     #endif
 
     
-    parallel::solve_BrasCPaccel(AO_tol, MAX_MTTKRP, R, frob_X, f_value, tns_dims, block_size, Init_Factors, Tensor_pointer, True_Tensor, p);
+    // parallel::solve_BrasCPaccel(AO_tol, MAX_MTTKRP, R, frob_X, f_value, tns_dims, block_size, Init_Factors, Tensor_pointer, True_Tensor, p);
+    parallel_asychronous::solve_BrasCPaccel(AO_tol, MAX_MTTKRP, R, frob_X, f_value, tns_dims, block_size, Init_Factors, Tensor_pointer, True_Tensor, p);
+
     return 0;
 }
