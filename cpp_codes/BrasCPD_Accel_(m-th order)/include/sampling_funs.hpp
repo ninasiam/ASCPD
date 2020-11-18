@@ -215,7 +215,7 @@ namespace symmetric //for symmetric tensors
     }
 } 
 
-namespace sorted // sorted
+namespace sorted // sorted namespace (The indices are now sorted BUT we need to include khatri-rao to this implementation)
 {   
     template <int TNS_ORDER>
     bool sortBasedCols(const std::vector<int> &v1, const std::vector<int> &v2)
@@ -295,11 +295,32 @@ namespace sorted // sorted
             }
         }
 
-
         // Number of rows; 
         int m = fiber_idxs.size();  
         int n = fiber_idxs[0].size(); 
 
+
+        // Displaying the 2D vector before sorting 
+        // cout << "The Matrix before sorting 1st row is:\n"; 
+        // for (int i=0; i<m; i++) 
+        // { 
+        //     for (int j=0; j<n ;j++) 
+        //         cout << fiber_idxs[i][j] << " "; 
+        //     cout << endl; 
+        // } 
+
+
+        // Sort the fiber_idxs
+        // std::sort(fiber_idxs.begin(), fiber_idxs.end(), sorted::sortBasedCols<TNS_ORDER>);
+        
+        // Displaying the 2D vector after sorting 
+        // cout << "The Matrix after sorting 1st row is:\n"; 
+        // for (int i=0; i<m; i++) 
+        // { 
+        //     for (int j=0; j<n ;j++) 
+        //         cout << fiber_idxs[i][j] << " "; 
+        //     cout << endl; 
+        // } 
 
         //create the offset vector for mode_1
         vector_offset[0] = 1;
@@ -319,13 +340,6 @@ namespace sorted // sorted
             }
             vector_offset = current_vector_offset;
         }
-
-        // std::cout << "The vector offset: " << std::endl;  
-        // for (int i=0; i<order; i++) 
-        // { 
-        //     cout << vector_offset[i] << " "; 
-        //     cout << endl; 
-        // }
 
         size_t offset = 0;
         if(current_mode == 0 || current_mode  == 1) // Only for mode 0 and 1
@@ -347,8 +361,8 @@ namespace sorted // sorted
             }
         }
         else // fill all collumns of matricization at once
-        {   offset = 0;
-            for(int fiber = 0; fiber < block_size(current_mode); fiber++)
+        {   // offset = 0;
+            for(size_t fiber = 0; fiber < block_size(current_mode); fiber++)
             {
                 //create the offset for each fiber
                 for (int i=1; i<order; i++)  // it counts from one since vector_offset corresponds to the offset of fiber that will added later
@@ -364,7 +378,7 @@ namespace sorted // sorted
             
             for(size_t el = 0; el < tns_dims(current_mode); el++)
             {   
-                for(int fiber = 0; fiber < block_size(current_mode); fiber++)
+                for(size_t fiber = 0; fiber < block_size(current_mode); fiber++)
                 {
                     T_mode(el,fiber) = Tensor_pointer[vector_offset[0]*el + offset_fiber[fiber]];
                 }
@@ -374,115 +388,6 @@ namespace sorted // sorted
 
     }
 
-}
-// namespace sorted // sorted
-// {   
-//     template <std::size_t  TNS_ORDER> 
-//     bool sortBasedCols(const array<int, TNS_ORDER - 1 > &arr1, const array<int, TNS_ORDER - 1 > &arr2)
-//     {
-//         return (arr1[TNS_ORDER - 2] < arr1[TNS_ORDER - 2]) || ((arr1[TNS_ORDER - 2] == arr1[TNS_ORDER - 2]) && (arr1[TNS_ORDER - 3] == arr1[TNS_ORDER - 3]));
+} // end namespace sorted
 
-//     }
-
-//     inline void Sample_mode(int TNS_ORDER, int &current_mode)
-//     {   
-//         //Choose the factor to be updated
-//         current_mode  = rand() % TNS_ORDER;  
-//     }
-
-//     inline void Sample_fibers(double* Tensor_pointer, const VectorXi &tns_dims, const VectorXi &block_size, int current_mode,
-//                        MatrixXi &sampled_idxs, MatrixXi &factor_idxs, MatrixXd &T_mode)
-//     {
-//         size_t order = block_size.size();
-//         size_t numCols_reduced = factor_idxs.cols(); // dimensions: block-size x order-1
-//         size_t numRows_reduced;
-//         size_t offset_sum;
-//         int idx_val;
-//         //Initialize true indices
-//         MatrixXi true_indices(tns_dims(current_mode), order);
-//         MatrixXi idxs(block_size(current_mode),order);
-//         std::vector<array<int, order - 1>> fiber_idxs;
-//         std::array<int, order -1> tuple_arr;
-//         VectorXi vector_offset(order,1);
-//         VectorXi current_vector_offset(order,1);
-//         VectorXi dims_offset(order - 1,1);
-//         VectorXi offset(order - 1,1);
-//         VectorXi index_vec(tns_dims(current_mode),1);
-//         VectorXi idxs_full = tns_dims;
-        
-        
-//         //sample blocksize indices for every mode (including current)
-//         for(int tuple = 0; tuple < block_size(current_mode); tuple++)
-//         {
-//             for(int col = 0, int inner_col = 0; col < order; col++)
-//             {   
-//                 idx_val = rand() % tns_dims(col);
-//                 idxs(tuple, col) = idx_val;
-
-//                 if(current_mode == col)
-//                 {   
-//                     inner_col = 1;
-//                     continue;
-//                 }
-//                 else
-//                 {   
-//                     if(inner_col == 1)
-//                     {
-//                         tuple_arr[tuple][col - 1] = idx_val;
-//                     }
-//                     else
-//                     {
-//                         tuple_arr[tuple][col] = idx_val;
-//                     }
-
-//                 }
-//             }
-//             fiber_idxs.push_back(tuple_arr); // oush back to a vector oo arrays a tuple of fiber indices
-//         }
-
-//         numRows_reduced = idxs.rows();
-//         if( current_mode < numCols_reduced )
-//             idxs.block(0, current_mode, numRows_reduced, numCols_reduced - current_mode) = idxs.rightCols(numCols_reduced - current_mode);
-
-//         idxs.conservativeResize(numRows_reduced,numCols_reduced);
-//         factor_idxs = idxs;
-
-//         // Sort the fiber_idxs
-//         sort(fiber_idxs.begin(), fiber_idxs.end(), sortBasedCols);
-
-//         vector_offset(0) = 1;
-//         for(size_t dim_idx = 1; dim_idx < order; dim_idx++)
-//         {
-//            vector_offset(dim_idx) = vector_offset(dim_idx - 1)*tns_dims(dim_idx -1);
-//         }
-
-//         //create current vector offset (not the first mode)
-//         if(current_mode != 0)
-//         {
-//             current_vector_offset = vector_offset;
-//             current_vector_offset(0) = vector_offset(current_mode);
-//             for(size_t dim_idx = 1; dim_idx < current_mode + 1; dim_idx++)
-//             {
-//                 current_vector_offset(dim_idx) = vector_offset(dim_idx - 1);
-//             }
-//             vector_offset = current_vector_offset;
-//         }
-
-//         //sample the fibers
-//         dims_offset = vector_offset.tail(order - 1);   //offset for each mode (truncate the first element which correspond to the current mode)
-//         for(size_t fiber = 0; fiber < block_size(current_mode); fiber++)
-//         {
-//             //create the offset for each fiber   
-//             offset = dims_offset.cwiseProduct(factor_idxs.row(fiber).transpose());
-//             offset_sum = offset.sum();
-
-//             for (size_t el = 0; el < tns_dims(current_mode); el++)
-//             {
-//                  T_mode(el,fiber) = Tensor_pointer[vector_offset(0)*el + offset_sum];  //fibers as columns of the matricization
-//             }
-           
-//         }      
-        
-//     }
-// }
 #endif //end if
