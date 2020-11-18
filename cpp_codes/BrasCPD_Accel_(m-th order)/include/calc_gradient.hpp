@@ -5,6 +5,7 @@
 #include "mttkrp.hpp"
 
 
+
 namespace svd
 {
     inline void Compute_mu_L(double &L, double &mu, const MatrixXd &Z)
@@ -57,27 +58,57 @@ inline void Compute_NAG_parameters(const MatrixXd &Hessian, double &L, double  &
     beta = (1 - sqrt(Q))/(1 + sqrt(Q));
 }
 
-inline void Calc_gradient(const VectorXi &Tns_dims, int Mode, const unsigned int thrds,
+namespace parallel_with_p  // In this version every thread calls Calc_Gradient, thus each MTTKRP is small
+{
+    void Calc_gradient(const VectorXi &Tns_dims, int Mode, const unsigned int thrds,
                           const double lambda,  const MatrixXd &U_prev, const MatrixXd &Y, 
                           const MatrixXd &Hessian, const MatrixXd &H, const MatrixXd &X_sub, MatrixXd &Gradient, nanoseconds &time_MTTKRP)
-{   
+    {   
 
-
-    int R = Hessian.rows();
-    int rows_mttkrp = X_sub.rows();
-   
-    MatrixXd MTTKRP(rows_mttkrp,R);                            // I_n * R
- 
+        int R = Hessian.rows();
+        int rows_mttkrp = X_sub.rows();
     
-    // Begin timer MTTKRP
-    auto t1_MTTKRP = high_resolution_clock::now();
-    MTTKRP = X_sub*H;
-    // v1::mttkrp( X_sub, H, Tns_dims, Mode, thrds, MTTKRP);
-    // End timer MTTKRP
-    auto t2_MTTKRP = high_resolution_clock::now();
-    time_MTTKRP += duration_cast<nanoseconds>(t2_MTTKRP - t1_MTTKRP);
+        MatrixXd MTTKRP(rows_mttkrp, R);                            // I_n * R
+    
+        // Begin timer MTTKRP
+        auto t1_MTTKRP = high_resolution_clock::now();
 
-    Gradient = Y*(Hessian + lambda*(MatrixXd::Identity(R,R)))-(MTTKRP + lambda*U_prev);
+        MTTKRP.noalias() = X_sub*H;
 
+        // End timer MTTKRP
+        auto t2_MTTKRP = high_resolution_clock::now();
+        #pragma omp master
+        time_MTTKRP += std::chrono::duration_cast<nanoseconds>(t2_MTTKRP - t1_MTTKRP);
+
+        Gradient = Y*(Hessian + lambda*(MatrixXd::Identity(R,R)))-(MTTKRP + lambda*U_prev);
+
+    }
+}
+
+namespace parallel_MTTKRP // The MTTKRP is computed in parallel (previous version)
+{
+    void Calc_gradient(const VectorXi &Tns_dims, int Mode, const unsigned int thrds,
+                          const double lambda,  const MatrixXd &U_prev, const MatrixXd &Y, 
+                          const MatrixXd &Hessian, const MatrixXd &H, const MatrixXd &X_sub, MatrixXd &Gradient, nanoseconds &time_MTTKRP)
+    {   
+
+        int R = Hessian.rows();
+        int rows_mttkrp = X_sub.rows();
+    
+        MatrixXd MTTKRP(rows_mttkrp, R);                            // I_n * R
+    
+        // Begin timer MTTKRP
+        auto t1_MTTKRP = high_resolution_clock::now();
+
+        // MTTKRP.noalias() = X_sub*H;
+        v1::mttkrp( X_sub, H, Tns_dims, Mode, thrds, MTTKRP);
+        
+        // End timer MTTKRP
+        auto t2_MTTKRP = high_resolution_clock::now();
+        time_MTTKRP += std::chrono::duration_cast<nanoseconds>(t2_MTTKRP - t1_MTTKRP);
+
+        Gradient = Y*(Hessian + lambda*(MatrixXd::Identity(R,R)))-(MTTKRP + lambda*U_prev);
+
+    }
 }
 #endif

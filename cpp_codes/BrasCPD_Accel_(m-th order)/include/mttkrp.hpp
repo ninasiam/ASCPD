@@ -125,7 +125,7 @@ namespace v2
     }
 } // end of namespace v2
 
-namespace partial
+namespace partial // This is only for the cost function computations (USE_COST_FUN)
 {
     // Calculates the full MTTKRP without computing the full Khatrirao
     // template <std::size_t TNS_ORDER>
@@ -279,13 +279,6 @@ namespace partial
         //     }
             
         // }
-
-
-
-
-
-
-    
 
 } // end  of namespace partial
     
