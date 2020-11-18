@@ -1,5 +1,5 @@
 #define EIGEN_DONT_PARALLELIZE 
-#define USE_COST_FUN 0
+#define USE_COST_FUN 1
 
 #include "master_library.hpp"
 
@@ -19,7 +19,7 @@ void Write_to_File(int nrows, int ncols, Ref<MatrixXd> Mat, const char *file_nam
 int main(int argc, char **argv){
 
     const int TNS_ORDER = 3;                                      // Declarations
-    const int R = 10;
+    const int R = 50;
     
     VectorXi tns_dims(TNS_ORDER);
     VectorXi block_size(TNS_ORDER);
