@@ -318,7 +318,7 @@ namespace sorted
 
             //Compute the sampled Khatri Rao
             auto t1_KRs = high_resolution_clock::now();
-            symmetric::Sample_KhatriRao( current_mode, R, current_mode_struct.idxs, Factors_prev, current_mode_struct.KR_s); // !!!! THIS SHOULD BE SORTED !!!
+            sorted::Sample_KhatriRao( current_mode, R, current_mode_struct.idxs, Factors_prev, current_mode_struct.KR_s); // !!!! THIS SHOULD BE SORTED !!!
             auto t2_KRs = high_resolution_clock::now();
             stop_t_KRs += duration_cast<nanoseconds>(t2_KRs - t1_KRs);
 
@@ -862,6 +862,7 @@ namespace parallel_asychronous
             std::array<MatrixXd, TNS_ORDER> local_Factors       = Factors;
             std::array<MatrixXd, TNS_ORDER> local_Factors_prev  = Factors;                                       //Previous values of factors
             std::array<MatrixXd, TNS_ORDER> local_Y_Factors     = Factors;
+            
             double L, beta_accel, lambda;							// NAG parameters
             MatrixXd local_Hessian(R,R);
 
@@ -896,9 +897,11 @@ namespace parallel_asychronous
                 #pragma omp master
                 t1_Ts = high_resolution_clock::now();
 
-                sorted::Sample_fibers<TNS_ORDER>(local_Tensor_pointer,  tns_dims,  block_size,  current_mode,
+                std::vector<std::vector<int>> local_fiber_idxs;
+                local_fiber_idxs.resize(block_size(current_mode), std::vector<int>(TNS_ORDER - 1));   // resize it, in order to index it
+                local_fiber_idxs = sorted::Sample_fibers<TNS_ORDER>(local_Tensor_pointer,  tns_dims,  block_size,  current_mode,
                                 current_mode_struct.idxs, current_mode_struct.T_s);
-                // std::cout << "T_s norm is : " << current_mode_struct.T_s.norm() << std::endl; 
+                                                                                                                                                       
                 #pragma omp master
                 {
                     auto t2_Ts = high_resolution_clock::now();
@@ -909,8 +912,9 @@ namespace parallel_asychronous
                 //Compute the sampled Khatri Rao
                 #pragma omp master
                 t1_KRs = high_resolution_clock::now();
-
-                symmetric::Sample_KhatriRao( current_mode, R, current_mode_struct.idxs, local_Factors_prev, current_mode_struct.KR_s);
+                // sorted::Sample_KhatriRao( current_mode, R, current_mode_struct.idxs, local_Factors_prev, current_mode_struct.KR_s);
+                sorted::Sample_KhatriRao( current_mode, R, local_fiber_idxs, local_Factors_prev, current_mode_struct.KR_s);
+                // current_mode_struct.KR_s = Eigen::MatrixXd::Random(block_size(current_mode), R);
                 // std::cout << "KR_s norm is : " << current_mode_struct.KR_s.norm() << std::endl; 
 
                 #pragma omp master

@@ -227,7 +227,7 @@ namespace sorted // sorted namespace (The indices are now sorted BUT we need to 
         {
             if(i < TNS_ORDER - 2)
             {
-                expr[i] = (v1[i+1] == v2[i+1]) && (v1[i] <= v2[i]);
+                expr[i] = (v1[i+1] == v2[i+1]) && (v1[i] < v2[i]);
                 final_expr = final_expr || expr[i];
 
                 if(!final_expr)
@@ -245,6 +245,12 @@ namespace sorted // sorted namespace (The indices are now sorted BUT we need to 
         return final_expr;
     }
 
+    // template <int TNS_ORDER>
+    // bool sortBasedCols(const std::vector<int> &v1, const std::vector<int> &v2)
+    // {
+    //     return v1[TNS_ORDER - 1] < v2[TNS_ORDER - 1];
+    // }
+
     inline void Sample_mode(int TNS_ORDER, int &current_mode)
     {   
         //Choose the factor to be updated
@@ -252,7 +258,7 @@ namespace sorted // sorted namespace (The indices are now sorted BUT we need to 
     }
 
     template <int TNS_ORDER>
-    inline void Sample_fibers(double* Tensor_pointer, const VectorXi &tns_dims, const VectorXi &block_size, int current_mode,
+    std::vector<std::vector<int>> Sample_fibers(double* Tensor_pointer, const VectorXi &tns_dims, const VectorXi &block_size, int current_mode,
                        MatrixXi &sampled_idxs, MatrixXd &T_mode)
     {   
         int idx_val;
@@ -263,7 +269,7 @@ namespace sorted // sorted namespace (The indices are now sorted BUT we need to 
         std::vector<std::vector<int> > fiber_idxs;                                  // vector of vectors, 2D vector
         std::vector<size_t> offset_fiber;
         offset_fiber.resize(block_size(current_mode), 1);
-        fiber_idxs.resize(block_size(current_mode), std::vector<int>(order - 1));   // resize it, in order to index it
+        fiber_idxs.resize(block_size(current_mode), std::vector<int>(TNS_ORDER - 1));   // resize it, in order to index it
         vector_offset.resize(order,1);
         current_vector_offset.resize(order,1);
         // idxs: sample blocksize tuple of indices for every mode (including current)
@@ -311,7 +317,8 @@ namespace sorted // sorted namespace (The indices are now sorted BUT we need to 
 
 
         // Sort the fiber_idxs
-        // std::sort(fiber_idxs.begin(), fiber_idxs.end(), sorted::sortBasedCols<TNS_ORDER>);
+        std::sort(fiber_idxs.begin(), fiber_idxs.end(), sorted::sortBasedCols<TNS_ORDER>);
+
         
         // Displaying the 2D vector after sorting 
         // cout << "The Matrix after sorting 1st row is:\n"; 
@@ -323,6 +330,8 @@ namespace sorted // sorted namespace (The indices are now sorted BUT we need to 
         // } 
 
         //create the offset vector for mode_1
+        // cout << "SORTING FIBERS START!";
+
         vector_offset[0] = 1;
         for(size_t dim_idx = 1; dim_idx < order; dim_idx++)
         {
@@ -384,7 +393,42 @@ namespace sorted // sorted namespace (The indices are now sorted BUT we need to 
                 }
             }
         }
+        // cout << "\t SORTING FIBERS END!" << endl;
+        return fiber_idxs;
+    }
 
+    template <std::size_t  TNS_ORDER>
+    void Sample_KhatriRao(const int &current_mode, const int &R, const std::vector<std::vector<int>> &sampled_indices, const std::array<MatrixXd, TNS_ORDER> &Factors, MatrixXd &KR_sampled)
+    {
+        int order = Factors.size();
+        int kr_s_rows = sampled_indices.size();;
+        int kr_factor;
+        KR_sampled.setOnes(kr_s_rows,R);                                                       
+
+        int first_mode = (current_mode == 0)? 1: 0;
+        int last_mode = (current_mode == order-1)? order-2 : order-1;
+
+        //For every row of Khatri-Rao (sampled)
+        for(int kr_s_row = 0; kr_s_row < kr_s_rows; kr_s_row++)                  //for every row of the sampled kr (NOT size_int because current_mode is of type int)
+        {
+            for(int factor = order - 1, fiber_factor_idx = order - 2; factor > -1; factor--)                   //for each factor (except the current mode)
+            {
+                if( factor == current_mode)
+                {   
+                    continue;            
+                }
+                else
+                {
+                    KR_sampled.row(kr_s_row) = KR_sampled.row(kr_s_row).cwiseProduct(Factors[factor].row(sampled_indices[kr_s_row][fiber_factor_idx]));
+                    fiber_factor_idx --; 
+                }
+                
+
+            }
+            
+        }
+
+        
 
     }
 
