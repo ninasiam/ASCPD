@@ -158,7 +158,7 @@ namespace symmetric
                     f_value(0) = f_value(0) / frob_X_sq_d;
                     auto t2_fval = high_resolution_clock::now();
                     stop_t_fval += duration_cast<nanoseconds>(t2_fval - t1_fval);
-                    cout << print_iter<< "  " << " --- " << f_value << "   " << " --- " << frob_X << endl;
+                    cout << print_iter<< "  " << " --- " << f_value(0) << "   " << " --- " << frob_X << endl;
                 #else
                     // Here we calculate the measure of performance, either CPD_GEN or calculate the norm of a tensor using the factors
                     auto t1_cpdgen = high_resolution_clock::now();
@@ -310,15 +310,17 @@ namespace sorted
 
 
             //Sample the fibers and take the sampled matricization and the idxs used for the sampling of khatri-rao
+            std::vector<std::vector<int>> fiber_idxs;
+            fiber_idxs.resize(block_size(current_mode), std::vector<int>(TNS_ORDER - 1));   // resize it, in order to index it
             auto t1_Ts = high_resolution_clock::now();
-            sorted::Sample_fibers<TNS_ORDER>( Tensor_pointer,  tns_dims,  block_size,  current_mode,
+            fiber_idxs = sorted::Sample_fibers<TNS_ORDER>( Tensor_pointer,  tns_dims,  block_size,  current_mode,
                              current_mode_struct.idxs, current_mode_struct.T_s);
             auto t2_Ts = high_resolution_clock::now();
             stop_t_Ts += duration_cast<nanoseconds>(t2_Ts - t1_Ts);
 
             //Compute the sampled Khatri Rao
             auto t1_KRs = high_resolution_clock::now();
-            sorted::Sample_KhatriRao( current_mode, R, current_mode_struct.idxs, Factors_prev, current_mode_struct.KR_s); // !!!! THIS SHOULD BE SORTED !!!
+            sorted::Sample_KhatriRao( current_mode, R, fiber_idxs, Factors_prev, current_mode_struct.KR_s); // !!!! THIS SHOULD BE SORTED !!!
             auto t2_KRs = high_resolution_clock::now();
             stop_t_KRs += duration_cast<nanoseconds>(t2_KRs - t1_KRs);
 
@@ -359,7 +361,7 @@ namespace sorted
                     f_value(0) = f_value(0) / frob_X_sq_d;
                     auto t2_fval = high_resolution_clock::now();
                     stop_t_fval += duration_cast<nanoseconds>(t2_fval - t1_fval);
-                    cout << print_iter << "  " << " --- " << f_value << "   " << " --- " << frob_X << endl;
+                    cout << print_iter << "  " << " --- " << f_value(0) << "   " << " --- " << frob_X << endl;
                 #else
                     // Here we calculate the measure of performance, either CPD_GEN or calculate the norm of a tensor using the factors
                     auto t1_cpdgen = high_resolution_clock::now();
@@ -424,7 +426,6 @@ namespace parallel
     {   
 
         MatrixXi idxs;
-        MatrixXi factor_idxs;
         MatrixXd T_s;
         MatrixXd KR_s; 
         MatrixXd Grad;
@@ -562,7 +563,9 @@ namespace parallel
                 #pragma omp master
                 t1_Ts = high_resolution_clock::now();
 
-                sorted::Sample_fibers<TNS_ORDER>(Tensor_pointer,  tns_dims,  block_size,  current_mode,
+                std::vector<std::vector<int>> local_fiber_idxs;
+                local_fiber_idxs.resize(block_size(current_mode), std::vector<int>(TNS_ORDER - 1));   // resize it, in order to index it
+                local_fiber_idxs = sorted::Sample_fibers<TNS_ORDER>(Tensor_pointer,  tns_dims,  block_size,  current_mode,
                                 current_mode_struct.idxs, current_mode_struct.T_s);
                 // std::cout << "T_s norm is : " << current_mode_struct.T_s.norm() << std::endl; 
                 #pragma omp master
@@ -576,7 +579,7 @@ namespace parallel
                 #pragma omp master
                 t1_KRs = high_resolution_clock::now();
 
-                symmetric::Sample_KhatriRao( current_mode, R, current_mode_struct.idxs, local_Factors_prev, current_mode_struct.KR_s);
+                sorted::Sample_KhatriRao( current_mode, R, local_fiber_idxs, local_Factors_prev, current_mode_struct.KR_s);
                 // std::cout << "KR_s norm is : " << current_mode_struct.KR_s.norm() << std::endl; 
 
                 #pragma omp master
@@ -675,7 +678,7 @@ namespace parallel
                             f_value(0) = f_value(0) / frob_X_sq_d;
                             auto t2_fval = high_resolution_clock::now();
                             stop_t_fval += duration_cast<nanoseconds>(t2_fval - t1_fval);
-                            cout << print_iter << "  " << " --- " << f_value << "   " << " --- " << frob_X << endl;
+                            cout << print_iter << "  " << " --- " << f_value(0) << "   " << " --- " << frob_X << endl;
                         #else
                             // Here we calculate the measure of performance, either CPD_GEN or calculate the norm of a tensor using the factors
                             t1_cpdgen = high_resolution_clock::now();
@@ -753,7 +756,7 @@ namespace parallel_asychronous
     struct struct_mode
     {   
 
-        MatrixXi idxs;
+        MatrixXi idxs; // inherited in previous versions, in this version we use a vector of vectors
         MatrixXd T_s;
         MatrixXd KR_s; 
         MatrixXd Grad;
@@ -1013,15 +1016,10 @@ namespace parallel_asychronous
                             f_value(0) = f_value(0) / frob_X_sq_d;
                             auto t2_fval = high_resolution_clock::now();
                             stop_t_fval += duration_cast<nanoseconds>(t2_fval - t1_fval);
-                            cout << print_iter<< " " << " --- " << f_value << " " << " --- " << frob_X << endl;
+                            cout << print_iter<< " " << " --- " << f_value(0) << " " << " --- " << frob_X_sq_d << endl;
                         #else
                             // Here we calculate the measure of performance, either CPD_GEN or calculate the norm of a tensor using the factors
                             t1_cpdgen = high_resolution_clock::now();
-                            // for(int i = 0; i < TNS_ORDER; i++)
-                            // {
-                            //     std:: cout << Factors_prev[i].norm() << std:: endl;
-                                
-                            // }
                             CpdGen( tns_dims, Factors_prev, R, Est_Tensor_from_factors);
                             auto t2_cpdgen = high_resolution_clock::now();
                             stop_t_cpdgen += duration_cast<nanoseconds>(t2_cpdgen-t1_cpdgen);
