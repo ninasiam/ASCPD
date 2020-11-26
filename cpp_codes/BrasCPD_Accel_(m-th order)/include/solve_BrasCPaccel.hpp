@@ -1003,7 +1003,7 @@ namespace parallel_asychronous
                 // #pragma omp flush(Factors, Y_Factors, Factors_prev)     
                 if( int(AO_iter % ((TNS_ORDER + 1)*(((tns_dims.prod()/tns_dims(current_mode))/(threads_num * block_size(current_mode))))) == 0))
                 {   
-                    #pragma omp master
+                    #pragma omp master // see if it  must include only cpdgen
                     {    
                         #pragma omp flush(Factors, Y_Factors, Factors_prev)               
                         print_iter++;

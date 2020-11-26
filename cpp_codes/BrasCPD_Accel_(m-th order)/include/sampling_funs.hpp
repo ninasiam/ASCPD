@@ -221,24 +221,30 @@ namespace sorted // sorted namespace (The indices are now sorted BUT we need to 
     bool sortBasedCols(const std::vector<int> &v1, const std::vector<int> &v2)
     {   
         // int order =  v1.size() + 1;
-        bool final_expr {false};
-        std::array<bool,TNS_ORDER - 1> expr;
+        bool final_expr = false;
+        // std::array<bool,TNS_ORDER - 1> expr {{false}}; // initiize an array of bools to the value false
+        bool expr[TNS_ORDER-1] = {false}; // initiize an array of bools to the value false (alternative)
         for(int i = TNS_ORDER - 2; i >= 0; i--)
         {
             if(i < TNS_ORDER - 2)
             {
+                // expr[i] = (v1[i+1] == v2[i+1]) && (v1[i] < v2[i]);
                 expr[i] = (v1[i+1] == v2[i+1]) && (v1[i] < v2[i]);
                 final_expr = final_expr || expr[i];
 
-                if(!final_expr)
+                if(final_expr)
                 {
                     return final_expr;
                 }
             }
             else
             {
-                expr[i] = v1[i] < v2[i];
+                expr[i] = v1[i] < v2[i];         
                 final_expr = final_expr || expr[i];
+                if(final_expr)
+                {
+                    return final_expr;
+                }
             }
         }
 
