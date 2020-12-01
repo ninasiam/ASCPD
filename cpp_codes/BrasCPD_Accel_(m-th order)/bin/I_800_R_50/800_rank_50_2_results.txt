@@ -1,0 +1,90 @@
+Tensor of order: 3	 ~Dimensions: 800 800 800	 ~Rank: 50
+Time Create True Tensor (CPDGEN): 4.19634s
+Sampling of each mode with blocksize: 1000 1000 1000
+Frob_X:2.05782e+10
+--------------------------- BEGIN ALGORITHM --------------------------- 
+1    --- 0.0528222    --- 1.08699e+09    --- 2.05782e+10
+2  --- 0.00119656  --- 2.05782e+10
+3  --- 0.000752922  --- 2.05782e+10
+4  --- 0.000320739  --- 2.05782e+10
+5  --- 5.39562e-06  --- 2.05782e+10
+6  --- 8.50584e-07  --- 2.05782e+10
+7  --- 3.1621e-07  --- 2.05782e+10
+8  --- 1.13182e-07  --- 2.05782e+10
+9  --- 1.3694e-08  --- 2.05782e+10
+10  --- 4.58301e-09  --- 2.05782e+10
+11  --- 1.50338e-09  --- 2.05782e+10
+---------------------------- EXIT ALGORITHM --------------------------- 
+CPU time WHILE = 143.75s
+Time CPDGEN    = 0s
+Time MTTKRP    = 30.7605s
+Time sample T  = 86.1595s
+Time sample KR = 3.03115s
+Time f_value   = 7.07264s
+Time grad      = 1.99245s
+Time NAG par   = 4.39384s
+Time struct    = 7.0175s
+AO_iter        = 12800
+num of threads = 2
+
+epsilon = 2.22045e-16
+Tensor of order: 3	 ~Dimensions: 800 800 800	 ~Rank: 50
+Time Create True Tensor (CPDGEN): 4.18136s
+Sampling of each mode with blocksize: 1000 1000 1000
+Frob_X:2.05782e+10
+--------------------------- BEGIN ALGORITHM --------------------------- 
+1    --- 0.0528222    --- 1.08699e+09    --- 2.05782e+10
+2  --- 0.0011214  --- 2.05782e+10
+3  --- 0.00076213  --- 2.05782e+10
+4  --- 0.000337094  --- 2.05782e+10
+5  --- 4.82891e-06  --- 2.05782e+10
+6  --- 7.33029e-07  --- 2.05782e+10
+7  --- 2.40355e-07  --- 2.05782e+10
+8  --- 7.92967e-08  --- 2.05782e+10
+9  --- 8.51448e-09  --- 2.05782e+10
+10  --- 2.7422e-09  --- 2.05782e+10
+11  --- 8.79257e-10  --- 2.05782e+10
+---------------------------- EXIT ALGORITHM --------------------------- 
+CPU time WHILE = 145.132s
+Time CPDGEN    = 0s
+Time MTTKRP    = 30.656s
+Time sample T  = 87.4031s
+Time sample KR = 3.021s
+Time f_value   = 7.20742s
+Time grad      = 2.00317s
+Time NAG par   = 4.39154s
+Time struct    = 7.17419s
+AO_iter        = 12800
+num of threads = 2
+
+epsilon = 2.22045e-16
+Tensor of order: 3	 ~Dimensions: 800 800 800	 ~Rank: 50
+Time Create True Tensor (CPDGEN): 4.1873s
+Sampling of each mode with blocksize: 1000 1000 1000
+Frob_X:2.05782e+10
+--------------------------- BEGIN ALGORITHM --------------------------- 
+1    --- 0.0528222    --- 1.08699e+09    --- 2.05782e+10
+2  --- 0.00112964  --- 2.05782e+10
+3  --- 0.000733878  --- 2.05782e+10
+4  --- 0.000368441  --- 2.05782e+10
+5  --- 9.28076e-06  --- 2.05782e+10
+6  --- 9.19804e-07  --- 2.05782e+10
+7  --- 2.92081e-07  --- 2.05782e+10
+8  --- 9.68594e-08  --- 2.05782e+10
+9  --- 1.0808e-08  --- 2.05782e+10
+10  --- 3.54708e-09  --- 2.05782e+10
+11  --- 1.17119e-09  --- 2.05782e+10
+---------------------------- EXIT ALGORITHM --------------------------- 
+CPU time WHILE = 144.722s
+Time CPDGEN    = 0s
+Time MTTKRP    = 30.1446s
+Time sample T  = 87.5603s
+Time sample KR = 3.06041s
+Time f_value   = 7.13113s
+Time grad      = 1.98287s
+Time NAG par   = 4.34447s
+Time struct    = 7.20089s
+AO_iter        = 12800
+num of threads = 2
+
+epsilon = 2.22045e-16
