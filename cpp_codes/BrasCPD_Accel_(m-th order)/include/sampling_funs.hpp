@@ -222,9 +222,9 @@ namespace sorted // sorted namespace (The indices are now sorted BUT we need to 
     {   
         // int order =  v1.size() + 1;
         bool final_expr = false;
-        // std::array<bool,TNS_ORDER - 1> expr {{false}}; // initiize an array of bools to the value false
+        // std::array<bool,TNS_ORDER - 1> expr {{false}}; // initialize an array of bools to the value false
         bool expr[TNS_ORDER-1] = {false}; // initiize an array of bools to the value false (alternative)
-        for(int i = TNS_ORDER - 2; i >= 0; i--)
+        for(int i = TNS_ORDER - 2; i >= TNS_ORDER - 3; i--) // i = 0 for 3 mode, i = 1 for 4 modes, i = 2 for 5 mode, !!! I dont know why!!!!
         {
             if(i < TNS_ORDER - 2)
             {
