@@ -815,7 +815,6 @@ namespace parallel_asychronous
         auto t1_struct_d  = high_resolution_clock::now();
 
 
-        Eigen::Tensor< double, static_cast<int>(TNS_ORDER) >  Est_Tensor_from_factors;                // with no dims, to calculate cost fun
         std::array<MatrixXd, TNS_ORDER> Factors_prev  = Factors;                                      //Previous values of factors
         std::array<MatrixXd, TNS_ORDER> Y_Factors     = Factors;                                      //Factors Y
 
@@ -826,7 +825,10 @@ namespace parallel_asychronous
             X_mat_0 = Eigen::Map<Eigen::MatrixXd>(Mat_Tensor.data(), tns_dims(0), tns_dims.prod()/tns_dims(0));
             MatrixXd MTTKRP_0(tns_dims(0), R);
             MatrixXd gram_cwise_prod(R, R);
+        #else
+            Eigen::Tensor< double, static_cast<int>(TNS_ORDER) >  Est_Tensor_from_factors;                // with no dims, to calculate cost fun
         #endif
+        
         //-------------------------------------- Matrix Initializations ---------------------------------------------
         
         // Eigen::Tensor< double, 0 > frob_X_sq = frob_X.square();
@@ -843,7 +845,7 @@ namespace parallel_asychronous
                         num_threads(threads_num) \
                         proc_bind(spread)\
                         default(none)\
-                        private(current_mode, Est_Tensor_from_factors)\
+                        private(current_mode)\
                         shared(Factors_prev, Y_Factors, cout, X_mat_0, MTTKRP_0, gram_cwise_prod,\
                         t1_struct, t1_Ts, t1_KRs, t1_cal_grad, t1_cpdgen, t1_struct_d, frob_X_sq_d,\
                         t1_NAG, t1_fval, stop_t_cal_grad, stop_t_cpdgen, stop_t_fval, stop_t_KRs, stop_t_MTTKRP,\
@@ -993,7 +995,7 @@ namespace parallel_asychronous
                     for (int mode = 0; mode < TNS_ORDER; mode++)
                     {
                         local_Factors[mode] = Factors[mode];
-                        local_Y_Factors[mode] = Factors[mode]; // maybe factors
+                        local_Y_Factors[mode] = Y_Factors[mode]; // maybe factors check it!!
                         local_Factors_prev[mode] = Factors[mode];
                     }
 
