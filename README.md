@@ -10,6 +10,7 @@ The project contains:
 ## Built with:
 For the matlab scripts the following libraries were used:
   - tensorlab: a matlab library for tensor operations.
+
 For the C++ project:
   - Eigen library: A C++ library, for linear algebra
   - Tensor module (Eigen Library): a module that provides a Tensor data structure.
