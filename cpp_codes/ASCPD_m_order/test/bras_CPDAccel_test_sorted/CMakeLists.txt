@@ -2,9 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
 PROJECT(BRASCPD_ACCEL_NN_TEST_SORTED)
 
-########################################################################################################################
-###      SET Variables
-########################################################################################################################
+###   Variables
 STRING(TOUPPER ${PROJECT_NAME} PROJECT_NAME_TOUPPER)  
 MESSAGE(STATUS " [ ${PROJECT_NAME_TOUPPER} ] Processing in ${CMAKE_BUILD_TYPE} mode.")
 MESSAGE(STATUS " [ ${PROJECT_NAME_TOUPPER} ] SOURCE DIR ==> ${CMAKE_CURRENT_LIST_DIR}")
@@ -18,17 +16,11 @@ SET(TEST_HEADER_FILES     ${INCLUDE_DIR})
 #SET(TEST_HEADER_FILE       ${CMAKE_CURRENT_LIST_DIR}/Test${PROJECT_NAME}.hpp)   
 INCLUDE_DIRECTORIES(${TEST_HEADER_FILES})
 #SET(TEST_HEADER_FILE       ${CMAKE_CURRENT_LIST_DIR}/Test${PROJECT_NAME}.hpp)   
-########################################################################################################################
 
-########################################################################################################################
 ### EIGEN LIBRARY
-########################################################################################################################
 MESSAGE(STATUS " [ ${PROJECT_NAME_TOUPPER} ] EIGEN_ROOT ==> " ${EIGEN_ROOT_DIR})
-########################################################################################################################
 
-########################################################################################################################
 ### OpenMP
-########################################################################################################################
 MESSAGE(STATUS " [ ${PROJECT_NAME_TOUPPER} ] CONFIGURING OPENMP")
 find_package(OpenMP REQUIRED)
 if (OPENMP_FOUND)
@@ -36,11 +28,9 @@ if (OPENMP_FOUND)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
-########################################################################################################################
 
-########################################################################################################################
-### CREATE EXECUTABLE FROM SOURCE AND HEADER FILES
-########################################################################################################################
+
+### Create executable
 SET(LIBRARIES_TO_LINK       OpenMP::OpenMP_CXX)
 
 MESSAGE(STATUS " [ ${PROJECT_NAME_TOUPPER} ] Creating executable brasCPD_NonNegative.cpp")
