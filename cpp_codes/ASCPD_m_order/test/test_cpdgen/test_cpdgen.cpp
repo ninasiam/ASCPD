@@ -91,7 +91,7 @@ int main(int argc, char **argv){
         Write_to_File(tns_dims(factor), R, Factor_to_write, file_name1.c_str());
     }
 
-    CpdGen( tns_dims, Init_Factors, R, Est_Tensor_from_factors);
+    CpdGen(tns_dims, Init_Factors, R, Est_Tensor_from_factors);
     cout << "Est_Tensor_from_factors 2" << " = \n " << Est_Tensor_from_factors << endl;
 
     // Frobenius norm of Tensor
