@@ -1,4 +1,4 @@
-# Main repo for the development of ASCPD and stochastic algorithms for Canonical Polyadic Decomposition(CPD)
+# ASCPD and stochastic algorithms for Canonical Polyadic Decomposition (CPD)
 
 ## About the project:
 The ASCPD algorithm is an accelerated algorithm for Canonical Tensor Decomposition Problem. It combines ALS with a fiber sampling technique in order to reduce the computational cost of the operation Matricized Tensor Times Khatri Rao Product (MTTKRP). \
