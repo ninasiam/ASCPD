@@ -13,5 +13,5 @@ For the matlab scripts the following libraries were used:
 
 For the C++ project:
   - Eigen library: A C++ library, for linear algebra operations.
-  - Tensor module (Eigen Library): a module that provides a Tensor data structure.
+  - Tensor module (Eigen Library): a module that provides a Tensor data structure. Note that the Tensor module is not supported.
 
